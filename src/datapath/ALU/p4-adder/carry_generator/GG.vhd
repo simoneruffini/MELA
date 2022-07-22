@@ -14,9 +14,9 @@
 -- Additional Comments:
 --
 --------------------------------------------------------------------------------
-LIBRARY ieee;
-    USE ieee.std_logic_1164.ALL;
-    USE ieee.numeric_std.ALL;
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
 entity GG is
   port (
