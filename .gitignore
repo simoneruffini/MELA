@@ -1,0 +1,9 @@
+work/
+WORK/
+*.log
+*.swp
+transcript
+vsim.wlf
+default.svf
+.synopsys_dc.setup
+*.bkp
