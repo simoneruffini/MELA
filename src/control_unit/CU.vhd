@@ -33,22 +33,7 @@ entity CU is
     RSTn   : in std_logic;                -- Active Low
     OPCODE : in  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
     FUNC   : in  std_logic_vector(FUNC_SIZE - 1 downto 0);
-    -- FIRST PIPE STAGE OUTPUTS
-    EN1    : out std_logic;               -- enables the register file and the pipeline registers
-    RF1    : out std_logic;               -- enables the read port 1 of the register file
-    RF2    : out std_logic;               -- enables the read port 2 of the register file
-    WF1    : out std_logic;               -- enables the write port of the register file
-    -- SECOND PIPE STAGE OUTPUTS
-    EN2    : out std_logic;               -- enables the pipe registers
-    S1     : out std_logic;               -- input selection of the first multiplexer
-    S2     : out std_logic;               -- input selection of the second multiplexer
-    ALU1   : out std_logic;               -- alu control bit
-    ALU2   : out std_logic;               -- alu control bit
-    -- THIRD PIPE STAGE OUTPUTS
-    EN3    : out std_logic;               -- enables the memory and the pipeline registers
-    RM     : out std_logic;               -- enables the read-out of the memory
-    WM     : out std_logic;               -- enables the write-in of the memory
-    S3     : out std_logic                -- input selection of the multiplexer
+    CTRL_WORD : out controlword_t(CW_SIZE-1 downto 0)
   );                  
 end CU;
 

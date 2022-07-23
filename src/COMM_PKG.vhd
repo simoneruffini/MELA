@@ -20,30 +20,30 @@ library ieee;
   use ieee.numeric_std.all;
 
 package COMM_PKG is
+  type controlword_t is array (natural range <>) of STD_LOGIC;
 
   -- Position of the control word signals. Used internally to map the internal
   -- std_logic_vector to the output signals.
-  -- CW1
-  constant PEN1 : integer := 0;  -- enables the Register File and the pipeline registers
-  constant PRF1 : integer := 1;  -- enables the read port 1 of the Register File
-  constant PRF2 : integer := 2;  -- enables the read port 2 of the Register File
-  -- CW2
-  constant PEN2  : integer := 3;  -- enables the pipe registers
-  constant PS1   : integer := 4;  -- allows the input selection of the first multiplexer
-  constant PS2   : integer := 5;  -- allows the input selection of the second multiplexer;
-  constant PALU1 : integer := 6;  -- alu control bit
-  constant PALU2 : integer := 7;  -- alu control bit
-  -- CW3
-  constant PEN3 : integer := 8;  -- enables the memory and the pipeline registers
-  constant PRM  : integer := 9;  -- enables the read-out of the memory
-  constant PWM  : integer := 10; -- enables the write-in of the memory
-  constant PS3  : integer := 11; -- input selection of the multiplexer
-  constant PWF1 : integer := 12; -- input selection of the multiplexer
+  -- Decode
+  constant A_RE : integer := 0;  -- enables the read port 1 of the Register File
+  constant B_RE : integer := 1;  -- enables the read port 2 of the Register File
+  constant J_TYPE : integer := 2;  -- Selects the right immediate value for the instruction type
+  constant REG_WE : integer := 3;  -- enables register file write
+  -- Execute
+  constant IMM_SEL  : integer := 4;  -- selects the immediate register as the second input for the ALU
+  constant PC_SEL   : integer := 5;  -- selects the program counter as the first input for the ALU
+  constant ALU_OP1 : integer := 6;  -- alu control bit
+  constant ALU_OP2 : integer := 7;  -- alu control bit
+  constant ALU_OP3 : integer := 8;  -- alu control bit
+  constant ALU_OP4 : integer := 9;  -- alu control bit
+  -- Memory
+  constant DM_RE  : integer := 10;  -- enables the read-out of the memory
+  constant DM_WE  : integer := 11; -- enables the write-in of the memory
 
+  -- Write-back
+  constant WB_MUX : integer := 12; -- Selects the output of the datapath
+  
   constant CW_SIZE  : integer := 13; -- Length of the control word == Number of control signals
-  constant CW1_SIZE : integer := 3; -- size of the control word in the first stage of the pipeline
-  constant CW2_SIZE : integer := 5; -- size of the control word in the second stage of the pipeline
-  constant CW3_SIZE : integer := 5; -- size of the control word in the third stage of the pipeline
 
 -- Control unit input size
   constant OP_CODE_SIZE : integer :=  6;  -- OPCODE field size
