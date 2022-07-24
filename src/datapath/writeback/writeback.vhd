@@ -28,7 +28,6 @@ entity writeback is
     data_w : integer := 32
   );
   port (
-    ck        : in    std_logic;
     ctrl_word : in    controlword_t(CW_SIZE - 1 downto 0);
     -- Inputs
     alu_out : in    std_logic_vector(data_w - 1 downto 0);
@@ -48,17 +47,15 @@ begin
   datapath_out <= muxout;
   wb           <= muxout;
 
-  wb_mux : process (ck, ctrl_word, alu_out, lmd) is
+  wb_mux0 : process (ctrl_word, alu_out, lmd) is
   begin
 
-    if (rising_edge (ck)) then
-      if (ctrl_word(WB_MUX)='1') then
-        muxout <= lmd;
-      else
-        muxout <= alu_out;
-      end if;
+    if (ctrl_word(WB_MUX)='1') then
+      muxout <= lmd;
+    else
+      muxout <= alu_out;
     end if;
 
-  end process wb_mux;
+  end process wb_mux0;
 
 end architecture behavioural;
