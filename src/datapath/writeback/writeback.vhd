@@ -31,7 +31,6 @@ entity writeback is
     ck        : in    std_logic;
     ctrl_word : in    controlword_t(CW_SIZE - 1 downto 0);
     -- Inputs
-    pci     : in    std_logic_vector(addr_w - 1 downto 0);
     alu_out : in    std_logic_vector(data_w - 1 downto 0);
     lmd     : in    std_logic_vector(data_w - 1 downto 0);
     -- Outputs
@@ -42,6 +41,24 @@ end entity writeback;
 
 architecture behavioural of writeback is
 
+  signal muxout : std_logic_vector(data_w - 1 downto 0);
+
 begin
+
+  datapath_out <= muxout;
+  wb           <= muxout;
+
+  wb_mux : process (ck, ctrl_word, alu_out, lmd) is
+  begin
+
+    if (rising_edge (ck)) then
+      if (ctrl_word(WB_MUX)='1') then
+        muxout <= lmd;
+      else
+        muxout <= alu_out;
+      end if;
+    end if;
+
+  end process wb_mux;
 
 end architecture behavioural;
