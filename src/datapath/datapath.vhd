@@ -19,15 +19,17 @@ library ieee;
   use ieee.std_logic_1164.all;
 
 library work;
-  use work.COMM_PKG.all;
+  use work.comm_pkg.all;
 
 entity datapath is
   generic (
-    ADDR_W : integer := 32;
-    DATA_W : integer := 32
+    addr_w : integer := 32;
+    data_w : integer := 32
   );
   port (
-    CTRL_WORD : in controlword_t(CW_SIZE-1 downto 0)
+    instruction  : in    std_logic_vector(data_w - 1 downto 0);
+    ctrl_word    : in    controlword_t(CW_SIZE - 1 downto 0);
+    datapath_out : out   std_logic_vector(data_w - 1 downto 0)
   );
 end entity datapath;
 
