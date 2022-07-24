@@ -34,7 +34,7 @@ entity CU is
     OPCODE : in  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
     FUNC   : in  std_logic_vector(FUNC_SIZE - 1 downto 0);
     CTRL_WORD : out controlword_t(CW_SIZE-1 downto 0)
-  );                  
+  );
 end CU;
 
 architecture Behavioural of CU is
