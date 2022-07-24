@@ -31,7 +31,7 @@ entity fetch is
     ck        : in    std_logic;
     ctrl_word : in    controlword_t(CW_SIZE - 1 downto 0);
     -- Inputs
-    pci         : in   std_logic_vector(addr_w - 1 downto 0);
+    pci         : in    std_logic_vector(addr_w - 1 downto 0);
     instruction : in    std_logic_vector(data_w - 1 downto 0);
     -- Outputs
     pco : out   std_logic_vector(addr_w - 1 downto 0);
@@ -42,5 +42,25 @@ end entity fetch;
 architecture behavioural of fetch is
 
 begin
+
+  -- Instruction passthrough
+  ir_reg : process (ck, instruction) is
+  begin
+
+    if (rising_edge (ck)) then
+      ir <= instruction;
+    end if;
+
+  end process ir_reg;
+
+  -- Increase program counter
+  pc_increase : process (ck, pci) is
+  begin
+
+    if (rising_edge(ck)) then
+      pco <= std_logic_vector(unsigned(pci) + 4);
+    end if;
+
+  end process pc_increase;
 
 end architecture behavioural;
