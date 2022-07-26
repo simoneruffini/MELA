@@ -7,3 +7,4 @@ vsim.wlf
 default.svf
 .synopsys_dc.setup
 *.bkp
+*.o

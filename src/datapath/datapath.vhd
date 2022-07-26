@@ -33,8 +33,13 @@ entity datapath is
   );
 end entity datapath;
 
-architecture behavioural of datapath is
+architecture BEHAVIORAL of datapath is
 
 begin
 
-end architecture behavioural;
+end architecture BEHAVIORAL;
+
+configuration CFG_DATAPATH_BEHAVIORAL of datapath is
+  for BEHAVIORAL
+  end for;
+end CFG_DATAPATH_BEHAVIORAL;

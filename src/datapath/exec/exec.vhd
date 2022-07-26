@@ -43,8 +43,13 @@ entity execute is
   );
 end entity execute;
 
-architecture behavioural of execute is
+architecture BEHAVIORAL of execute is
 
 begin
 
-end architecture behavioural;
+end architecture BEHAVIORAL;
+
+configuration CFG_EXECUTE_BEHAVIORAL of execute is
+  for BEHAVIORAL
+  end for;
+end CFG_EXECUTE_BEHAVIORAL;

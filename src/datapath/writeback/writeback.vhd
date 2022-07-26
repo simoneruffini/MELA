@@ -38,7 +38,7 @@ entity writeback is
   );
 end entity writeback;
 
-architecture behavioural of writeback is
+architecture BEHAVIORAL of writeback is
 
   signal muxout : std_logic_vector(data_w - 1 downto 0);
 
@@ -58,4 +58,9 @@ begin
 
   end process wb_mux0;
 
-end architecture behavioural;
+end architecture BEHAVIORAL;
+
+configuration CFG_WRITEBACK_BEHAVIORAL of writeback is
+  for BEHAVIORAL
+  end for;
+end CFG_WRITEBACK_BEHAVIORAL;

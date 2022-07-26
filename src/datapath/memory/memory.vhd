@@ -41,8 +41,13 @@ entity memory is
   );
 end entity memory;
 
-architecture behavioural of memory is
+architecture BEHAVIORAL of memory is
 
 begin
 
-end architecture behavioural;
+end architecture BEHAVIORAL;
+
+configuration CFG_MEMORY_BEHAVIORAL of memory is
+  for BEHAVIORAL
+  end for;
+end CFG_MEMORY_BEHAVIORAL;

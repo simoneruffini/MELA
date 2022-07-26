@@ -17,7 +17,7 @@
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.std_logic_unsigned.all;
-  use ieee.std_logic_arith.all;
+  --use ieee.std_logic_arith.all;
   use ieee.numeric_std.all;
 library work;
   use work.ALU_PKG.all;
@@ -33,7 +33,7 @@ entity ALU is
     OUTALU  : out std_logic_vector(N - 1 downto 0));
 end ALU;
 
-architecture behavioural of ALU is
+architecture BEHAVIORAL of ALU is
 begin
 
   P_ALU : process (FUNC, DATA1, DATA2)
@@ -54,9 +54,9 @@ begin
 
   end process P_ALU;
 
-end behavioural;
+end BEHAVIORAL;
 
 configuration CFG_ALU_BEHAVIORAL of ALU is
-  for behavioural
+  for BEHAVIORAL
   end for;
 end CFG_ALU_BEHAVIORAL;

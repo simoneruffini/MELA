@@ -37,7 +37,7 @@ entity CU is
   );
 end CU;
 
-architecture Behavioural of CU is
+architecture BEHAVIORAL of CU is
 
   type op_lut_t is array (integer range <>) of std_logic_vector(CW_SIZE - 1 downto 0);
   type func_lut_t is array (integer range <>) of std_logic_vector(ALU_CW_SIZE - 1 downto 0);
@@ -139,10 +139,10 @@ begin
     end if;
   end process DELAYS;
 
-end Behavioural;
+end BEHAVIORAL;
 
-configuration CFG_CU_BEHAVIOURAL of CU is
-  for Behavioural
+configuration CFG_CU_BEHAVIORAL of CU is
+  for BEHAVIORAL
   end for;
 end configuration;
 

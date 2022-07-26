@@ -39,7 +39,7 @@ entity fetch is
   );
 end entity fetch;
 
-architecture behavioural of fetch is
+architecture BEHAVIORAL of fetch is
 
 begin
 
@@ -63,4 +63,9 @@ begin
 
   end process pc_increase;
 
-end architecture behavioural;
+end architecture BEHAVIORAL;
+
+configuration CFG_FETCH_BEHAVIORAL of fetch is
+  for BEHAVIORAL
+  end for;
+end CFG_FETCH_BEHAVIORAL;

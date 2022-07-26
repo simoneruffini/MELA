@@ -3,29 +3,26 @@
 WORKDIR=work
 
 GHDL=ghdl
-OPTS=-a --workdir=$(WORKDIR)
+INCLUDE_OPTS=-i --workdir=$(WORKDIR)
+BUILD_OPTS=-m --workdir=$(WORKDIR) -o $(WORKDIR)/build -fsynopsys
+ELABORATE_OPTS=-c --workdir=$(WORKDIR)
 
-BUILD_CMD=$(GHDL) $(OPTS)
+BUILD_CMD=$(GHDL) $(BUILD_OPTS)
+
+SOURCES:=$(shell find . -name "*.vhd")
+
+all: $(WORKDIR) include
+	$(GHDL) $(BUILD_OPTS) CFG_DATAPATH_BEHAVIORAL
+
+datapath: $(WORKDIR) include
+	$(GHDL) $(BUILD_OPTS) CFG_DATAPATH_BEHAVIORAL
 
 $(WORKDIR):
 	mkdir $(WORKDIR)
 
-comm_pkg: work
-	$(BUILD_CMD) COMM_PKG.vhd
-
-fetch: comm_pkg
-	$(BUILD_CMD) datapath/fetch/fetch.vhd
-decode: comm_pkg
-	$(BUILD_CMD) datapath/decode/decode.vhd
-exec: comm_pkg
-	$(BUILD_CMD) datapath/exec/exec.vhd
-memory: comm_pkg
-	$(BUILD_CMD) datapath/memory/memory.vhd
-writeback: comm_pkg
-	$(BUILD_CMD) datapath/writeback/writeback.vhd
-
-datapath: comm_pkg fetch decode exec memory writeback
-	$(BUILD_CMD) datapath/datapath.vhd
+include: $(WORKDIR)
+	$(GHDL) $(INCLUDE_OPTS) $(SOURCES)
 
 clean:
+	$(GHDL) clean --workdir=$(WORKDIR)
 	rm -rf $(WORKDIR)

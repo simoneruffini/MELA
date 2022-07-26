@@ -33,7 +33,7 @@ entity decode is
     -- Inputs
     pci         : in    std_logic_vector(addr_w - 1 downto 0);
     instruction : in    std_logic_vector(data_w - 1 downto 0);
-    wb           : in   std_logic_vector(data_w - 1 downto 0);
+    wb          : in    std_logic_vector(data_w - 1 downto 0);
     -- Outputs
     pco : out   std_logic_vector(addr_w - 1 downto 0);
     a   : out   std_logic_vector(data_w - 1 downto 0);
@@ -42,8 +42,13 @@ entity decode is
   );
 end entity decode;
 
-architecture behavioural of decode is
+architecture BEHAVIORAL of decode is
 
 begin
 
-end architecture behavioural;
+end architecture BEHAVIORAL;
+
+configuration CFG_DECODE_BEHAVIORAL of decode is
+  for BEHAVIORAL
+  end for;
+end CFG_DECODE_BEHAVIORAL;
