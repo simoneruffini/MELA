@@ -29,7 +29,7 @@ entity execute is
   );
   port (
     ck        : in    std_logic;
-    ctrl_word : in    controlword_t(CW_SIZE - 1 downto 0);
+    ctrl_word    : in    controlword_t(cw_signals_type'POS(CW_SIZE) - 1 downto 0);
     -- Inputs
     pci : in    std_logic_vector(addr_w - 1 downto 0);
     a   : in    std_logic_vector(data_w - 1 downto 0);

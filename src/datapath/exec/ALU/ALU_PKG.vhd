@@ -17,15 +17,16 @@
 
 package ALU_PKG is
   type TYPE_OP is (
-    ADD, 
-    SUB,
-    MULT,
-    BITAND,
-    BITOR,
-    BITXOR,
-    FUNCLSL,
-    FUNCLSR,
-    FUNCRL,
-    FUNCRR
+    ADD,    -- 0000
+    SUB,    -- 0001
+    MULT,   -- 0010
+    BITAND, -- 0011
+    BITOR,  -- 0100
+    BITXOR, -- 0101
+    FUNCLSL,-- 0110
+    FUNCLSR,-- 0111
+    -- TODO: add arithmetic shifts
+    FUNCRL, -- 1000
+    FUNCRR  -- 1001
   );
 end ALU_PKG;

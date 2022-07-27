@@ -28,7 +28,7 @@ entity datapath is
   );
   port (
     instruction  : in    std_logic_vector(data_w - 1 downto 0);
-    ctrl_word    : in    controlword_t(CW_SIZE - 1 downto 0);
+    ctrl_word    : in    controlword_t(cw_signals_type'POS(CW_SIZE) - 1 downto 0);
     datapath_out : out   std_logic_vector(data_w - 1 downto 0)
   );
 end entity datapath;
