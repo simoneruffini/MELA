@@ -1,0 +1,4 @@
+#! env bash
+
+od --width=4 -t xC $1 | awk '{print $2$3$4$5}'
+
