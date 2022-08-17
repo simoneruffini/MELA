@@ -22,5 +22,5 @@ asmfile="${basename_asmfile%.*}" # remove extension
 ASSEMBLER_PATH="$script_base_dir/dlxasm.pl"
 
 perl $ASSEMBLER_PATH -o "$asmfile.bin" -list "$asmfile.list" "$1"
-rm $asmfile.bin.hdr
-cat $asmfile.bin | hexdump -v -e '/1 "%02X" /1 "%02X" /1 "%02X" /1 "%02X\n"' > "$asmfile_dump.txt"
+rm "$asmfile.bin.hdr"
+cat "$asmfile.bin"| hexdump -v -e '/1 "%02X" /1 "%02X" /1 "%02X" /1 "%02X\n"' > "${asmfile}_dump.txt"
