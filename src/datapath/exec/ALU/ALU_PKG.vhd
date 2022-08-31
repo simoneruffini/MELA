@@ -16,17 +16,18 @@
 --------------------------------------------------------------------------------
 
 package ALU_PKG is
-  type TYPE_OP is (
-    ADD,    -- 0000
-    SUB,    -- 0001
-    MULT,   -- 0010
-    BITAND, -- 0011
-    BITOR,  -- 0100
-    BITXOR, -- 0101
-    FUNCLSL,-- 0110
-    FUNCLSR,-- 0111
-    -- TODO: add arithmetic shifts
-    FUNCRL, -- 1000
-    FUNCRR  -- 1001
+  type ALU_FUNC_T is (
+    ADD,     -- Addition              RES = A + B
+    SUB,     -- Subtraction           RES = A - B
+    BITAND,  -- Bitwise and           RES = A AND B
+    BITOR,   -- Bitwise or            RES = A OR B
+    BITXOR,  -- Bitwise xor           RES = A XOR B
+    LSL,     -- Logical shift left    RES = A << B
+    LSR,     -- Logical shift right   RES = A >> B 
+    RL,      -- rotate left           RES = A rl(B)
+    RR,      -- rotate right          RES = A rr(B)
+    GEQ,     -- greater then equal    RES = A >= B
+    LEQ,     -- less then equal       RES = A <= B
+    NEQ      -- not equal             RES = A != B
   );
 end ALU_PKG;

@@ -16,40 +16,89 @@
 --------------------------------------------------------------------------------
 library ieee;
   use ieee.std_logic_1164.all;
-  use ieee.std_logic_unsigned.all;
-  --use ieee.std_logic_arith.all;
   use ieee.numeric_std.all;
+
 library work;
   use work.ALU_PKG.all;
+  use work.DLX_PKG.all;
 
 entity ALU is
   generic (
-    N : integer := 32
+    D_WIDTH : integer := 32                                 -- Input/Outputs Data Width
   );
   port (
-    FUNC    : in type_op;
-    DATA1   : in std_logic_vector(N - 1 downto 0);
-    DATA2   : in std_logic_vector(N - 1 downto 0);
-    OUTALU  : out std_logic_vector(N - 1 downto 0));
+    FUNC    : in alu_func_t;                                -- ALU function
+    A       : in std_logic_vector(D_WIDTH - 1 downto 0);    -- A port
+    B       : in std_logic_vector(D_WIDTH - 1 downto 0);    -- B port
+    RES     : out std_logic_vector(D_WIDTH - 1 downto 0)    -- Result port
+  );
 end ALU;
 
 architecture BEHAVIORAL of ALU is
+
+  signal A_u : integer (RANGE 0 to D_WIDTH-1);
+  signal B_u : integer (RANGE 0 to D_WIDTH-1);
+  signal A_i : integer (RANGE 0 to D_WIDTH-1);
+  signal B_i : integer (RANGE 0 to D_WIDTH-1);
+
+  signal P4_ADDER_Cin : std_logic;
+  signal P4_ADDER_B   : std_logic_vector(D_WIDTH - 1 downto 0);
+  signal P4_ADDER_S   : std_logic_vector(D_WIDTH - 1 downto 0);
+
 begin
 
-  P_ALU : process (FUNC, DATA1, DATA2)
+  -- Combinatorial Functions
+  ------------------------------------------------------------------------------
+
+  -- helpers 
+  A_u <= unsigned(A);
+  B_u <= unsigned(B);
+  A_i <= to_integer(A_u);
+  B_i <= to_integer(B_u);
+
+  -- Instantiations
+  ------------------------------------------------------------------------------
+  P4_ADDER_U: work.P4_ADDER("STRUCTURAL") is
+    generic map (
+      NBIT =>  C_ALU_PRECISION_BIT
+    )
+    port map (
+      A    => A,
+      B    => P4_ADDER_B,
+      Cin  => P4_ADDER_Cin,
+      S    => P4_ADDER_S,
+      Cout => open
+    );
+
+  
+  P_ALU : process (FUNC, A, B)
   begin
+    -- Defaults for disabling latch inference
+    RES <= (others => '0');
+    P4_ADDER_Cin  <= '0';
+    P4_ADDER_B    <= B;
+
     case FUNC is
-      when ADD      => OUTALU <= DATA1 + DATA2;
-      when SUB      => OUTALU <= DATA1 - DATA2;
-      when MULT     => OUTALU <= DATA1 ((N/2) - 1 downto 0) * DATA2 ((N/2) - 1 downto 0);
-      when BITAND   => OUTALU <= DATA1 AND DATA2; 
-      when BITOR    => OUTALU <= DATA1 OR DATA2; 
-      when BITXOR   => OUTALU <= DATA1 XOR DATA2;
-      when FUNCLSL  => OUTALU <= std_logic_vector( SHIFT_LEFT(unsigned(DATA1), to_integer(unsigned(DATA2))) );
-      when FUNCLSR  => OUTALU <= std_logic_vector( SHIFT_RIGHT(unsigned(DATA1), to_integer(unsigned(DATA2))) );
-      when FUNCRL   => OUTALU <= std_logic_vector( ROTATE_LEFT(unsigned(DATA1),  to_integer(unsigned(DATA2))) ); -- rotate left
-      when FUNCRR   => OUTALU <= std_logic_vector( ROTATE_RIGHT(unsigned(DATA1), to_integer(unsigned(DATA2))) ); -- rotate right
-      when others   => NULL;
+      when ADD     => P4_ADDER_B <= B;
+                      P4_ADDER_Cin <= '0';
+                      RES <= P4_ADDER_S;
+      when SUB     => P4_ADDER_B <= not B; -- Negate B to make the number 2's complement
+                      P4_ADDER_Cin <= '1'; -- Add 1 to make B negative in 2's complement
+                      RES <= P4_ADDER_S;
+      when BITAND  => RES <= A AND B; 
+      when BITOR   => RES <= A OR B; 
+      when BITXOR  => RES <= A XOR B;
+      when LSL     => RES <= std_logic_vector( SHIFT_LEFT(A_u, B_i ) ); -- Logical shift left
+      when LSR     => RES <= std_logic_vector( SHIFT_RIGHT(A_u, B_i ) ); -- Logical shift right
+      when RL      => RES <= std_logic_vector( ROTATE_LEFT(A_u,  B_i ) ); -- rotate left
+      when RR      => RES <= std_logic_vector( ROTATE_RIGHT(A_u, B_i ) ); -- rotate right
+      when GEQ     => RES <= (others => '0');
+                      RES(0)<= '1' when A_u >= B_u else '0';
+      when LEQ     => RES <= (others => '0');
+                      RES(0)<= '1' when A_u <= B_u else '0';
+      when NEQ     => RES <= (others => '0');
+                      RES(0)<= '1' when A_u /= B_u else '0'; 
+      when others  => RES <= (others => '0'); -- Disables latch inference
     end case;
 
   end process P_ALU;
