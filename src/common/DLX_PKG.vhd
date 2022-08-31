@@ -5,7 +5,7 @@
 --
 -- Create Date:     Wed May  4 09:47:35 PM CEST 2022
 -- Design Name:     Common Package
--- Module Name:     COMM_PKG.vhd  
+-- Module Name:     DLX_PKG.vhd  
 -- Project Name:    DLX
 -- Description:     Common package
 --
@@ -19,7 +19,14 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-package COMM_PKG is
+package DLX_PKG is
+  
+  -- DLX GLOBAL CONSTANTS
+  constant C_ARCHITECTURE_BIT_DEPTH : integer := 32;
+
+  -- DERIVED CONSTANTS
+  constant C_ALU_PRECISION_BIT : integer := C_ARCHITECTURE_BIT_DEPTH;
+
   type controlword_t is array (natural range <>) of STD_LOGIC;
 
   type cw_signals_type is(
@@ -75,4 +82,4 @@ package COMM_PKG is
   constant ALU_AND_CW   : std_logic_vector(ALU_CW_SIZE-1 downto 0) := "0010"; -- ALU1=1 ALU2=0
   constant ALU_OR_CW    : std_logic_vector(ALU_CW_SIZE-1 downto 0) := "0011"; -- ALU1=1 ALU2=1
 
-end COMM_PKG;
+end DLX_PKG;

@@ -24,7 +24,7 @@ library ieee;
   use ieee.numeric_std.all;
 
 library work;
-  use work.COMM_PKG.all;
+  use work.DLX_PKG.all;
 
 entity CU is
   port (

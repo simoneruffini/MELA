@@ -20,7 +20,7 @@ library ieee;
   use ieee.numeric_std.all;
 
 library work;
-use work.COMM_PKG.all;
+use work.DLX_PKG.all;
 
 package CU_WIRING is
 
@@ -114,7 +114,7 @@ package CU_WIRING is
   constant SUBI2_OPCODE  : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( SUBI2_OPCODE_i ,OP_CODE_SIZE));  
   constant ANDI2_OPCODE  : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( ANDI2_OPCODE_i ,OP_CODE_SIZE));  
   constant ORI2_OPCODE   : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( ORI2_OPCODE_i  ,OP_CODE_SIZE));   
-  constant MOV_OPCODE    : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( MOV_OPCODE_i  ,OP_CODE_SIZE));    
+  constant MOV_OPCODE    : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( MOV_OPCODE_i   ,OP_CODE_SIZE));    
   constant S_REG1_OPCODE : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( S_REG1_OPCODE_i,OP_CODE_SIZE)); 
   constant S_REG2_OPCODE : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( S_REG2_OPCODE_i,OP_CODE_SIZE)); 
   constant S_MEM2_OPCODE : std_logic_vector(OP_CODE_SIZE-1 downto 0) := std_logic_vector(to_unsigned( S_MEM2_OPCODE_i,OP_CODE_SIZE)); 
