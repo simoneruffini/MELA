@@ -15,19 +15,21 @@
 --
 --------------------------------------------------------------------------------
 
-package ALU_PKG is
-  type ALU_FUNC_T is (
-    ADD,     -- Addition              RES = A + B
-    SUB,     -- Subtraction           RES = A - B
-    BITAND,  -- Bitwise and           RES = A AND B
-    BITOR,   -- Bitwise or            RES = A OR B
-    BITXOR,  -- Bitwise xor           RES = A XOR B
-    LSL,     -- Logical shift left    RES = A << B
-    LSR,     -- Logical shift right   RES = A >> B 
-    RL,      -- rotate left           RES = A rl(B)
-    RR,      -- rotate right          RES = A rr(B)
-    GEQ,     -- greater then equal    RES = A >= B
-    LEQ,     -- less then equal       RES = A <= B
-    NEQ      -- not equal             RES = A != B
+package alu_pkg is
+
+  type alu_func_t is (
+    ADD,    -- Addition              RES = A + B
+    SUB,    -- Subtraction           RES = A - B
+    BITAND, -- Bitwise and           RES = A AND B
+    BITOR,  -- Bitwise or            RES = A OR B
+    BITXOR, -- Bitwise xor           RES = A XOR B
+    LSL,    -- Logical shift left    RES = A << B
+    LSR,    -- Logical shift right   RES = A >> B
+    RL,     -- rotate left           RES = A rl(B)
+    RR,     -- rotate right          RES = A rr(B)
+    GEQ,    -- greater then equal    RES = A >= B
+    LEQ,    -- less then equal       RES = A <= B
+    NEQ     -- not equal             RES = A != B
   );
-end ALU_PKG;
+
+end package alu_pkg;
