@@ -8,3 +8,9 @@ default.svf
 .synopsys_dc.setup
 *.bkp
 *.o
+__pycache__
+secrets.py
+runs
+.ipynb_*
+*.csv
+.direnv

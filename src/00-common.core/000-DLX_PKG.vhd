@@ -23,10 +23,11 @@ library ieee;
 package dlx_pkg is
 
   -- DLX GLOBAL CONSTANTS
-  constant C_ARCHITECTURE_BIT_DEPTH : integer := 32;
+  constant C_ARCH_BIT_DEPTH : integer := 32; -- DLX Architecture bit depth
 
   -- DERIVED CONSTANTS
-  constant C_ALU_PRECISION_BIT : integer := C_ARCHITECTURE_BIT_DEPTH;
+  constant C_ARCH_WORD_W       : integer := C_ARCH_BIT_DEPTH; -- DLX architecture word width
+  constant C_ALU_PRECISION_BIT : integer := C_ARCH_BIT_DEPTH;
 
   type controlword_t is array (natural range <>) of std_logic;
 
