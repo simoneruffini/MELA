@@ -1,17 +1,18 @@
 --------------------------------------------------------------------------------
--- Engineer: Simone Ruffini  [simone.ruffini@studenti.polito.it]
+-- Engineer: Simone Ruffini   [simone.ruffini@studenti.polito.it]
 -- Engineer: Matteo Bonora    [matteo.bonora@studenti.polito.it]
 -- Engineer: Lorenzo Latella  [s292653@studenti.polito,it]
 --
 -- Create Date:     Mon Lug 25 11:34:23 PM CEST 2022
--- Design Name:     Control unit wiring
--- Module Name:     CU_WIRING.vhd  
+-- Module Name:     CU_PKG
 -- Project Name:    DLX
--- Description:     Control unit wiring
+-- Description:     Control unit control words varius encodings 
 --
 -- Revision:
 -- Revision 00 - Matteo Bonora
 --  first implementation
+-- Revision 01 - Simone Ruffini
+--  changed name and refactor
 -- Additional Comments:
 --
 --------------------------------------------------------------------------------
@@ -22,7 +23,7 @@ library ieee;
 library work;
 use work.DLX_PKG.all;
 
-package CU_WIRING is
+package CU_PKG is
 
   --    instruction    |        meaning          |           mapping            | additional notes
   -- ADD    RA RB RC   | R[RC] = R[RA] + R[RB]   | RC->RD , RA->RS1, RB->RS2    |
@@ -127,4 +128,4 @@ package CU_WIRING is
   constant AND_FUNC : std_logic_vector(FUNC_SIZE-1 downto 0) := std_logic_vector(to_unsigned(AND_FUNC_i,FUNC_SIZE)); 
   constant OR_FUNC  : std_logic_vector(FUNC_SIZE-1 downto 0) := std_logic_vector(to_unsigned(OR_FUNC_i ,FUNC_SIZE)); 
 
-end CU_WIRING;
+end CU_PKG;

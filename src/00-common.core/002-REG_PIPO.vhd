@@ -1,0 +1,87 @@
+--------------------------------------------------------------------------------
+-- Engineer: Simone Ruffini [simone.ruffini@studenti.polito.it,
+--                           simone.ruffini@tutanota.com]
+--           Matteo Bonora  [matteo.bonora@studenti.polito.it]
+--
+-- Create Date:   Tue Sep 27 12:40:53 PM CEST 2022
+-- Module Name:   REG_PIPO
+-- Project Name:  DLX
+-- Description:   Generic Register Parallell In Parallel Out
+--
+-- Revision:
+-- Revision 00 - Simone Ruffini
+--  * Created
+-- Additional Comments:
+--  The register can be initialized by the INIT active high signal, in such case
+--  the register will take the value defined in INIT_VAL.
+--  The initialization function is overridden by the EN signal, if EN is on the
+--------------------------------------------------------------------------------
+
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
+
+------------------------------------------------------------- ENTITY
+
+entity REG_PIPO is
+  generic (
+    DATA_W   : integer; -- Data width of the register
+    INIT_VAL : integer  -- Value of init of the register
+  );
+  port (
+    CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
+    RST_AN : in    std_logic;                             -- Reset Signal: Asyncronous Active Low (Negative)
+
+    EN_N   : in    std_logic;                             -- Enable signal, active low, synch, priority on INIT
+    INIT   : in    std_logic;                             -- Initialize signal, acitve high, synch
+    DIN    : in    std_logic_vector(DATA_W - 1 downto 0); -- Data Input signal
+    DOUT   : out   std_logic_vector(DATA_W - 1 downto 0)  -- Data Output Signal
+  );
+end entity REG_PIPO;
+
+------------------------------------------------------------- ARCHITECTURE
+
+architecture BEHAV_WITH_EN_INIT of REG_PIPO is
+
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
+  ----------------------------------------------------------- FUNCTIONS
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+
+  signal reg_mem : std_logic_vector(DATA_W - 1 downto 0);
+
+begin
+
+  ----------------------------------------------------------- ENTITY DEFINITION
+
+  ----------------------------------------------------------- COMBINATORIAL
+
+  DOUT <= reg_mem;
+  ----------------------------------------------------------- PROCESSES
+  P_MEM : process (CLK, RST_AN) is
+  begin
+
+    if (RST_AN = '0') then
+      reg_mem <= (others => '0');
+    elsif (CLK'event and CLK = '1') then
+      reg_mem <= reg_mem; -- Inference a memory
+
+      if (EN_N = '0') then
+        reg_mem <= DIN;   -- Update the value with the one on the rising edge
+
+        -- If init is on then overwrite the value saved in memory and hence the output
+        if (INIT = '1') then
+          reg_mem <= std_logic_vector(to_unsigned(INIT_VAL, reg_mem'length));
+        end if;
+      end if;
+    end if;
+
+  end process P_MEM;
+
+end architecture BEHAV_WITH_EN_INIT;
+

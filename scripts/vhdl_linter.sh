@@ -23,7 +23,7 @@ if [ $# -lt 1 ]; then
 fi
 
 FIX=""
-PARAMETERS="-c '$VSG_CNFG' -f"
+PARAMETERS="--style jcl --configuration '$VSG_CNFG' --jobs 6 --filename"
 
 if [ $# -eq 2 ]; then
   if [ $2 = "fix" ]; then

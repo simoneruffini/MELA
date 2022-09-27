@@ -20,16 +20,39 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-package dlx_pkg is
+library ieee;
+  use work.alu_pkg.all;
+
+package DLX_PKG is
 
   -- DLX GLOBAL CONSTANTS
   constant C_ARCH_BIT_DEPTH : integer := 32; -- DLX Architecture bit depth
+  constant C_INSTR_OPCODE_W : integer := 6;  -- DLX Instruction Operation Code width
+  constant C_INSTR_FIELD_W  : integer := 5;  -- DLX Instruction Generic Field width
 
   -- DERIVED CONSTANTS
   constant C_ARCH_WORD_W       : integer := C_ARCH_BIT_DEPTH; -- DLX architecture word width
   constant C_ALU_PRECISION_BIT : integer := C_ARCH_BIT_DEPTH;
+  constant C_INSTR_RS1_W       : integer := C_INSTR_FIELD_W;
+  constant C_INSTR_RS2_W       : integer := C_INSTR_FIELD_W;
+  constant C_INSTR_RS3_W       : integer := C_INSTR_FIELD_W;
 
-  type controlword_t is array (natural range <>) of std_logic;
+  type cntrl_wrd_t is record
+    -- Fetch
+    -- Decode
+    jal      : std_logic;
+    rf_ra_en : std_logic;
+    rf_rb_en : std_logic;
+    rf_wen   : std_logic;
+    reg_we   : std_logic;
+    -- Execute
+    r_type_sel   : std_logic;  -- selects whethere the write back address is the one obtained from an i-type INSTR or a R-TYPE
+    imm_sel      : std_logic;
+    pc_pls_4_sel : std_logic;
+    alu_func     : alu_func_t; -- the convertion for this signal is done inside the control unit (integer to alu_func_t)
+  -- Memory
+  -- Writeback
+  end record cntrl_wrd_t;
 
   type cw_signals_type is (
     -- Decode
@@ -84,4 +107,4 @@ package dlx_pkg is
   constant ALU_AND_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0010"; -- ALU1=1 ALU2=0
   constant ALU_OR_CW   : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0011"; -- ALU1=1 ALU2=1
 
-end package dlx_pkg;
+end package DLX_PKG;

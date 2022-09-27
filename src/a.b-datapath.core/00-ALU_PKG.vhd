@@ -15,7 +15,7 @@
 --
 --------------------------------------------------------------------------------
 
-package alu_pkg is
+package ALU_PKG is
 
   type alu_func_t is (
     ADD,    -- Addition              RES = A + B
@@ -32,4 +32,4 @@ package alu_pkg is
     NEQ     -- not equal             RES = A != B
   );
 
-end package alu_pkg;
+end package ALU_PKG;

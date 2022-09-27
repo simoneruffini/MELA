@@ -6,6 +6,18 @@
     "constant_015": {
       "disable": false,
       "fixable": true
+    },
+    "package_008":{
+        "case": "upper"
+    },
+    "package_010":{
+        "case": "upper"
+    },
+    "case_200":{
+        "style":"no_blank_line"
+    },
+    "case_201":{
+        "style":"require_blank_line"
     }
   }
 }
