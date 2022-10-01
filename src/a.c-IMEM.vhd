@@ -17,9 +17,11 @@
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
+  use ieee.std_logic_textio.all; -- synopsis
 
 library work;
   use work.dlx_pkg.all;
+  use std.textio.all;
 
 entity IMEM is
   generic (
@@ -38,22 +40,43 @@ architecture BEHAVIOURAL of IMEM is
 
   type mem_type is array ((2 ** ADDR_W) - 1 downto 0) of std_logic_vector(DATA_W - 1 downto 0);
 
+  -- Takes 32 hexadecimal values from RamFileName  and returns an array of them
+  -- NOTE: values must be 32bit hex
+
+  impure function initramfromfile (RamFileName : in string) return mem_type is
+
+    file     RamFile     : text is in RamFileName;
+    variable ramfileline : line;
+    variable tmpword     : std_logic_vector(31 downto 0);
+    variable ram         : mem_type;
+
+  begin
+
+    for I in 0 to (2 ** ADDR_W) - 1 loop
+
+      readline (RamFile, ramfileline);
+      hread(ramfileline, tmpword);
+      ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
+
+    end loop;
+
+    return ram;
+
+  end function;
+
   signal mem   : mem_type;
-  signal d_out : std_logic_vector(DATA_W - 1 downto 0);
 
 begin
-
-  DOUT <= d_out;
 
   P_READ : process (CLK) is
   begin
 
     if (RST_AN = '1') then
       if (CLK = '1' and CLK'event) then
-        d_out <= mem(to_integer(unsigned(RADDR)));
+        DOUT <= mem(to_integer(unsigned(RADDR)));
       end if;
     else
-      d_out <= (others => '0');
+      DOUT <= (others => '0');
     end if;
 
   end process P_READ;
