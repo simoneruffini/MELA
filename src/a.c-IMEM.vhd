@@ -68,7 +68,7 @@ architecture BEHAVIOURAL of IMEM is
 
 begin
 
-  P_READ : process (CLK) is
+  P_READ : process (CLK, RST_AN) is
   begin
 
     if (RST_AN = '1') then
