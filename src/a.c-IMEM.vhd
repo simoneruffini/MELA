@@ -48,19 +48,14 @@ begin
   P_READ : process (CLK) is
   begin
 
-    if (CLK = '1' and CLK'event) then
-      d_out <= mem(to_integer(unsigned(RADDR)));
+    if (RST_AN = '1') then
+      if (CLK = '1' and CLK'event) then
+        d_out <= mem(to_integer(unsigned(RADDR)));
+      end if;
+    else
+      d_out <= (others => '0');
     end if;
 
   end process P_READ;
-
-  P_RESET : process (RST_AN) is
-  begin
-
-    if (RST_AN = '1') then
-      d_out <= (others => 'Z');
-    end if;
-
-  end process P_RESET;
 
 end architecture BEHAVIOURAL;
