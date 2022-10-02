@@ -62,6 +62,11 @@ architecture BEHAVIORAL of ALU is
   signal p4_adder_b   : std_logic_vector(DATA_W - 1 downto 0);
   signal p4_adder_s   : std_logic_vector(DATA_W - 1 downto 0);
 
+  signal t2_logic_a   : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_b   : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_s   : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_op  : std_logic_vector(DATA_W - 1 downto 0);
+
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
@@ -75,6 +80,17 @@ begin
       CIN  => p4_adder_cin,
       S    => p4_adder_s,
       COUT => open
+    );
+
+  T2_LOGIC_U : entity work.tw_logic("BEHAVIOURAL")
+    generic map (
+      DATA_W => C_ALU_PRECISION_BIT
+    )
+    port map (
+      OP => t2_logic_op,
+      A  => t2_logic_a,
+      B  => t2_logic_b,
+      S  => t2_logic_s
     );
 
   -- helpers
@@ -105,13 +121,26 @@ begin
         RES          <= p4_adder_s;
 
       when BITAND =>
-        RES <= A and B;
+        t2_logic_a  <= A;
+        t2_logic_b  <= B;
+        t2_logic_s  <= RES;
+        t2_logic_op <= '0001';
+
+      -- RES <= A and B;
 
       when BITOR =>
-        RES <= A or B;
+        t2_logic_a  <= A;
+        t2_logic_b  <= B;
+        t2_logic_s  <= RES;
+        t2_logic_op <= '0111';
+      -- RES <= A or B;
 
       when BITXOR =>
-        RES <= A xor B;
+        t2_logic_a  <= A;
+        t2_logic_b  <= B;
+        t2_logic_s  <= RES;
+        t2_logic_op <= '0110';
+      -- RES <= A xor B;
 
       when LSL =>
         RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
