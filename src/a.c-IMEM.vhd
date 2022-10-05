@@ -54,13 +54,15 @@ architecture BEHAVIOURAL of IMEM is
 
     while not endfile(RamFile) loop
 
-      assert i>=2**ADDR_W report "Instruction file size exceeds memory size" severity failure;
+      assert i>=2 ** ADDR_W
+        report "Instruction file size exceeds memory size"
+        severity failure;
 
       readline (RamFile, ramfileline);
       hread(ramfileline, tmpword);
       ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
 
-      i      := i + 1;
+      i := i + 1;
 
     end loop;
 
@@ -75,12 +77,10 @@ begin
   P_READ : process (CLK, RST_AN) is
   begin
 
-    if (RST_AN = '1') then
-      if (CLK = '1' and CLK'event) then
-        DOUT <= mem(to_integer(unsigned(RADDR)));
-      end if;
-    else
+    if (RST_AN = '0') then
       DOUT <= (others => '0');
+    elsif (CLK = '1' and CLK'event) then
+      DOUT <= mem(to_integer(unsigned(RADDR)));
     end if;
 
   end process P_READ;
