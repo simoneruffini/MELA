@@ -22,9 +22,6 @@ library ieee;
 library std;
   use std.textio.all;
 
-library work;
-  use work.dlx_pkg.all;
-
 entity IMEM is
   generic (
     ADDR_W : integer; -- Instruction memory addres port bit width
@@ -47,18 +44,23 @@ architecture BEHAVIOURAL of IMEM is
 
   impure function initramfromfile (RamFileName : in string) return mem_type is
 
-    file     RamFile     : text is in RamFileName;
+    file     RamFile     : text open read_mode is RamFileName;
     variable ramfileline : line;
     variable tmpword     : std_logic_vector(31 downto 0);
     variable ram         : mem_type;
+    variable i           : natural := 0;
 
   begin
 
-    for I in 0 to (2 ** ADDR_W) - 1 loop
+    while not endfile(RamFile) loop
+
+      assert i>=2**ADDR_W report "Instruction file size exceeds memory size" severity failure;
 
       readline (RamFile, ramfileline);
       hread(ramfileline, tmpword);
       ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
+
+      i      := i + 1;
 
     end loop;
 
