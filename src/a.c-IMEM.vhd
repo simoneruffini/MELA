@@ -8,7 +8,7 @@
 -- Description:     Instruction Memory, 1 read port
 --
 -- Revision:
--- Revision 00 - Simone Ruffini
+-- Revision 00 - Bonora Matteo
 --  * Created
 -- Additional Comments:
 --
@@ -19,9 +19,11 @@ library ieee;
   use ieee.numeric_std.all;
   use ieee.std_logic_textio.all; -- synopsis
 
+library std;
+  use std.textio.all;
+
 library work;
   use work.dlx_pkg.all;
-  use std.textio.all;
 
 entity IMEM is
   generic (
@@ -64,7 +66,7 @@ architecture BEHAVIOURAL of IMEM is
 
   end function;
 
-  signal mem   : mem_type;
+  signal mem   : mem_type := initramfromfile("003-IMEM_INIT_FILE.txt");
 
 begin
 
