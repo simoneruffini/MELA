@@ -1,16 +1,25 @@
 {
   "rule": {
+    "instantiation_034":{
+        "method": "entity"
+    },
     "constant_004": {
-      "case": "upper"
+        "case": "upper"
     },
     "constant_015": {
-      "disable": false,
-      "fixable": true
+        "disable": false,
+        "fixable": true
     },
     "package_008":{
         "case": "upper"
     },
     "package_010":{
+        "case": "upper"
+    },
+    "package_body_502":{
+        "case": "upper"
+    },
+    "package_body_507":{
         "case": "upper"
     },
     "case_200":{
