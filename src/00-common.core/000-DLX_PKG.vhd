@@ -35,11 +35,12 @@ package DLX_PKG is
 
   procedure dlx_pkg_check_assertions;
 
+  -- DLX Architecture bit depth
+  constant C_ARCH_BIT_DEPTH : integer := 32; -- Don't use this constant directly
+
   -- DLX GLOBAL CONSTANTS ======================================================
   -- ===========================================================================
 
-  -- DLX Architecture bit depth
-  constant C_ARCH_BIT_DEPTH : integer := 32;
   -- DLX Instruction Operation Code width
   constant C_INSTR_OPCODE_W : integer := 6;
   -- DLX Instruction Function Code width (r-type instructions)
@@ -64,10 +65,10 @@ package DLX_PKG is
 
   -- Widths
   ---
-  -- DLX Instruction Generic Field width (5)
-  constant C_INSTR_FIELD_W : integer := C_RF_ADDR_W;
   -- DLX architecture word width
   constant C_ARCH_WORD_W : integer := C_ARCH_BIT_DEPTH;
+  -- DLX Instruction Generic Field width (5)
+  constant C_INSTR_FIELD_W : integer := C_RF_ADDR_W;
   -- DLX Instruction I-Type immediate field width (16)
   constant C_INSTR_I_TYPE_IMM_W : integer := C_ARCH_BIT_DEPTH - (C_INSTR_OPCODE_W + 2 * C_INSTR_FIELD_W);
   -- DLX Instruction J-Type immediate field width (26)
@@ -91,7 +92,7 @@ package DLX_PKG is
   -- CONTROL WORD TYPE =========================================================
   -- ===========================================================================
 
-  type cntrl_wrd_t is record
+  type cntrl_word_t is record
     --======================= Fetch
     branch_en : std_logic;     -- selects wheter the PC will take the branch instruction address instead of PC+4
     jump_en   : std_logic;     -- selects wheter the PC will take the jump instruction address instead of PC+4
@@ -110,7 +111,7 @@ package DLX_PKG is
     dmem_wen : std_logic;
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
-  end record cntrl_wrd_t;
+  end record cntrl_word_t;
 
   ---- Position of the control word signals. Used internally to map the internal
   ---- std_logic_vector to the output signals.

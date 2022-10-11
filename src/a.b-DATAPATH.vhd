@@ -29,8 +29,8 @@ entity DATAPATH is
   port (
     CLK             : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
     RST_AN          : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
-    CTRL_WRD        : in    cntrl_wrd_t;                                   -- Control Word from CU
-    PC_PLS_4        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Program Counter plus 4
+    CTRL_WRD        : in    cntrl_word_t;                                   -- Control Word from CU
+    --PC_PLS_4        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Program Counter plus 4
     INSTR           : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
     DMEM_ADDR       : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory address
     DMEM_DOUT       : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)   -- Data Memory data output
@@ -182,7 +182,25 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  -- TODO put RF
+  U_RF: entity work.RF("Behavioural")
+  generic map(
+    ADDR_W => C_RF_ADDR_W,
+    DATA_W => C_ARCH_WORD_W
+  )
+  port map(
+    CLK     => CLK,
+    RST_AN  => RST_AN,
+    ENABLE  => '1',
+    RD1     => '1',
+    RD2     => '1',
+    WR      => CTRL_WRD.rf_wen,
+    ADD_WR  => rf_waddr_d,
+    ADD_RD1 => rs1_d,
+    ADD_RD2 => rs2_d,
+    DATAIN  => rf_din_d,
+    OUT1    => rf_dout1_d,
+    OUT2    => rf_dout2_d
+  );
 
   U_RF_DOUT1_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
     generic map (
