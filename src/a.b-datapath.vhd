@@ -8,7 +8,7 @@
 -- Description:     DLX datapath
 --
 -- Revision:
--- Revision 00 - Matteo Bonora
+-- Revision 00 - Simone Ruffini
 --  * Created
 -- Additional Comments:
 --

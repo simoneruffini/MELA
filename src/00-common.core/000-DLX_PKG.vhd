@@ -42,6 +42,8 @@ package DLX_PKG is
   constant C_ARCH_BIT_DEPTH : integer := 32;
   -- DLX Instruction Operation Code width
   constant C_INSTR_OPCODE_W : integer := 6;
+  -- DLX Instruction Function Code width (r-type instructions)
+  constant C_INSTR_FUNC_W : integer := 10;
   -- DLX Register File Address Width
   -- => DLX RF address space == 32
   constant C_RF_ADDR_W : integer := ilog2(32);
