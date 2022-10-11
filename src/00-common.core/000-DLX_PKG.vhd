@@ -53,29 +53,43 @@ package DLX_PKG is
   -- DLX Data Memory Address Width
   -- => DLX D-MEM address space == 2**C_DMEM_ADDRW
   constant C_DMEM_ADDR_W : integer := 8;
+  -- TODO maybe place constant in different file
+  -- Register number in which jal instruction will save the return address
+  constant C_JAL_RET_ADDR_REG : integer := 31;
 
   -- DERIVED CONSTANTS =========================================================
   -- ===========================================================================
 
+  constant C_ALU_PRECISION_BIT : integer := C_ARCH_BIT_DEPTH;
+
+  -- Widths
+  ---
   -- DLX Instruction Generic Field width (5)
   constant C_INSTR_FIELD_W : integer := C_RF_ADDR_W;
   -- DLX architecture word width
-  constant C_ARCH_WORD_W             : integer := C_ARCH_BIT_DEPTH;
-  constant C_ALU_PRECISION_BIT       : integer := C_ARCH_BIT_DEPTH;
-  constant C_INSTR_RS1_START_POS_BIT : integer := C_ARCH_BIT_DEPTH - (C_INSTR_OPCODE_W + C_INSTR_FIELD_W);
-  constant C_INSTR_RS1_W             : integer := C_INSTR_FIELD_W;
-  constant C_INSTR_RS2_START_POS_BIT : integer := C_INSTR_RS1_START_POS_BIT - C_INSTR_FIELD_W;
-  constant C_INSTR_RS2_W             : integer := C_INSTR_FIELD_W;
-  constant C_INSTR_RS2_START_POS_BIT : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_FIELD_W;
-  constant C_INSTR_RS3_W             : integer := C_INSTR_FIELD_W;
+  constant C_ARCH_WORD_W : integer := C_ARCH_BIT_DEPTH;
   -- DLX Instruction I-Type immediate field width (16)
   constant C_INSTR_I_TYPE_IMM_W : integer := C_ARCH_BIT_DEPTH - (C_INSTR_OPCODE_W + 2 * C_INSTR_FIELD_W);
-  -- I type instructions have 2 operand fields and then the immediate field
-  constant C_INSTR_I_TYPE_IMM_START_POS_BIT : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_I_TYPE_IMM_W;
   -- DLX Instruction J-Type immediate field width (26)
   constant C_INSTR_J_TYPE_IMM_W : integer := C_ARCH_BIT_DEPTH - C_INSTR_OPCODE_W;
+
+  -- Bit Index Position of fields inside instruction Word
+  --
+  constant C_INSTR_OPCODE_START_POS_BIT : integer := C_ARCH_BIT_DEPTH - C_INSTR_OPCODE_W;
+  constant C_INSTR_RS1_START_POS_BIT    : integer := C_ARCH_BIT_DEPTH - (C_INSTR_OPCODE_W + C_INSTR_FIELD_W);
+  constant C_INSTR_RS1_W                : integer := C_INSTR_FIELD_W;
+  constant C_INSTR_RS2_START_POS_BIT    : integer := C_INSTR_RS1_START_POS_BIT - C_INSTR_FIELD_W;
+  constant C_INSTR_RS2_W                : integer := C_INSTR_FIELD_W;
+  constant C_INSTR_RS2_START_POS_BIT    : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_FIELD_W;
+  constant C_INSTR_RS3_W                : integer := C_INSTR_FIELD_W;
+  constant C_INSTR_FUNC_START_POS_BIT   : integer := C_INSTR_RS3_W - C_INSTR_FUNC_W;
+  -- I type instructions have 2 operand fields and then the immediate field
+  constant C_INSTR_I_TYPE_IMM_START_POS_BIT : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_I_TYPE_IMM_W;
   -- J type instruction have only one field
   constant C_INSTR_J_TYPE_IMM_START_POS_BIT : integer := C_ARCH_BIT_DEPTH - (C_INSTR_FIELD_W + C_INSTR_J_TYPE_IMM_W);
+
+  -- CONTROL WORD TYPE =========================================================
+  -- ===========================================================================
 
   type cntrl_wrd_t is record
     --======================= Fetch
@@ -97,9 +111,6 @@ package DLX_PKG is
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
   end record cntrl_wrd_t;
-
-  -- TODO maybe place constant in different file
-  constant C_JAL_RET_ADDR_REG : integer := 31; -- Register number in which jal instruction will save the return address
 
   ---- Position of the control word signals. Used internally to map the internal
   ---- std_logic_vector to the output signals.
@@ -151,6 +162,9 @@ package body DLX_PKG is
     assert C_INSTR_J_TYPE_IMM_W > 0
       report "The constant C_INSTR_J_TYPE_IMM_W is less then equal 0, check why"
       severity failure;
+    assert C_INSTR_OPCODE_START_POS_BIT >= 0
+      report "The constant C_INSTR_OPCODE_START_POS_BIT is less then equal 0, check why"
+      severity failure;
     assert C_INSTR_RS1_START_POS_BIT >= 0
       report "The constant C_INSTR_RS1_START_POS_BIT is negative, check displacements"
       severity failure;
@@ -162,6 +176,9 @@ package body DLX_PKG is
       severity failure;
     assert C_INSTR_J_TYPE_IMM_START_POS_BIT >= 0
       report "The constant C_INSTR_J_TYPE_IMM_START_POS_BIT is negative, check displacements"
+      severity failure;
+    assert C_INSTR_FUNC_START_POS_BIT >= 0
+      report "The constant C_INSTR_FUNC_START_POS_BIT is negative, check displacements"
       severity failure;
 
   end dlx_pkg_check_assertions;
