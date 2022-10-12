@@ -29,7 +29,7 @@ entity DATAPATH is
   port (
     CLK             : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
     RST_AN          : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
-    CTRL_WRD        : in    cntrl_word_t;                                   -- Control Word from CU
+    CTRL_WORD        : in    cntrl_word_t;                                   -- Control Word from CU
     --PC_PLS_4        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Program Counter plus 4
     INSTR           : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
     DMEM_ADDR       : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory address
@@ -141,8 +141,8 @@ begin
   pc_pls_4_f <= std_logic_vector(to_unsigned(to_integer(unsigned(npc_f)) + 4, pc_pls_4_f'length));
 
   -- NPC MUX select signal logic
-  npc_sel_f <= is_0_e when CTRL_WRD.branc_en = '1' else
-               '1' when CTRL_WRD.jump_en else
+  npc_sel_f <= is_0_e when CTRL_WORD.branc_en = '1' else
+               '1' when CTRL_WORD.jump_en else
                '0';
 
   -- NPC MUX
@@ -193,7 +193,7 @@ begin
     ENABLE  => '1',
     RD1     => '1',
     RD2     => '1',
-    WR      => CTRL_WRD.rf_wen,
+    WR      => CTRL_WORD.rf_wen,
     ADD_WR  => rf_waddr_d,
     ADD_RD1 => rs1_d,
     ADD_RD2 => rs2_d,
@@ -231,15 +231,15 @@ begin
   imm_j_type_ext_d <= std_logic_vector(resize(signed(imm_j_type_d), C_ARCH_WORD_W)));
 
   -- RF_WADDR MUX
-  rf_waddr_d <= std_logic_vector(to_unsigned(C_JAL_RET_ADDR_REG, rf_waddr_d'length)) when CTRL_WRD.jal_en = '1' else
+  rf_waddr_d <= std_logic_vector(to_unsigned(C_JAL_RET_ADDR_REG, rf_waddr_d'length)) when CTRL_WORD.jal_en = '1' else
                 rf_waddr_wb;
 
   -- RF_DIN MUX
-  rf_din_d <= pc_pls_4_d when CTRL_WRD.jal_en = '1' else
+  rf_din_d <= pc_pls_4_d when CTRL_WORD.jal_en = '1' else
               rf_din_wb;
 
   -- IMMEDIATE FROM JTYPE MUX
-  imm_d <= imm_j_type_ext_d when CTRL_WRD.j_type_imm_sel = '1' else
+  imm_d <= imm_j_type_ext_d when CTRL_WORD.j_type_imm_sel = '1' else
            imm_i_type_ext_d;
 
   ----------------------------------------------------------- PIPELINE REGISTERS
@@ -304,7 +304,7 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      FUNC => CTRL_WRD.alu_func,
+      FUNC => CTRL_WORD.alu_func,
       A    => alu_a_e,
       B    => alu_b_e,
       RES  => alu_out_e
@@ -313,15 +313,15 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
 
   -- MUX ALU A
-  alu_a_e <= pc_pls_4_e when CTRL_WRD.pc_pls_4_sel = '1' else
+  alu_a_e <= pc_pls_4_e when CTRL_WORD.pc_pls_4_sel = '1' else
              rf_dout1_e;
 
   -- MUX ALU B
-  alu_b_e <= imm_e when CTRL_WRD.imm_sel = '1' else
+  alu_b_e <= imm_e when CTRL_WORD.imm_sel = '1' else
              rf_dout2_e;
 
   -- MUX RF WADDR
-  rf_waddr_e <= rs3_e when CTRL_WRD.r_type_sel = '1' else
+  rf_waddr_e <= rs3_e when CTRL_WORD.r_type_sel = '1' else
                 rs2_e;
 
   -- ZERO detector
@@ -386,7 +386,7 @@ begin
       CLK    => CLK,
       RST_AN => RST_AN,
       RWADDR => alu_out_m,
-      WEN    => CTRL_WRD.DMEM_WE,
+      WEN    => CTRL_WORD.DMEM_WE,
       DIN    => dmem_din_m,
       DOUT   => dmem_dout_m,
     );
@@ -439,7 +439,7 @@ begin
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
-  rf_din_wb <= dmem_dout_wb when CTRL_WRD.rf_wb_dmem_dout_sel = '1' else
+  rf_din_wb <= dmem_dout_wb when CTRL_WORD.rf_wb_dmem_dout_sel = '1' else
                alu_dout_wb;
 
 end architecture BEHAVIORAL;
