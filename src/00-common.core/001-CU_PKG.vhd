@@ -21,7 +21,7 @@ library ieee;
   use ieee.numeric_std.all;
 
 library work;
-use work.DLX_PKG.all;
+  use work.dlx_pkg.all;
 
 package CU_PKG is
 

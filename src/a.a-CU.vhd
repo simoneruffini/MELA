@@ -139,8 +139,293 @@ architecture BEHAVIORAL of CU is
     pc_pls_4_sel => '0',
     alu_func     => ADD
   );
-  constant C_MEMORY_STAGE_SIG_0S    : memory_stage_sig_t := (dmem_wen => '0');
-  constant C_WRITEBACK_STAGE_SIG_0S : writeback_stage_sig_t := (rf_wb_dmem_dout_sel => '0');
+  constant C_MEMORY_STAGE_SIG_0S    : memory_stage_sig_t :=
+  (
+    dmem_wen => '0'
+  );
+  constant C_WRITEBACK_STAGE_SIG_0S : writeback_stage_sig_t :=
+  (
+    rf_wb_dmem_dout_sel => '0'
+  );
+
+  constant RTYPE_CW                 : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+  constant JTYPE_JUMP_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+  constant ITYPE_JAL_CW             : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_BEQZ_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_BNEZ_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_ADDI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_SUBI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_ANDI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_ORI_CW             : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_XORI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_SLLI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant NOP_CW                   : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_SRLI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_SNEI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_SLEI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant ITYPE_SGEI_CW            : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant LW_CW                    : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant SW_CW                    : opcode_cw_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant SLL_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant SRL_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant ADD_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant SUB_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant AND_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant OR_FUNC_CW               : func_cw_t := (alu_func=>ADD);
+  constant XOR_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant SNE_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant SLE_FUNC_CW              : func_cw_t := (alu_func=>ADD);
+  constant SGE_FUNC_CW              : func_cw_t := (alu_func=>ADD);
 
   -- Lut Memory containing the control words for each OPCODE.
   -- The OPCODE indexes the LUT.
@@ -273,27 +558,27 @@ begin
 
   -- Extract the signals from the control word in the helpers for the pipeline
   fetch_sig   <= (
-                  branch_en <=OPCODE_LUT(opcode).branch_en,
-                  jump_en   <=OPCODE_LUT(opcode).jump_en
+                  branch_en =>OPCODE_LUT(opcode).branch_en,
+                  jump_en   =>OPCODE_LUT(opcode).jump_en
                 );
   decode_sig  <= (
-                  jal_en         <=OPCODE_LUT(opcode).jal_en,
-                  rf_wen         <=OPCODE_LUT(opcode).rf_wen,
-                  j_type_imm_sel <=OPCODE_LUT(opcode).j_type_imm_sel
+                  jal_en         =>OPCODE_LUT(opcode).jal_en,
+                  rf_wen         =>OPCODE_LUT(opcode).rf_wen,
+                  j_type_imm_sel =>OPCODE_LUT(opcode).j_type_imm_sel
                 );
   execute_sig <= (
-                  r_type_sel   <=OPCODE_LUT(opcode).r_type_sel,
-                  imm_sel      <=OPCODE_LUT(opcode).imm_sel,
-                  pc_pls_4_sel <=OPCODE_LUT(opcode).pc_pls_4_sel,
-                  alu_func     <=ALU_LUT(func).alu_func
+                  r_type_sel   =>OPCODE_LUT(opcode).r_type_sel,
+                  imm_sel      =>OPCODE_LUT(opcode).imm_sel,
+                  pc_pls_4_sel =>OPCODE_LUT(opcode).pc_pls_4_sel,
+                  alu_func     =>ALU_LUT(func).alu_func
                 );
 
   memory_sig <= (
-                 dmem_wen <=OPCODE_LUT(opcode).dmem_wen
+                 dmem_wen =>OPCODE_LUT(opcode).dmem_wen
                );
 
   writeback_sig <= (
-                    rf_wb_dmem_dout_sel <=OPCODE_LUT(opcode).rf_wb_dmem_dout_sel
+                    rf_wb_dmem_dout_sel =>OPCODE_LUT(opcode).rf_wb_dmem_dout_sel
                   );
 
   -- fetch_sig <= (
@@ -352,7 +637,6 @@ begin
       writeback_sig_d2 <= C_WRITEBACK_STAGE_SIG_0S;
       writeback_sig_d3 <= C_WRITEBACK_STAGE_SIG_0S;
       writeback_sig_d4 <= C_WRITEBACK_STAGE_SIG_0S;
-
     elsif (CLK'event and CLK = '1') then     -- rising clock edge
       decode_sig_d1 <= decode_sig;
 
