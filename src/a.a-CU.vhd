@@ -27,6 +27,7 @@ library ieee;
 
 library work;
   use work.dlx_pkg.all;
+  use work.alu_pkg.all;
   use work.dlx_isa_enc_pkg.all;
 -- use work.cu_pkg.all;
 
@@ -123,7 +124,8 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel => '0'
   );
 
-  constant RTYPE_CW                 : ctrl_wrd_t :=
+  -- vsg_off constant_015 : vsg checking that constant have C_ prefix
+  constant RTYPE_CW                 : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -137,7 +139,7 @@ architecture BEHAVIORAL of CU is
     dmem_wen            =>'1',
     rf_wb_dmem_dout_sel =>'1'
   );
-  constant JTYPE_JUMP_CW            : ctrl_wrd_t :=
+  constant JTYPE_JUMP_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -151,22 +153,7 @@ architecture BEHAVIORAL of CU is
     dmem_wen            =>'1',
     rf_wb_dmem_dout_sel =>'1'
   );
-  constant ITYPE_JAL_CW             : ctrl_wrd_t :=
-  (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
-    rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
-    imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
-  );
-
-  constant ITYPE_BEQZ_CW            : ctrl_wrd_t :=
+  constant ITYPE_JAL_CW             : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -181,7 +168,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_BNEZ_CW            : ctrl_wrd_t :=
+  constant ITYPE_BEQZ_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -196,7 +183,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_ADDI_CW            : ctrl_wrd_t :=
+  constant ITYPE_BNEZ_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -211,7 +198,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_SUBI_CW            : ctrl_wrd_t :=
+  constant ITYPE_ADDI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -226,7 +213,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_ANDI_CW            : ctrl_wrd_t :=
+  constant ITYPE_SUBI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -241,7 +228,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_ORI_CW             : ctrl_wrd_t :=
+  constant ITYPE_ANDI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -256,7 +243,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_XORI_CW            : ctrl_wrd_t :=
+  constant ITYPE_ORI_CW             : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -271,7 +258,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_SLLI_CW            : ctrl_wrd_t :=
+  constant ITYPE_XORI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -286,7 +273,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant NOP_CW                   : ctrl_wrd_t :=
+  constant ITYPE_SLLI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -301,7 +288,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_SRLI_CW            : ctrl_wrd_t :=
+  constant NOP_CW                   : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -316,7 +303,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_SNEI_CW            : ctrl_wrd_t :=
+  constant ITYPE_SRLI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -331,7 +318,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_SLEI_CW            : ctrl_wrd_t :=
+  constant ITYPE_SNEI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -346,7 +333,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant ITYPE_SGEI_CW            : ctrl_wrd_t :=
+  constant ITYPE_SLEI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -361,7 +348,7 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant LW_CW                    : ctrl_wrd_t :=
+  constant ITYPE_SGEI_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -376,7 +363,22 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant SW_CW                    : ctrl_wrd_t :=
+  constant LW_CW                    : ctrl_word_t :=
+  (
+    branch_en           =>'1',
+    jump_en             =>'1',
+    jal_en              =>'1',
+    rf_wen              =>'1',
+    j_type_imm_sel      =>'1',
+    r_type_sel          =>'1',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'1',
+    alu_func            =>ADD,
+    dmem_wen            =>'1',
+    rf_wb_dmem_dout_sel =>'1'
+  );
+
+  constant SW_CW                    : ctrl_word_t :=
   (
     branch_en           =>'1',
     jump_en             =>'1',
@@ -414,16 +416,18 @@ architecture BEHAVIORAL of CU is
   --
   constant OPCODE_LUT               : op_lut_t(2 ** (C_INSTR_OPCODE_W) - 1 downto 0) :=
   (
-    SLL_OPCODE_i  => RTYPE_CW,
-    SRL_OPCODE_i  => RTYPE_CW,
-    ADD_OPCODE_i  => RTYPE_CW,
-    SUB_OPCODE_i  => RTYPE_CW,
-    AND_OPCODE_i  => RTYPE_CW,
-    OR_OPCODE_i   => RTYPE_CW,
-    XOR_OPCODE_i  => RTYPE_CW,
-    SNE_OPCODE_i  => RTYPE_CW,
-    SLE_OPCODE_i  => RTYPE_CW,
-    SGE_OPCODE_i  => RTYPE_CW,
+    -- SLL_OPCODE_i  => RTYPE_CW,
+    -- SRL_OPCODE_i  => RTYPE_CW,
+    -- ADD_OPCODE_i  => RTYPE_CW,
+    -- SUB_OPCODE_i  => RTYPE_CW,
+    -- AND_OPCODE_i  => RTYPE_CW,
+    -- OR_OPCODE_i   => RTYPE_CW,
+    -- XOR_OPCODE_i  => RTYPE_CW,
+    -- SNE_OPCODE_i  => RTYPE_CW,
+    -- SLE_OPCODE_i  => RTYPE_CW,
+    -- SGE_OPCODE_i  => RTYPE_CW,
+    -- all the above assignments are equal and condensed in the bottom one
+    RTYPE_OPCODE_i=> RTYPE_CW,
     J_OPCODE_i    => JTYPE_JUMP_CW,
     JAL_OPCODE_i  => ITYPE_JAL_CW,
     BEQZ_OPCODE_i => ITYPE_BEQZ_CW,
@@ -447,12 +451,12 @@ architecture BEHAVIORAL of CU is
   -- Lut Memory containing the ALU control words for each FUNC of and R-type
   -- instruction. FUNC indexes the LUT.
   --
-  -- alu_cw = ALU_CW_LUT(FUNC)
+  -- alu_cw = ALU_LUT(FUNC)
   --
   -- The ALU control words will drive directly ALU1 and ALU2 signals when the
   -- opcode is of an r-type instruction
   --
-  constant ALU_CW_LUT               : func_lut_t(2 ** (C_INSTR_FUNC_W) - 1 downto 0) :=
+  constant ALU_LUT                  : func_lut_t(2 ** (C_INSTR_FUNC_W) - 1 downto 0) :=
   (
     SLL_FUNC_i  => SLL_FUNC_CW,
     SRL_FUNC_i  => SRL_FUNC_CW,
@@ -466,18 +470,15 @@ architecture BEHAVIORAL of CU is
     SGE_FUNC_i  => SGE_FUNC_CW,
     others      => ADD                                                             -- for other FUNC do and ADD operation
   );
+  -- vsg_on constant_015 : vsg checking that constant have C_ prefix
 
   ----------------------------------------------------------- SIGNALS
 
   signal opcode                     : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);
   signal func                       : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0);
-
-  signal cw                         : std_logic_vector(CW_SIZE - 1 downto 0);      -- full control word read from cw_lut
-  signal cw1                        : std_logic_vector(CW_SIZE - 1 downto 0);      -- cw 1 clk delay stage
-  signal cw2                        : std_logic_vector(CW_SIZE - 1 downto 0);      -- cw 2 clk delay stage
-
-  signal alu_cw                     : std_logic_vector(ALU_CW_SIZE - 1 downto 0);  -- alu control word read from alu_cw_lut
-  signal alu_cw1                    : std_logic_vector(ALU_CW_SIZE - 1 downto 0);  -- alu_cw 1 clk delay stage
+  -- helpers
+  signal opcode_i                   : integer;
+  signal func_i                     : integer;
 
   signal control_word               : ctrl_word_t;
 
@@ -515,48 +516,51 @@ begin
   -- Extract the opcode and the func from the instruction word
   opcode <= INSTR((C_INSTR_OPCODE_START_POS_BIT + C_INSTR_OPCODE_W) - 1 downto C_INSTR_OPCODE_START_POS_BIT);
   func   <= INSTR((C_INSTR_FUNC_START_POS_BIT + C_INSTR_FUNC_W) - 1 downto C_INSTR_FUNC_START_POS_BIT);
+  -- helpers
+  opcode_i <= to_integer(unsigned(opcode));
+  func_i   <= to_integer(unsigned(func));
 
   -- Control word for the fetch instruction word
   -- Merged output of OPCODE_LUT and ALU_LUT, alu_func is multiplexed for
   -- R-TYPE instructions
 
-  control_word.branch_en           <= OPCODE_LUT(opcode).branch_en;
-  control_word.jump_en             <= OPCODE_LUT(opcode).jump_en;
-  control_word.jal_en              <= OPCODE_LUT(opcode).jal_en;
-  control_word.rf_wen              <= OPCODE_LUT(opcode).rf_wen;
-  control_word.j_type_imm_sel      <= OPCODE_LUT(opcode).j_type_imm_sel;
-  control_word.r_type_sel          <= OPCODE_LUT(opcode).r_type_sel;
-  control_word.imm_sel             <= OPCODE_LUT(opcode).imm_sel;
-  control_word.pc_pls_4_sel        <= OPCODE_LUT(opcode).pc_pls_4_sel;
-  control_word.alu_func            <= ALU_LUT(func) when opcode = RTYPE_OPCODE  else
-                                      OPCODE_LUT(opcode).alu_func;
-  control_word.dmem_wen            <= OPCODE_LUT(opcode).dmem_wen;
-  control_word.rf_wb_dmem_dout_sel <= OPCODE_LUT(opcode).rf_wb_dmem_dout_sel;
+  control_word.branch_en           <= OPCODE_LUT(opcode_i).branch_en;
+  control_word.jump_en             <= OPCODE_LUT(opcode_i).jump_en;
+  control_word.jal_en              <= OPCODE_LUT(opcode_i).jal_en;
+  control_word.rf_wen              <= OPCODE_LUT(opcode_i).rf_wen;
+  control_word.j_type_imm_sel      <= OPCODE_LUT(opcode_i).j_type_imm_sel;
+  control_word.r_type_sel          <= OPCODE_LUT(opcode_i).r_type_sel;
+  control_word.imm_sel             <= OPCODE_LUT(opcode_i).imm_sel;
+  control_word.pc_pls_4_sel        <= OPCODE_LUT(opcode_i).pc_pls_4_sel;
+  control_word.alu_func            <= ALU_LUT(func_i) when opcode_i = RTYPE_OPCODE_i  else
+                                      OPCODE_LUT(opcode_i).alu_func;
+  control_word.dmem_wen            <= OPCODE_LUT(opcode_i).dmem_wen;
+  control_word.rf_wb_dmem_dout_sel <= OPCODE_LUT(opcode_i).rf_wb_dmem_dout_sel;
 
   -- Extract the signals from the control word in the helpers for the pipeline
 
   fetch_sig   <= (
-                  branch_en <= control_word.branch_en,
-                  jump_en   <= control_word.jump_en
+                  branch_en => control_word.branch_en,
+                  jump_en   => control_word.jump_en
                 );
   decode_sig  <= (
-                  jal_en         <=control_word.jal_en,
-                  rf_wen         <=control_word.rf_wen,
-                  j_type_imm_sel <=control_word.j_type_imm_sel
+                  jal_en         => control_word.jal_en,
+                  rf_wen         => control_word.rf_wen,
+                  j_type_imm_sel => control_word.j_type_imm_sel
                 );
   execute_sig <= (
-                  r_type_sel   <=control_word.r_type_sel,
-                  imm_sel      <=control_word.imm_sel,
-                  pc_pls_4_sel <=control_word.pc_pls_4_sel,
-                  alu_func     <=control_word.alu_func
+                  r_type_sel   => control_word.r_type_sel,
+                  imm_sel      => control_word.imm_sel,
+                  pc_pls_4_sel => control_word.pc_pls_4_sel,
+                  alu_func     => control_word.alu_func
                 );
 
   memory_sig <= (
-                 dmem_wen <=control_word.dmem_wen
+                 dmem_wen => control_word.dmem_wen
                );
 
   writeback_sig <= (
-                    rf_wb_dmem_dout_sel <=control_word.rf_wb_dmem_dout_sel
+                    rf_wb_dmem_dout_sel => control_word.rf_wb_dmem_dout_sel
                   );
 
   -- Final Control Word Output with pre-delayed control signals

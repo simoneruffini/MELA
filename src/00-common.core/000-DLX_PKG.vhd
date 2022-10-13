@@ -4,8 +4,7 @@
 -- Engineer: Lorenzo Latella  [s292653@studenti.polito,it]
 --
 -- Create Date:     Wed May  4 09:47:35 PM CEST 2022
--- Design Name:     Common Package
--- Module Name:     DLX_PKG.vhd
+-- Design Name:     DLX_PKG
 -- Project Name:    DLX
 -- Description:     Common package
 --
@@ -21,14 +20,11 @@ library ieee;
   use ieee.numeric_std.all;
   use ieee.math_real.all;
 
-library ieee;
+library work;
+  use work.vhdl_help_func_pkg.all;
   use work.alu_pkg.all;
 
 package DLX_PKG is
-
-  -- ilog2 returs always the ceiling of the log2 of x
-
-  function ilog2 (x: natural) return natural;
 
   -- This function checks the derived constants calculated in the DLX_PKG
   -- NB run this function in the top_level of the DLX design
@@ -47,7 +43,7 @@ package DLX_PKG is
   constant C_INSTR_FUNC_W : integer := 10;
   -- DLX Register File Address Width
   -- => DLX RF address space == 32
-  constant C_RF_ADDR_W : integer := ilog2(32);
+  constant C_RF_ADDR_W : integer := VHFP_ilog2(32);
   -- DLX Instruction Memory Address Width
   -- => DLX I-MEM address space == 2**C_DMEM_ADDRW
   constant C_IMEM_ADDR_W : integer := 8;
@@ -81,7 +77,7 @@ package DLX_PKG is
   constant C_INSTR_RS1_W                : integer := C_INSTR_FIELD_W;
   constant C_INSTR_RS2_START_POS_BIT    : integer := C_INSTR_RS1_START_POS_BIT - C_INSTR_FIELD_W;
   constant C_INSTR_RS2_W                : integer := C_INSTR_FIELD_W;
-  constant C_INSTR_RS2_START_POS_BIT    : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_FIELD_W;
+  constant C_INSTR_RS3_START_POS_BIT    : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_FIELD_W;
   constant C_INSTR_RS3_W                : integer := C_INSTR_FIELD_W;
   constant C_INSTR_FUNC_START_POS_BIT   : integer := C_INSTR_RS3_W - C_INSTR_FUNC_W;
   -- I type instructions have 2 operand fields and then the immediate field
@@ -113,7 +109,7 @@ package DLX_PKG is
     rf_wb_dmem_dout_sel : std_logic;
   end record ctrl_word_t;
 
-  constant C_CTRL_WORD_0S := 
+  constant C_CTRL_WORD_0S : ctrl_word_t :=
   (
     branch_en           =>'0',
     jump_en             =>'0',
