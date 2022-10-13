@@ -53,19 +53,24 @@ architecture BEHAVIORAL of ALU is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
-  signal a_u          : integer (RANGE 0 to DATA_W - 1);
-  signal b_u          : integer (RANGE 0 to DATA_W - 1);
-  signal a_i          : integer (RANGE 0 to DATA_W - 1);
-  signal b_i          : integer (RANGE 0 to DATA_W - 1);
+  signal a_u               : integer (RANGE 0 to DATA_W - 1);
+  signal b_u               : integer (RANGE 0 to DATA_W - 1);
+  signal a_i               : integer (RANGE 0 to DATA_W - 1);
+  signal b_i               : integer (RANGE 0 to DATA_W - 1);
 
-  signal p4_adder_cin : std_logic;
-  signal p4_adder_b   : std_logic_vector(DATA_W - 1 downto 0);
-  signal p4_adder_s   : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_cin      : std_logic;
+  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
 
-  signal t2_logic_a   : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_b   : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_s   : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_op  : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_a        : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_b        : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_op       : std_logic_vector(DATA_W - 1 downto 0);
+
+  signal t2_shifter_amount : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_shifter_amount : std_logic_vector(4 downto 0);
+  signal t2_shifter_op     : std_logic_vector(1 downto 0);
+  signal t2_shifter_s      : std_logic_vector(DATA_W - 1  downto 0);
 
 begin
 
@@ -82,7 +87,7 @@ begin
       COUT => open
     );
 
-  T2_LOGIC_U : entity work.tw_logic("BEHAVIOURAL")
+  T2_LOGIC_U : entity work.t2_logic("BEHAVIOURAL")
     generic map (
       DATA_W => C_ALU_PRECISION_BIT
     )
@@ -91,6 +96,17 @@ begin
       A  => t2_logic_a,
       B  => t2_logic_b,
       S  => t2_logic_s
+    );
+
+  T2_SHIFTER_U : entity work.t2_shifter("BEHAVIOURAL")
+    generic map (
+      DATA_W => C_ALU_PRECISION_BIT
+    )
+    port map (
+      A      => t2_shifter_amount,
+      AMOUNT => t2_shifter_amount,
+      OP     => t2_shifter_op,
+      S      => t2_shifter_s
     );
 
   -- helpers
@@ -125,7 +141,6 @@ begin
         t2_logic_b  <= B;
         t2_logic_s  <= RES;
         t2_logic_op <= '0001';
-
       -- RES <= A and B;
 
       when BITOR =>
@@ -143,10 +158,18 @@ begin
       -- RES <= A xor B;
 
       when LSL =>
-        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+        t2_shifter_amount <= A;
+        t2_shifter_amount <= B(4 downto 0);
+        t2_shifter_op     <= "00";
+        t2_shifter_s      <= RES;
+      -- RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
 
       when LSR =>
-        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+        t2_shifter_amount <= A;
+        t2_shifter_amount <= B(4 downto 0);
+        t2_shifter_op     <= "01";
+        t2_shifter_s      <= RES;
+      -- RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
 
       when RL =>
         RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left

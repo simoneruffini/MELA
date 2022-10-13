@@ -19,7 +19,6 @@ library ieee;
   use ieee.std_logic_1164.all;
 
 library work;
-  use work.dlx_pkg.all;
 
 entity T2_LOGIC is
   generic (
