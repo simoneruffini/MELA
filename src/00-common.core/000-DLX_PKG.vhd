@@ -90,8 +90,6 @@ package DLX_PKG is
 
   type ctrl_word_t is record
     --======================= Fetch
-    branch_en : std_logic;     -- selects wheter the PC will take the branch instruction address instead of PC+4
-    jump_en   : std_logic;     -- selects wheter the PC will take the jump instruction address instead of PC+4
     --======================= Decode
     jal_en : std_logic;
     -- rf_ra_en : std_logic;
@@ -104,7 +102,10 @@ package DLX_PKG is
     pc_pls_4_sel : std_logic;
     alu_func     : alu_func_t; -- the convertion for this signal is done inside the control unit (integer to alu_func_t)
     --======================= Memory
-    dmem_wen : std_logic;
+    jump_en       : std_logic; -- selects wheter the PC will take the jump instruction address instead of PC+4
+    branch_en     : std_logic; -- selects wheter the PC will take the branch instruction address instead of PC+4
+    comp_0_invert : std_logic;
+    dmem_wen      : std_logic;
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
   end record ctrl_word_t;
@@ -120,41 +121,42 @@ package DLX_PKG is
     imm_sel             =>'0',
     pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
+    comp_0_invert=>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0'
   );
 
-  ---- Position of the control word signals. Used internally to map the internal
-  ---- std_logic_vector to the output signals.
-  ---- Decode
-  -- constant A_RE : integer := 0;  -- enables the read port 1 of the Register File
-  -- constant B_RE : integer := 1;  -- enables the read port 2 of the Register File
-  -- constant REG_WE : integer := 2;  -- Selects the right immediate value for the instruction type
-  -- constant IMM_SEL : integer := 3;  -- enables register file write
-  ---- Execute
-  -- constant PC_SEL  : integer := 4;  -- selects the immediate register as the second input for the ALU
-  -- constant ALU_OP1 : integer := 5;  -- alu control bit
-  -- constant ALU_OP2 : integer := 6;  -- alu control bit
-  -- constant ALU_OP3 : integer := 7;  -- alu control bit
-  -- constant ALU_OP4 : integer := 8;  -- alu control bit
-  ---- Memory
-  -- constant J_TYPE  : integer := 9;  -- enables the read-out of the memory
-  -- constant DM_RE  : integer := 10; -- enables the write-in of the memory
-  ---- Write-back
-  -- constant DM_WE : integer := 12; -- Selects the output of the datapath
-  -- constant WB_MUX : integer := 13; -- Selects the output of the datapath
-  -- constant CW_SIZE  : integer := 14; -- Length of the control word == Number of control signals
+---- Position of the control word signals. Used internally to map the internal
+---- std_logic_vector to the output signals.
+---- Decode
+-- constant A_RE : integer := 0;  -- enables the read port 1 of the Register File
+-- constant B_RE : integer := 1;  -- enables the read port 2 of the Register File
+-- constant REG_WE : integer := 2;  -- Selects the right immediate value for the instruction type
+-- constant IMM_SEL : integer := 3;  -- enables register file write
+---- Execute
+-- constant PC_SEL  : integer := 4;  -- selects the immediate register as the second input for the ALU
+-- constant ALU_OP1 : integer := 5;  -- alu control bit
+-- constant ALU_OP2 : integer := 6;  -- alu control bit
+-- constant ALU_OP3 : integer := 7;  -- alu control bit
+-- constant ALU_OP4 : integer := 8;  -- alu control bit
+---- Memory
+-- constant J_TYPE  : integer := 9;  -- enables the read-out of the memory
+-- constant DM_RE  : integer := 10; -- enables the write-in of the memory
+---- Write-back
+-- constant DM_WE : integer := 12; -- Selects the output of the datapath
+-- constant WB_MUX : integer := 13; -- Selects the output of the datapath
+-- constant CW_SIZE  : integer := 14; -- Length of the control word == Number of control signals
 
-  ---- Control unit input size
-  -- constant OP_CODE_SIZE : integer :=  6;  -- OPCODE field size
-  -- constant FUNC_SIZE    : integer :=  11; -- FUNC field size
+---- Control unit input size
+-- constant OP_CODE_SIZE : integer :=  6;  -- OPCODE field size
+-- constant FUNC_SIZE    : integer :=  11; -- FUNC field size
 
-  -- ALU control word (ALU0,ALU1,ALU2,ALU3 control signals)
-  constant ALU_CW_SIZE : integer := 4;
-  constant ALU_ADD_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0000"; -- ALU1=0 ALU2=0
-  constant ALU_SUB_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0001"; -- ALU1=0 ALU2=1
-  constant ALU_AND_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0010"; -- ALU1=1 ALU2=0
-  constant ALU_OR_CW   : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0011"; -- ALU1=1 ALU2=1
+-- ALU control word (ALU0,ALU1,ALU2,ALU3 control signals)
+-- constant ALU_CW_SIZE : integer := 4;
+-- constant ALU_ADD_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0000"; -- ALU1=0 ALU2=0
+-- constant ALU_SUB_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0001"; -- ALU1=0 ALU2=1
+-- constant ALU_AND_CW  : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0010"; -- ALU1=1 ALU2=0
+-- constant ALU_OR_CW   : std_logic_vector(ALU_CW_SIZE - 1 downto 0) := "0011"; -- ALU1=1 ALU2=1
 
 end package DLX_PKG;
 

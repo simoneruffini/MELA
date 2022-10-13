@@ -98,6 +98,8 @@ architecture BEHAVIORAL of DATAPATH is
   signal dmem_din_m         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal rf_waddr_m         : std_logic_vector(C_RF_ADDR_W - 1 downto 0);
 
+  signal is_0_m             : std_logic;
+
   -- Write Back Stage Signals (_wb)
   signal alu_out_wb         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_dout_wb       : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
@@ -140,7 +142,7 @@ begin
   pc_pls_4_f <= std_logic_vector(to_unsigned(to_integer(unsigned(npc_f)) + 4, pc_pls_4_f'length));
 
   -- NPC MUX select signal logic
-  npc_sel_f <= is_0_e when CTRL_WORD.branc_en = '1' else
+  npc_sel_f <= (is_0_m xor CTRL_WORD.comp_0_invert) when CTRL_WORD.branch_en = '1' else
                '1' when CTRL_WORD.jump_en else
                '0';
 
@@ -370,6 +372,19 @@ begin
       INIT   => '0',
       DIN    => rf_waddr_e,
       DOUT   => rf_waddr_m
+    );
+
+  U_REG_IS_0_E : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+    generic map (
+      DATA_W => is_0_e'length, INIT_VAL => C_REG_INIT_VAL
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN_N   => '0',
+      INIT   => '0',
+      DIN    => is_0_e,
+      DOUT   => is_0_m
     );
 
   --*************************************************************************** MEMORY STAGE

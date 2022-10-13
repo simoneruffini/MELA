@@ -1,4 +1,4 @@
---------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 -- Engineer: Simone Ruffini  [simone.ruffini@studenti.polito.it]
 --           Lorenzo Latella [s292653@studenti.polito.it]
 --           Matteo Bonora   [matteo.bonora@studenti.polito.it]
@@ -58,10 +58,8 @@ architecture BEHAVIORAL of CU is
   -- clean
   -- fetch stage signals record
 
-  type fetch_stage_sig_t is record
-    branch_en : std_logic;
-    jump_en   : std_logic;
-  end record fetch_stage_sig_t;
+  -- type fetch_stage_sig_t is record
+  -- end record fetch_stage_sig_t;
 
   -- Decode stage signals record
 
@@ -83,7 +81,10 @@ architecture BEHAVIORAL of CU is
   -- Memory stage signals record
 
   type memory_stage_sig_t is record
-    dmem_wen : std_logic;
+    dmem_wen      : std_logic;
+    branch_en     : std_logic;
+    jump_en       : std_logic;
+    comp_0_invert : std_logic;
   end record memory_stage_sig_t;
 
   -- Writeback stage signals record
@@ -96,11 +97,9 @@ architecture BEHAVIORAL of CU is
 
   ----------------------------------------------------------- CONSTANTS 2
 
-  constant C_FETCH_STAGE_SIG_0S     : fetch_stage_sig_t :=
-  (
-    branch_en => '0',
-    jump_en   => '0'
-  );
+  -- constant C_FETCH_STAGE_SIG_0S     : fetch_stage_sig_t :=
+  --(
+  --);
 
   constant C_DECODE_STAGE_SIG_0S    : decode_stage_sig_t :=
   (
@@ -117,7 +116,10 @@ architecture BEHAVIORAL of CU is
   );
   constant C_MEMORY_STAGE_SIG_0S    : memory_stage_sig_t :=
   (
-    dmem_wen => '0'
+    dmem_wen => '0',
+    branch_en => '0',
+    jump_en   => '0',
+    comp_0_invert   => '0'
   );
   constant C_WRITEBACK_STAGE_SIG_0S : writeback_stage_sig_t :=
   (
@@ -127,165 +129,176 @@ architecture BEHAVIORAL of CU is
   -- vsg_off constant_015 : vsg checking that constant have C_ prefix
   constant RTYPE_CW                 : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
+    j_type_imm_sel      =>'0',
     r_type_sel          =>'1',
-    imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
+    imm_sel             =>'0',
+    pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert       =>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
   constant JTYPE_JUMP_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
+    branch_en           =>'0',
     jump_en             =>'1',
-    jal_en              =>'1',
-    rf_wen              =>'1',
+    jal_en              =>'0',
+    rf_wen              =>'0',
     j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
-  constant ITYPE_JAL_CW             : ctrl_word_t :=
+  constant JTYPE_JAL_CW             : ctrl_word_t :=
   (
-    branch_en           =>'1',
+    branch_en           =>'0',
     jump_en             =>'1',
     jal_en              =>'1',
     rf_wen              =>'1',
     j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_BEQZ_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
-    rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    jump_en             =>'0',
+    jal_en              =>'0',
+    rf_wen              =>'0',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_BNEZ_CW            : ctrl_word_t :=
   (
     branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
-    rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    jump_en             =>'0',
+    jal_en              =>'0',
+    rf_wen              =>'0',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert=>'1',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_ADDI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
+    pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_SUBI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>SUB,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_ANDI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>BITAND,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_ORI_CW             : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>BITOR,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_XORI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>BITXOR,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_SLLI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>LSL,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant NOP_CW                   : ctrl_word_t :=
@@ -299,96 +312,103 @@ architecture BEHAVIORAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
+    comp_0_invert=>'0',
     dmem_wen            =>'1',
     rf_wb_dmem_dout_sel =>'1'
   );
 
   constant ITYPE_SRLI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>LSR,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_SNEI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>NEQ,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_SLEI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>LEQ,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_SGEI_CW            : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
-    alu_func            =>ADD,
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    pc_pls_4_sel        =>'0',
+    alu_func            =>GEQ,
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant LW_CW                    : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
+    pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    dmem_wen            =>'1',
+    comp_0_invert=>'0',
+    dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'1'
   );
 
   constant SW_CW                    : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
     rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
     imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
+    pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
+    comp_0_invert=>'0',
     dmem_wen            =>'1',
     rf_wb_dmem_dout_sel =>'1'
   );
@@ -429,7 +449,7 @@ architecture BEHAVIORAL of CU is
     -- all the above assignments are equal and condensed in the bottom one
     RTYPE_OPCODE_i=> RTYPE_CW,
     J_OPCODE_i    => JTYPE_JUMP_CW,
-    JAL_OPCODE_i  => ITYPE_JAL_CW,
+    JAL_OPCODE_i  => JTYPE_JAL_CW,
     BEQZ_OPCODE_i => ITYPE_BEQZ_CW,
     BNEZ_OPCODE_i => ITYPE_BNEZ_CW,
     ADDI_OPCODE_i => ITYPE_ADDI_CW,
@@ -483,7 +503,7 @@ architecture BEHAVIORAL of CU is
   signal control_word               : ctrl_word_t;
 
   -- Fetch signals
-  signal fetch_sig                  : fetch_stage_sig_t;
+  -- signal fetch_sig                  : fetch_stage_sig_t;
 
   -- Decode signals and delays
   signal decode_sig                 : decode_stage_sig_t;
@@ -520,12 +540,10 @@ begin
   opcode_i <= to_integer(unsigned(opcode));
   func_i   <= to_integer(unsigned(func));
 
-  -- Control word for the fetch instruction word
+  -- Control word of the fetched instruction
   -- Merged output of OPCODE_LUT and ALU_LUT, alu_func is multiplexed for
   -- R-TYPE instructions
 
-  control_word.branch_en           <= OPCODE_LUT(opcode_i).branch_en;
-  control_word.jump_en             <= OPCODE_LUT(opcode_i).jump_en;
   control_word.jal_en              <= OPCODE_LUT(opcode_i).jal_en;
   control_word.rf_wen              <= OPCODE_LUT(opcode_i).rf_wen;
   control_word.j_type_imm_sel      <= OPCODE_LUT(opcode_i).j_type_imm_sel;
@@ -534,15 +552,16 @@ begin
   control_word.pc_pls_4_sel        <= OPCODE_LUT(opcode_i).pc_pls_4_sel;
   control_word.alu_func            <= ALU_LUT(func_i) when opcode_i = RTYPE_OPCODE_i  else
                                       OPCODE_LUT(opcode_i).alu_func;
+  control_word.jump_en             <= OPCODE_LUT(opcode_i).jump_en;
+  control_word.branch_en           <= OPCODE_LUT(opcode_i).branch_en;
+  control_word.comp_0_invert       <= OPCODE_LUT(opcode_i).comp_0_invert;
   control_word.dmem_wen            <= OPCODE_LUT(opcode_i).dmem_wen;
   control_word.rf_wb_dmem_dout_sel <= OPCODE_LUT(opcode_i).rf_wb_dmem_dout_sel;
 
   -- Extract the signals from the control word in the helpers for the pipeline
 
-  fetch_sig   <= (
-                  branch_en => control_word.branch_en,
-                  jump_en   => control_word.jump_en
-                );
+  -- fetch_sig   <= (
+  --               );
   decode_sig  <= (
                   jal_en         => control_word.jal_en,
                   rf_wen         => control_word.rf_wen,
@@ -556,7 +575,10 @@ begin
                 );
 
   memory_sig <= (
-                 dmem_wen => control_word.dmem_wen
+                 jump_en       => control_word.jump_en,
+                 branch_en     => control_word.branch_en,
+                 comp_0_invert => control_word.comp_0_invert,
+                 dmem_wen      => control_word.dmem_wen
                );
 
   writeback_sig <= (
@@ -564,8 +586,6 @@ begin
                   );
 
   -- Final Control Word Output with pre-delayed control signals
-  CTRL_WORD.branch_en           <= fetch_sig.branch_en;
-  CTRL_WORD.jump_en             <= fetch_sig.jump_en;
   CTRL_WORD.jal_en              <= decode_sig_d1.jal_en;
   CTRL_WORD.rf_wen              <= decode_sig_d1.rf_wen;
   CTRL_WORD.j_type_imm_sel      <= decode_sig_d1.j_type_imm_sel;
@@ -573,6 +593,9 @@ begin
   CTRL_WORD.imm_sel             <= execute_sig_d2.imm_sel;
   CTRL_WORD.pc_pls_4_sel        <= execute_sig_d2.pc_pls_4_sel;
   CTRL_WORD.alu_func            <= execute_sig_d2.alu_func;
+  CTRL_WORD.jump_en             <= memory_sig_d3.jump_en;
+  CTRL_WORD.branch_en           <= memory_sig_d3.branch_en;
+  CTRL_WORD.comp_0_invert       <= memory_sig_d3.comp_0_invert;
   CTRL_WORD.dmem_wen            <= memory_sig_d3.dmem_wen;
   CTRL_WORD.rf_wb_dmem_dout_sel <= writeback_sig_d4.rf_wb_dmem_dout_sel;
 
