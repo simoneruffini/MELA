@@ -29,3 +29,7 @@
 #../src/a.b-DATAPATH.core/a.b.b-RF.vhd
 #../src/a.b-DATAPATH.vhd
 ../src/a.a-CU.vhd
+
+# Testbench stuff
+../sim/CLKGEN.vhd
+../sim/tb_CU.vhd

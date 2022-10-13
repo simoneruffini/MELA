@@ -29,7 +29,7 @@ package DLX_PKG is
   -- This function checks the derived constants calculated in the DLX_PKG
   -- NB run this function in the top_level of the DLX design
 
-  procedure dlx_pkg_check_assertions;
+  function dlx_pkg_check_assertions return natural;
 
   -- DLX Architecture bit depth
   constant C_ARCH_BIT_DEPTH : integer := 32; -- Don't use this constant directly
@@ -79,7 +79,7 @@ package DLX_PKG is
   constant C_INSTR_RS2_W                : integer := C_INSTR_FIELD_W;
   constant C_INSTR_RS3_START_POS_BIT    : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_FIELD_W;
   constant C_INSTR_RS3_W                : integer := C_INSTR_FIELD_W;
-  constant C_INSTR_FUNC_START_POS_BIT   : integer := C_INSTR_RS3_W - C_INSTR_FUNC_W;
+  constant C_INSTR_FUNC_START_POS_BIT   : integer := C_INSTR_RS3_START_POS_BIT - C_INSTR_FUNC_W;
   -- I type instructions have 2 operand fields and then the immediate field
   constant C_INSTR_I_TYPE_IMM_START_POS_BIT : integer := C_INSTR_RS2_START_POS_BIT - C_INSTR_I_TYPE_IMM_W;
   -- J type instruction have only one field
@@ -162,7 +162,7 @@ end package DLX_PKG;
 
 package body DLX_PKG is
 
-  procedure dlx_pkg_check_assertions is
+  function dlx_pkg_check_assertions return natural is
 
   begin
 
@@ -170,31 +170,50 @@ package body DLX_PKG is
     assert C_INSTR_FIELD_W > 0
       report "The constant C_INSTR_FIELD_W is less then equal 0, check why"
       severity failure;
+    report "C_INSTR_FIELD_W                  = " & integer'image(C_INSTR_FIELD_W);
+
     assert C_INSTR_I_TYPE_IMM_W > 0
       report "The constant C_INSTR_I_TYPE_IMM_W is less then equal 0, check why"
       severity failure;
+    report "C_INSTR_I_TYPE_IMM_W             = " & integer'image(C_INSTR_I_TYPE_IMM_W);
+
     assert C_INSTR_J_TYPE_IMM_W > 0
       report "The constant C_INSTR_J_TYPE_IMM_W is less then equal 0, check why"
       severity failure;
+    report "C_INSTR_J_TYPE_IMM_W             = " & integer'image(C_INSTR_J_TYPE_IMM_W);
+
     assert C_INSTR_OPCODE_START_POS_BIT >= 0
       report "The constant C_INSTR_OPCODE_START_POS_BIT is less then equal 0, check why"
       severity failure;
+    report "C_INSTR_OPCODE_START_POS_BIT     = " & integer'image(C_INSTR_OPCODE_START_POS_BIT);
+
     assert C_INSTR_RS1_START_POS_BIT >= 0
       report "The constant C_INSTR_RS1_START_POS_BIT is negative, check displacements"
       severity failure;
+    report "C_INSTR_RS1_START_POS_BIT         = " & integer'image(C_INSTR_RS1_START_POS_BIT);
+
     assert C_INSTR_RS2_START_POS_BIT >= 0
       report "The constant C_INSTR_RS2_START_POS_BIT is negative, check displacements"
       severity failure;
+    report "C_INSTR_RS2_START_POS_BIT         = " & integer'image(C_INSTR_RS2_START_POS_BIT);
+
     assert C_INSTR_I_TYPE_IMM_START_POS_BIT >= 0
       report "The constant C_INSTR_I_TYPE_IMM_START_POS_BIT is negative, check displacements"
       severity failure;
+    report "C_INSTR_I_TYPE_IMM_START_POS_BIT  = " & integer'image(C_INSTR_I_TYPE_IMM_START_POS_BIT);
+
     assert C_INSTR_J_TYPE_IMM_START_POS_BIT >= 0
       report "The constant C_INSTR_J_TYPE_IMM_START_POS_BIT is negative, check displacements"
       severity failure;
+    report "C_INSTR_J_TYPE_IMM_START_POS_BIT  = " & integer'image(C_INSTR_J_TYPE_IMM_START_POS_BIT);
+    
     assert C_INSTR_FUNC_START_POS_BIT >= 0
       report "The constant C_INSTR_FUNC_START_POS_BIT is negative, check displacements"
       severity failure;
+    report "C_INSTR_FUNC_START_POS_BIT        = " & integer'image(C_INSTR_FUNC_START_POS_BIT);
 
+    report "-> All checks are correct!";
+    return 0;
   end dlx_pkg_check_assertions;
 
   function ilog2 (x:natural) return natural is

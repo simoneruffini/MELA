@@ -21,7 +21,7 @@ echo "####                                 ####"
 echo "#########################################"
 
 # First compile VHDL files then if all ok verilog ones
-vcom -F $VHDL_SRCS_LIST_FILE
+vcom -F $VHDL_SRCS_LIST_FILE -2008
 
 # check if verilog file compilation went ok otherwise exit
 if [ $? -ne 0 ]; then  exit; fi
@@ -39,4 +39,4 @@ echo "####                                 ####"
 echo "#########################################"
 
 # Simulate the acc_tb entity using sim.do tcl script
-vsim -c -sv_seed random -do sim.do acc_tb
+vsim -onfinish stop -c -sv_seed random -do sim.do tb_CU
