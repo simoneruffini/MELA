@@ -29,7 +29,7 @@ entity DATAPATH is
   port (
     CLK             : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
     RST_AN          : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
-    CTRL_WORD        : in    cntrl_word_t;                                   -- Control Word from CU
+    CTRL_WORD        : in    ctrl_word_t;                                   -- Control Word from CU
     --PC_PLS_4        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Program Counter plus 4
     INSTR           : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
     DMEM_ADDR       : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory address

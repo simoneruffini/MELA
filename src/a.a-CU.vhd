@@ -37,7 +37,7 @@ entity CU is
     CLK              : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
     RST_AN           : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
     INSTR            : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
-    CTRL_WORD        : out   cntrl_word_t                                   -- Control Word
+    CTRL_WORD        : out   ctrl_word_t                                    -- Control Word
   );
 end entity CU;
 
@@ -504,8 +504,7 @@ architecture BEHAVIORAL of CU is
   signal alu_cw                     : std_logic_vector(ALU_CW_SIZE - 1 downto 0);  -- alu control word read from alu_cw_lut
   signal alu_cw1                    : std_logic_vector(ALU_CW_SIZE - 1 downto 0);  -- alu_cw 1 clk delay stage
 
-  -- TODO delete
-  -- signal control_word : cntrl_word_t;
+  signal control_word               : ctrl_word_t;
 
   -- Fetch signals
   signal fetch_sig                  : fetch_stage_sig_t;

@@ -92,7 +92,7 @@ package DLX_PKG is
   -- CONTROL WORD TYPE =========================================================
   -- ===========================================================================
 
-  type cntrl_word_t is record
+  type ctrl_word_t is record
     --======================= Fetch
     branch_en : std_logic;     -- selects wheter the PC will take the branch instruction address instead of PC+4
     jump_en   : std_logic;     -- selects wheter the PC will take the jump instruction address instead of PC+4
@@ -111,7 +111,22 @@ package DLX_PKG is
     dmem_wen : std_logic;
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
-  end record cntrl_word_t;
+  end record ctrl_word_t;
+
+  constant C_CTRL_WORD_0S := 
+  (
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
+    rf_wen              =>'0',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
+    imm_sel             =>'0',
+    pc_pls_4_sel        =>'0',
+    alu_func            =>ADD,
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
+  );
 
   ---- Position of the control word signals. Used internally to map the internal
   ---- std_logic_vector to the output signals.
