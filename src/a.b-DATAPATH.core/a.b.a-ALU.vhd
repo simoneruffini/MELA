@@ -171,6 +171,12 @@ begin
         t2_shifter_s      <= RES;
       -- RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
 
+      when ASR => -- Arithmetic shift right
+        t2_shifter_amount <= A;
+        t2_shifter_amount <= B(4 downto 0);
+        t2_shifter_op     <= "10";
+        t2_shifter_s      <= RES;
+
       when RL =>
         RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
 

@@ -25,6 +25,7 @@ package ALU_PKG is
     BITXOR, -- Bitwise xor           RES = A XOR B
     LSL,    -- Logical shift left    RES = A << B
     LSR,    -- Logical shift right   RES = A >> B
+    ASR,    -- Arithmetic shift right   RES = A a>> B
     RL,     -- rotate left           RES = A rl(B)
     RR,     -- rotate right          RES = A rr(B)
     GEQ,    -- greater then equal    RES = A >= B
