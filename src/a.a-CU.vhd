@@ -303,18 +303,18 @@ architecture BEHAVIORAL of CU is
 
   constant NOP_CW                   : ctrl_word_t :=
   (
-    branch_en           =>'1',
-    jump_en             =>'1',
-    jal_en              =>'1',
-    rf_wen              =>'1',
-    j_type_imm_sel      =>'1',
-    r_type_sel          =>'1',
-    imm_sel             =>'1',
-    pc_pls_4_sel        =>'1',
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
+    rf_wen              =>'0',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
+    imm_sel             =>'0',
+    pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
-    dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    comp_0_invert       =>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0'
   );
 
   constant ITYPE_SRLI_CW            : ctrl_word_t :=
@@ -413,16 +413,16 @@ architecture BEHAVIORAL of CU is
     rf_wb_dmem_dout_sel =>'1'
   );
 
-  constant SLL_FUNC_CW              : alu_func_t := ADD;
-  constant SRL_FUNC_CW              : alu_func_t := ADD;
+  constant SLL_FUNC_CW              : alu_func_t := LSL;
+  constant SRL_FUNC_CW              : alu_func_t := LSR;
   constant ADD_FUNC_CW              : alu_func_t := ADD;
-  constant SUB_FUNC_CW              : alu_func_t := ADD;
-  constant AND_FUNC_CW              : alu_func_t := ADD;
-  constant OR_FUNC_CW               : alu_func_t := ADD;
-  constant XOR_FUNC_CW              : alu_func_t := ADD;
-  constant SNE_FUNC_CW              : alu_func_t := ADD;
-  constant SLE_FUNC_CW              : alu_func_t := ADD;
-  constant SGE_FUNC_CW              : alu_func_t := ADD;
+  constant SUB_FUNC_CW              : alu_func_t := SUB;
+  constant AND_FUNC_CW              : alu_func_t := BITAND;
+  constant OR_FUNC_CW               : alu_func_t := BITOR;
+  constant XOR_FUNC_CW              : alu_func_t := BITXOR;
+  constant SNE_FUNC_CW              : alu_func_t := NEQ;
+  constant SLE_FUNC_CW              : alu_func_t := LEQ;
+  constant SGE_FUNC_CW              : alu_func_t := GEQ;
 
   -- Lut Memory containing the control words for each OPCODE.
   -- The OPCODE indexes the LUT.
