@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------
 -- Engineer: Simone Ruffini [simone.ruffini@studenti.polito.it]
--- 
+--
 -- Create Date:     Wed Mar 30 10:56:52 PM CEST 2022
 -- Design Name:     GG
 -- Module Name:     GG.vhd
 -- Project Name:    P4 adder
 -- Description:     Group Generate Unit
---                  
+--
 --
 -- Revision:
 -- Revision 00 - Simone Ruffini
@@ -14,27 +14,45 @@
 -- Additional Comments:
 --
 --------------------------------------------------------------------------------
+
+------------------------------------------------------------- PACKAGES/LIBRARIES
+
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+------------------------------------------------------------- ENTITY
+
 entity GG is
   port (
-    G_current   : IN STD_LOGIC; 
-    P_current   : IN STD_LOGIC; 
-    G_prev      : IN STD_LOGIC; 
-    G           : OUT STD_LOGIC
+    G_CURRENT   : in    std_logic;
+    P_CURRENT   : in    std_logic;
+    G_PREV      : in    std_logic;
+    G           : out   std_logic
   );
-end GG;
+end entity GG;
 
-ARCHITECTURE BEHAVIORAL OF GG is 
-BEGIN
+------------------------------------------------------------- ARCHITECTURE
 
-  G <= ( G_current OR (P_current AND G_prev) );
+architecture BEHAVIORAL of GG is
 
-END ARCHITECTURE BEHAVIORAL;
+----------------------------------------------------------- CONSTANTS 1
+
+----------------------------------------------------------- TYPES
+
+----------------------------------------------------------- FUNCTIONS
+
+----------------------------------------------------------- CONSTANTS 2
+
+----------------------------------------------------------- SIGNALS
+
+begin
+
+  G <= (G_CURRENT or (P_CURRENT and G_PREV));
+
+end architecture BEHAVIORAL;
 
 CONFIGURATION CFG_GG_BEHAVIORAL OF GG IS
-  FOR BEHAVIORAL
-  END FOR;
+ FOR BEHAVIORAL
+ END FOR;
 END CFG_GG_BEHAVIORAL;
