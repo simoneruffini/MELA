@@ -19,10 +19,14 @@
 --
 --------------------------------------------------------------------------------
 
+------------------------------------------------------------- PACKAGES/LIBRARIES
+
 library IEEE;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
   use ieee.math_real.all;
+
+------------------------------------------------------------- ENTITY
 
 entity RF is
   generic (
@@ -45,15 +49,33 @@ entity RF is
   );
 end entity RF;
 
+------------------------------------------------------------- ARCHITECTURE
+
 architecture BEHAVIOURAL of RF is
+
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
 
   subtype reg_addr_range is natural range 0 to ((2 ** ADDR_W) - 1); -- using natural type
 
   type reg_array is array (reg_addr_range) of std_logic_vector(DATA_W - 1 downto 0);
 
+  ----------------------------------------------------------- FUNCTIONS
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+
   signal registers : reg_array;
 
 begin
+
+  ----------------------------------------------------------- ENTITY DEFINITION
+
+  ----------------------------------------------------------- COMBINATORIAL
+
+  ----------------------------------------------------------- PROCESSES
 
   -- write your RF code
 
@@ -86,15 +108,15 @@ begin
   begin
 
     if (RD1 = '1' and ENABLE = '1') then
-      if (unsigned(ADD_RD1) = '0') then
-        OUT1 <= (others => 0);
+      if (unsigned(ADD_RD1) = 0) then
+        OUT1 <= (others => '0');
       end if;
       OUT1 <= registers(to_integer(unsigned(ADD_RD1)));
     end if;
 
     if (RD2 = '1' and ENABLE = '1') then
-      if (unsigned(ADD_RD2) = '0') then
-        OUT2 <= (others => 0);
+      if (unsigned(ADD_RD2) = 0) then
+        OUT2 <= (others => '0');
       end if;
       OUT2 <= registers(to_integer(unsigned(ADD_RD2)));
     end if;

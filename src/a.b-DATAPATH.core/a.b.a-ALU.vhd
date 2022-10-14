@@ -25,6 +25,7 @@ library ieee;
 library work;
   use work.alu_pkg.all;
   use work.dlx_pkg.all;
+  use work.vhdl_help_func_pkg.all;
 
 ------------------------------------------------------------- ENTITY
 
@@ -40,7 +41,7 @@ entity ALU is
   );
 end entity ALU;
 
-------------------------------------------------------------- ARCHITECTURE
+------------------------------------------------------------- ARCHITECTURE BEHAVIOURAL
 
 architecture BEHAVIORAL of ALU is
 
@@ -53,129 +54,59 @@ architecture BEHAVIORAL of ALU is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
-  signal a_u               : integer (RANGE 0 to DATA_W - 1);
-  signal b_u               : integer (RANGE 0 to DATA_W - 1);
-  signal a_i               : integer (RANGE 0 to DATA_W - 1);
-  signal b_i               : integer (RANGE 0 to DATA_W - 1);
+  signal a_u               : unsigned (DATA_W - 1 downto 0);
+  signal b_u               : unsigned (DATA_W - 1 downto 0);
+  signal a_s               : signed (DATA_W - 1 downto 0);
+  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
 
   signal p4_adder_cin      : std_logic;
   signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
   signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
 
-  signal t2_logic_a        : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_b        : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_s        : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_op       : std_logic_vector(DATA_W - 1 downto 0);
-
-  signal t2_shifter_amount : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_shifter_amount : std_logic_vector(4 downto 0);
-  signal t2_shifter_op     : std_logic_vector(1 downto 0);
-  signal t2_shifter_s      : std_logic_vector(DATA_W - 1  downto 0);
-
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  P4_ADDER_U : entity work.p4_adder("STRUCTURAL")
-    generic map (
-      NBIT => C_ALU_PRECISION_BIT
-    )
-    port map (
-      A    => A,
-      B    => p4_adder_b,
-      CIN  => p4_adder_cin,
-      S    => p4_adder_s,
-      COUT => open
-    );
-
-  T2_LOGIC_U : entity work.t2_logic("BEHAVIOURAL")
-    generic map (
-      DATA_W => C_ALU_PRECISION_BIT
-    )
-    port map (
-      OP => t2_logic_op,
-      A  => t2_logic_a,
-      B  => t2_logic_b,
-      S  => t2_logic_s
-    );
-
-  T2_SHIFTER_U : entity work.t2_shifter("BEHAVIOURAL")
-    generic map (
-      DATA_W => C_ALU_PRECISION_BIT
-    )
-    port map (
-      A      => t2_shifter_amount,
-      AMOUNT => t2_shifter_amount,
-      OP     => t2_shifter_op,
-      S      => t2_shifter_s
-    );
-
   -- helpers
   a_u <= unsigned(A);
   b_u <= unsigned(B);
+  a_s <= signed(A);
   a_i <= to_integer(a_u);
   b_i <= to_integer(b_u);
 
   ----------------------------------------------------------- PROCESSES
+
   P_ALU : process (FUNC, A, B) is
   begin
 
     -- Defaults for disabling latch inference
-    RES          <= (others => '0');
-    p4_adder_cin <= '0';
-    p4_adder_b   <= B;
+    RES <= (others => '0');
 
     case FUNC is
 
       when ADD =>
-        p4_adder_b   <= B;
-        p4_adder_cin <= '0';
-        RES          <= p4_adder_s;
+        RES <= std_logic_vector(to_unsigned(a_i + b_i, RES'length));
 
       when SUB =>
-        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
-        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
-        RES          <= p4_adder_s;
+        RES <= std_logic_vector(to_unsigned(a_i - b_i, RES'length));
 
       when BITAND =>
-        t2_logic_a  <= A;
-        t2_logic_b  <= B;
-        t2_logic_s  <= RES;
-        t2_logic_op <= '0001';
-      -- RES <= A and B;
+        RES <= A and B;
 
       when BITOR =>
-        t2_logic_a  <= A;
-        t2_logic_b  <= B;
-        t2_logic_s  <= RES;
-        t2_logic_op <= '0111';
-      -- RES <= A or B;
+        RES <= A or B;
 
       when BITXOR =>
-        t2_logic_a  <= A;
-        t2_logic_b  <= B;
-        t2_logic_s  <= RES;
-        t2_logic_op <= '0110';
-      -- RES <= A xor B;
+        RES <= A xor B;
 
       when LSL =>
-        t2_shifter_amount <= A;
-        t2_shifter_amount <= B(4 downto 0);
-        t2_shifter_op     <= "00";
-        t2_shifter_s      <= RES;
-      -- RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
 
       when LSR =>
-        t2_shifter_amount <= A;
-        t2_shifter_amount <= B(4 downto 0);
-        t2_shifter_op     <= "01";
-        t2_shifter_s      <= RES;
-      -- RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
 
-      when ASR => -- Arithmetic shift right
-        t2_shifter_amount <= A;
-        t2_shifter_amount <= B(4 downto 0);
-        t2_shifter_op     <= "10";
-        t2_shifter_s      <= RES;
+      when ASR =>
+        RES <= std_logic_vector(SHIFT_RIGHT(a_s, b_i));  -- arithmetic shift right
 
       when RL =>
         RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
@@ -203,6 +134,396 @@ begin
   end process P_ALU;
 
 end architecture BEHAVIORAL;
+
+------------------------------------------------------------- END ARCHITECTURE BEHAVIOURAL
+
+------------------------------------------------------------- ARCHITECTURE BEHAVIOURLA + P4 ADDER
+
+architecture BEHAV_P4ADD of ALU is
+
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
+  ----------------------------------------------------------- FUNCTIONS
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+  signal a_u               : unsigned (DATA_W - 1 downto 0);
+  signal b_u               : unsigned (DATA_W - 1 downto 0);
+  signal a_s               : signed (DATA_W - 1 downto 0);
+  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+
+  signal p4_adder_cin      : std_logic;
+  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+
+begin
+
+  ----------------------------------------------------------- ENTITY DEFINITION
+  P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+    generic map (
+      NBIT => C_ALU_PRECISION_BIT
+    )
+    port map (
+      A    => A,
+      B    => p4_adder_b,
+      CIN  => p4_adder_cin,
+      S    => p4_adder_s,
+      COUT => open
+    );
+
+  -- helpers
+  a_u <= unsigned(A);
+  b_u <= unsigned(B);
+  a_s <= signed(A);
+  a_i <= to_integer(a_u);
+  b_i <= to_integer(b_u);
+
+  ----------------------------------------------------------- PROCESSES
+  P_ALU : process (FUNC, A, B) is
+  begin
+
+    -- Defaults for disabling latch inference
+    RES          <= (others => '0');
+    p4_adder_cin <= '0';
+    p4_adder_b   <= B;
+
+    case FUNC is
+
+      when ADD =>
+        p4_adder_b   <= B;
+        p4_adder_cin <= '0';
+        RES          <= p4_adder_s;
+
+      when SUB =>
+        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
+        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
+        RES          <= p4_adder_s;
+
+      when BITAND =>
+        RES <= A and B;
+
+      when BITOR =>
+        RES <= A or B;
+
+      when BITXOR =>
+        RES <= A xor B;
+
+      when LSL =>
+        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+
+      when LSR =>
+        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+
+      when ASR =>
+        RES <= std_logic_vector(SHIFT_RIGHT(a_s, b_i));  -- arithmetic shift right
+
+      when RL =>
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+
+      when RR =>
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+
+      when GEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u >= b_u else '0';
+
+      when LEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u <= b_u else '0';
+
+      when NEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u /= b_u else '0';
+
+      when others =>
+        RES <= (others => '0');                          -- Disables latch inference
+
+    end case;
+
+  end process P_ALU;
+
+end architecture BEHAV_P4ADD;
+
+------------------------------------------------------------- END ARCHITECTURE BEHAVIOURLA + P4 ADDER
+
+------------------------------------------------------------- ARCHITECTURE BEHAVIOURLA + P4 ADDER + T2 LOGIC
+
+architecture BEHAV_P4ADD_T2LOGIC of ALU is
+
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
+  ----------------------------------------------------------- FUNCTIONS
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+  signal a_u               : unsigned (DATA_W - 1 downto 0);
+  signal b_u               : unsigned (DATA_W - 1 downto 0);
+  signal a_s               : signed (DATA_W - 1 downto 0);
+  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+
+  signal p4_adder_cin      : std_logic;
+  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+
+  signal t2_logic_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_op       : std_logic_vector(DATA_W - 1 downto 0);
+
+begin
+
+  ----------------------------------------------------------- ENTITY DEFINITION
+  P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+    generic map (
+      NBIT => C_ALU_PRECISION_BIT
+    )
+    port map (
+      A    => A,
+      B    => p4_adder_b,
+      CIN  => p4_adder_cin,
+      S    => p4_adder_s,
+      COUT => open
+    );
+
+  T2_LOGIC_U : entity work.t2_logic(BEHAVIOURAL)
+    generic map (
+      DATA_W => C_ALU_PRECISION_BIT
+    )
+    port map (
+      OP => t2_logic_op,
+      A  => A,
+      B  => B,
+      S  => t2_logic_s
+    );
+
+  -- helpers
+  a_u <= unsigned(A);
+  b_u <= unsigned(B);
+  a_s <= signed(A);
+  a_i <= to_integer(a_u);
+  b_i <= to_integer(b_u);
+
+  ----------------------------------------------------------- PROCESSES
+  P_ALU : process (FUNC, A, B) is
+  begin
+
+    -- Defaults for disabling latch inference
+    RES          <= (others => '0');
+    p4_adder_cin <= '0';
+    p4_adder_b   <= B;
+
+    case FUNC is
+
+      when ADD =>
+        p4_adder_b   <= B;
+        p4_adder_cin <= '0';
+        RES          <= p4_adder_s;
+
+      when SUB =>
+        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
+        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
+        RES          <= p4_adder_s;
+
+      when BITAND =>
+        t2_logic_s  <= RES;
+        t2_logic_op <= "0001";
+
+      when BITOR =>
+        t2_logic_s  <= RES;
+        t2_logic_op <= "0111";
+
+      when BITXOR =>
+        t2_logic_s  <= RES;
+        t2_logic_op <= "0110";
+
+      when LSL =>
+        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+
+      when LSR =>
+        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+
+      when RL =>
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+
+      when RR =>
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+
+      when GEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u >= b_u else '0';
+
+      when LEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u <= b_u else '0';
+
+      when NEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u /= b_u else '0';
+
+      when others =>
+        RES <= (others => '0');                          -- Disables latch inference
+
+    end case;
+
+  end process P_ALU;
+
+end architecture BEHAV_P4ADD_T2LOGIC;
+
+------------------------------------------------------------- END ARCHITECTURE BEHAVIOURLA + P4 ADDER + T2 LOGIC
+
+------------------------------------------------------------- ARCHITECTURE STRUCTURAL
+
+architecture STRUCTURAL of ALU is
+
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
+  ----------------------------------------------------------- FUNCTIONS
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+  signal a_u               : unsigned (DATA_W - 1 downto 0);
+  signal b_u               : unsigned (DATA_W - 1 downto 0);
+  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+
+  signal p4_adder_cin      : std_logic;
+  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+
+  signal t2_logic_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_op       : std_logic_vector(DATA_W - 1 downto 0);
+
+  signal t2_shifter_op     : std_logic_vector(1 downto 0);
+  signal t2_shifter_s      : std_logic_vector(DATA_W - 1  downto 0);
+
+begin
+
+  ----------------------------------------------------------- ENTITY DEFINITION
+  P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+    generic map (
+      NBIT => C_ALU_PRECISION_BIT
+    )
+    port map (
+      A    => A,
+      B    => p4_adder_b,
+      CIN  => p4_adder_cin,
+      S    => p4_adder_s,
+      COUT => open
+    );
+
+  T2_LOGIC_U : entity work.t2_logic(BEHAVIOURAL)
+    generic map (
+      DATA_W => C_ALU_PRECISION_BIT
+    )
+    port map (
+      OP => t2_logic_op,
+      A  => A,
+      B  => B,
+      S  => t2_logic_s
+    );
+
+  T2_SHIFTER_U : entity work.t2_shifter(BEHAVIOURAL)
+    generic map (
+      DATA_W => C_ALU_PRECISION_BIT
+    )
+    port map (
+      A      => A,
+      AMOUNT => B(vhfp_ilog2(DATA_W) - 1 downto 0),
+      OP     => t2_shifter_op,
+      S      => t2_shifter_s
+    );
+
+  -- helpers
+  a_u <= unsigned(A);
+  b_u <= unsigned(B);
+  a_i <= to_integer(a_u);
+  b_i <= to_integer(b_u);
+
+  ----------------------------------------------------------- PROCESSES
+  P_ALU : process (FUNC, A, B) is
+  begin
+
+    -- Defaults for disabling latch inference
+    RES           <= (others => '0');
+    p4_adder_cin  <= '0';
+    p4_adder_b    <= B;
+    t2_shifter_op <= (others => '0');
+
+    case FUNC is
+
+      when ADD =>
+        p4_adder_b   <= B;
+        p4_adder_cin <= '0';
+        RES          <= p4_adder_s;
+
+      when SUB =>
+        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
+        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
+        RES          <= p4_adder_s;
+
+      when BITAND =>
+        t2_logic_s  <= RES;
+        t2_logic_op <= "0001";
+
+      when BITOR =>
+        t2_logic_s  <= RES;
+        t2_logic_op <= "0111";
+
+      when BITXOR =>
+        t2_logic_s  <= RES;
+        t2_logic_op <= "0110";
+
+      when LSL =>
+        t2_shifter_op <= "00";
+        RES           <= t2_shifter_s;
+      -- RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+
+      when LSR =>
+        t2_shifter_op <= "01";
+        RES           <= t2_shifter_s;
+      -- RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+
+      when ASR =>                                        -- Arithmetic shift right
+        t2_shifter_op <= "10";
+        RES           <= t2_shifter_s;
+
+      when RL =>
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+
+      when RR =>
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+
+      when GEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u >= b_u else '0';
+
+      when LEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u <= b_u else '0';
+
+      when NEQ =>
+        RES <= (others => '0');
+        RES(0)<= '1' when a_u /= b_u else '0';
+
+      when others =>
+        RES <= (others => '0');                          -- Disables latch inference
+
+    end case;
+
+  end process P_ALU;
+
+end architecture STRUCTURAL;
+
+------------------------------------------------------------- END ARCHITECTURE STRUCTURAL
 
 -- configuration CFG_ALU_BEHAVIORAL of ALU is
 --  for BEHAVIORAL

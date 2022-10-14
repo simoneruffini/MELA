@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------
 -- Engineer: Matteo Bonora  [matteo.bonora@polito.it]
--- 
+--
 -- Create Date:     Mon Mar 23 12:09:00 CET 2022
 -- Design Name:     Booth's Encoder
 -- Module Name:     boothenc.vhd
--- Project Name:    
--- Description:     
---                  
+-- Project Name:
+-- Description:
+--
 --
 -- Revision:
 -- Revision 00 - Matteo Bonora
@@ -14,89 +14,92 @@
 -- Additional Comments:
 --
 --------------------------------------------------------------------------------
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.ALL;
-USE ieee.numeric_std.ALL;
+
+library ieee;
+  use ieee.std_logic_1164.all;
+  use ieee.std_logic_unsigned.all;
+  use ieee.numeric_std.all;
 
 -- The encoder takes A from the previous encoder block so that it only has to do
 -- a shift of 2 bits.
-ENTITY BOOTHENC IS
-	GENERIC (
-		NBIT : INTEGER;
-		i : INTEGER
-	);
-	PORT (
-		A_s : IN STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-		A_ns : IN STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-		B : IN STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-		O : OUT STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-		A_so : OUT STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-		A_nso : OUT STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0)
-	);
-END BOOTHENC;
 
-ARCHITECTURE BEHAVIORAL OF BOOTHENC IS
+entity BOOTHENC is
+  generic (
+    NBIT : integer;
+    I    : integer
+  );
+  port (
+    A_S   : in    std_logic_vector(NBIT - 1 downto 0);
+    A_NS  : in    std_logic_vector(NBIT - 1 downto 0);
+    B     : in    std_logic_vector(NBIT - 1 downto 0);
+    O     : out   std_logic_vector(NBIT - 1 downto 0);
+    A_SO  : out   std_logic_vector(NBIT - 1 downto 0);
+    A_NSO : out   std_logic_vector(NBIT - 1 downto 0)
+  );
+end entity BOOTHENC;
 
-	SIGNAL BAPP : STD_LOGIC_VECTOR(NBIT DOWNTO 0);
+architecture BEHAVIORAL of BOOTHENC is
 
-	-- Shifted A
-	SIGNAL A_s1 : STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-	SIGNAL A_s2 : STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
+  signal bapp  : std_logic_vector(NBIT downto 0);
 
-	-- Shifted -A
-	SIGNAL A_ns1 : STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
-	SIGNAL A_ns2 : STD_LOGIC_VECTOR(NBIT - 1 DOWNTO 0);
+  -- Shifted A
+  signal a_s1  : std_logic_vector(NBIT - 1 downto 0);
+  signal a_s2  : std_logic_vector(NBIT - 1 downto 0);
 
-BEGIN
-	-- Append a 0 at the beginning to B
-	BAPP <= B & '0';
+  -- Shifted -A
+  signal a_ns1 : std_logic_vector(NBIT - 1 downto 0);
+  signal a_ns2 : std_logic_vector(NBIT - 1 downto 0);
 
-	-- If this is the first mux, we shift A only once
-	A0 : IF i = 0 GENERATE
-		A_s1 <= A_s;
-		A_ns1 <= A_ns;
-	END GENERATE;
-	AN : IF i > 0 GENERATE
-		-- Positive shift
-		A_s1 <= STD_LOGIC_VECTOR(shift_left(signed(A_s), 1));
-		-- Negative shift
-		A_ns1 <= STD_LOGIC_VECTOR(shift_left(signed(A_ns), 1));
-	END GENERATE;
+begin
 
-	-- Shift another time
-	A_s2 <= STD_LOGIC_VECTOR(shift_left(signed(A_s1), 1));
-	A_so <= A_s2;
+  -- Append a 0 at the beginning to B
+  bapp <= B & '0';
 
-	A_ns2 <= STD_LOGIC_VECTOR(shift_left(signed(A_ns1), 1));
-	A_nso <= A_ns2;
+  -- If this is the first mux, we shift A only once
 
-	ENC : PROCESS (A_s1, A_s2, A_ns1, A_ns2, BAPP)
-	BEGIN
-		IF (((BAPP(i + 2) = '0') AND (BAPP(i + 1) = '0') AND (BAPP(i) = '1')) OR ((BAPP(i + 2) = '0') AND (BAPP(i + 1) = '1') AND (BAPP(i) = '0'))) THEN
-			-- A<<i
-			O <= A_s1;
+  A0 : if I = 0 generate
+    a_s1  <= A_S;
+    a_ns1 <= A_NS;
+  end generate A0;
 
-		ELSIF (BAPP(i + 2) = '0') AND (BAPP(i + 1) = '1') AND (BAPP(i) = '1') THEN
-			-- A<<(i+1)
-			O <= A_s2;
+  AN : if I > 0 generate
+    -- Positive shift
+    a_s1 <= std_logic_vector(shift_left(signed(A_S), 1));
+    -- Negative shift
+    a_ns1 <= std_logic_vector(shift_left(signed(A_NS), 1));
+  end generate AN;
 
-		ELSIF (BAPP(i + 2) = '1') AND (BAPP(i + 1) = '0') AND (BAPP(i) = '0') THEN
-			-- -1 * (A<<(i+1))
-			O <= A_ns2;
+  -- Shift another time
+  a_s2 <= std_logic_vector(shift_left(signed(a_s1), 1));
+  A_SO <= a_s2;
 
-		ELSIF (((BAPP(i + 2) = '1') AND (BAPP(i + 1) = '0') AND (BAPP(i) = '1')) OR ((BAPP(i + 2) = '1') AND (BAPP(i + 1) = '1') AND (BAPP(i) = '0'))) THEN
-			-- -1 * (A<<i)
-			O <= A_ns1;
+  a_ns2 <= std_logic_vector(shift_left(signed(a_ns1), 1));
+  A_NSO <= a_ns2;
 
-		ELSE
-			O <= (OTHERS => '0');
-		END IF;
+  ENC : process (a_s1, a_s2, a_ns1, a_ns2, bapp) is
+  begin
 
-	END PROCESS;
-END BEHAVIORAL;
+    if (((bapp(I + 2) = '0') and (bapp(I + 1) = '0') and (bapp(I) = '1')) or ((bapp(I + 2) = '0') and (bapp(I + 1) = '1') and (bapp(I) = '0'))) then
+      -- A<<i
+      O <= a_s1;
+    elsif ((bapp(I + 2) = '0') and (bapp(I + 1) = '1') and (bapp(I) = '1')) then
+      -- A<<(i+1)
+      O <= a_s2;
+    elsif ((bapp(I + 2) = '1') and (bapp(I + 1) = '0') and (bapp(I) = '0')) then
+      -- -1 * (A<<(i+1))
+      O <= a_ns2;
+    elsif (((bapp(I + 2) = '1') and (bapp(I + 1) = '0') and (bapp(I) = '1')) or ((bapp(I + 2) = '1') and (bapp(I + 1) = '1') and (bapp(I) = '0'))) then
+      -- -1 * (A<<i)
+      O <= a_ns1;
+    else
+      O <= (OTHERS => '0');
+    end if;
 
-CONFIGURATION CFG_BOOTHENC_BEHAVIORAL OF BOOTHENC IS
-	FOR BEHAVIORAL
-	END FOR;
-END CFG_BOOTHENC_BEHAVIORAL;
+  end process ENC;
+
+end architecture BEHAVIORAL;
+
+-- CONFIGURATION CFG_BOOTHENC_BEHAVIORAL OF BOOTHENC IS
+--  FOR BEHAVIORAL
+--  END FOR;
+-- END CFG_BOOTHENC_BEHAVIORAL;

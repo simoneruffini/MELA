@@ -58,7 +58,7 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  U_CU : entity work.cu("Behavioural")
+  U_CU : entity work.cu(Behavioural)
     port map (
       CLK       => CLK,
       RST_AN    => RST_AN,
@@ -66,7 +66,7 @@ begin
       CTRL_WORD => ctrl_word
     );
 
-  U_IMEM : entity work.imem("Behavioural")
+  U_IMEM : entity work.imem(Behavioural)
     generic map (
       ADDR_W => C_IMEM_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -78,7 +78,7 @@ begin
       DOUT   => instr
     );
 
-  U_DATAPATH : entity work.datapath("Behavioural")
+  U_DATAPATH : entity work.datapath(Behavioural)
     port map (
       CLK         => CLK,
       RST_AN      => RST_AN,
@@ -91,7 +91,7 @@ begin
       DMEM_DOUT   => dmem_dout
     );
 
-  U_DMEM : entity work.dmem("Behavioural")
+  U_DMEM : entity work.dmem(Behavioural)
     generic map (
       ADDR_W => C_DMEM_ADDR_W,
       DATA_W => C_ARCH_WORD_W

@@ -15,24 +15,39 @@
 --
 --------------------------------------------------------------------------------
 
+------------------------------------------------------------- PACKAGES/LIBRARIES
+
 library ieee;
   use ieee.std_logic_1164.all;
+  use ieee.numeric_std.all;
 
-library work;
+------------------------------------------------------------- ENTITY
 
 entity T2_LOGIC is
   generic (
     DATA_W : integer  -- Instruction memory data port bit width
   );
   port (
-    OP     : in    std_logic_vector(4 downto 0);           -- Opcode
-    A      : in    std_logic_vector(DATA_W - 1 downto 0);  -- Input A Port
-    B      : in    std_logic_vector(DATA_W - 1 downto 0);  -- Input B Port
-    S      : out   std_logic_vector(DATA_W - 1 downto 0)   -- Data Output Port
+    OP     : in    std_logic_vector(4 - 1 downto 0);           -- Opcode
+    A      : in    std_logic_vector(DATA_W - 1 downto 0);      -- Input A Port
+    B      : in    std_logic_vector(DATA_W - 1 downto 0);      -- Input B Port
+    S      : out   std_logic_vector(DATA_W - 1 downto 0)       -- Data Output Port
   );
 end entity T2_LOGIC;
 
+------------------------------------------------------------- ARCHITECTURE
+
 architecture STRUCTURAL of T2_LOGIC is
+
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
+  ----------------------------------------------------------- FUNCTIONS
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
 
   signal l0 : std_logic_vector(DATA_W - 1 downto 0);
   signal l1 : std_logic_vector(DATA_W - 1 downto 0);
@@ -41,21 +56,35 @@ architecture STRUCTURAL of T2_LOGIC is
 
 begin
 
-  LOGIC : process (OP, A, B) is
+  ----------------------------------------------------------- PROCESSES
+
+  P_LOGIC : process (OP, A, B) is
   begin
 
-    l0 <= OP(0) nand not A nand not B;
-    l1 <= OP(1) nand not A nand B;
-    l2 <= OP(2) nand A nand not B;
-    l3 <= OP(3) nand A nand B;
+    l0 <= not (OP(0) and (not A) and (not B));
+    l1 <= not (OP(1) and (not A) and B);
+    l2 <= not (OP(2) and A and (not B));
+    l3 <= not (OP(3) and A and B);
 
-    S <= l0 nand l1 nand l2 nand l3;
+    S <= not (l0 and l1 and l2 and l3);
 
-  end process LOGIC;
+  end process P_LOGIC;
 
 end architecture STRUCTURAL;
 
+------------------------------------------------------------- ARCHITECTURE
+
 architecture BEHAVIOURAL of T2_LOGIC is
+
+----------------------------------------------------------- CONSTANTS 1
+
+----------------------------------------------------------- TYPES
+
+----------------------------------------------------------- FUNCTIONS
+
+----------------------------------------------------------- CONSTANTS 2
+
+----------------------------------------------------------- SIGNALS
 
 begin
 
@@ -64,20 +93,23 @@ begin
 
     case OP is
 
-      when '0001' =>
-        RES <= A and B;
+      when "0001" =>
+        S <= A and B;
 
-      when '1110' =>
-        RES <= A nand B;
+      when "1110" =>
+        S <= A nand B;
 
-      when '0111' =>
-        RES <= A or B;
+      when "0111" =>
+        S <= A or B;
 
-      when '1000' =>
-        RES <= A nor B;
+      when "1000" =>
+        S <= A nor B;
 
-      when '0110' =>
-        RES <= A xor B;
+      when "0110" =>
+        S <= A xor B;
+
+      when others =>
+        S <= (others => '0');
 
     end case;
 

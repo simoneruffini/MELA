@@ -117,7 +117,7 @@ begin
   --*********************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  U_PC_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_PC_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => pc_f'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -130,7 +130,7 @@ begin
       DOUT   => pc_f
     );
 
-  U_IMEM : entity work.imem("Behavioural")
+  U_IMEM : entity work.imem(Behavioural)
     generic map (
       ADDR_W => C_IMEM_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -157,7 +157,7 @@ begin
 
   ----------------------------------------------------------- PIPELINE REGISTERS
 
-  U_PC_PLS_4_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_PC_PLS_4_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => pc_pls_4_f'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -170,7 +170,7 @@ begin
       DOUT   => pc_pls_4_d
     );
 
-  U_INSTR_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_INSTR_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => instr_f'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -188,7 +188,7 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  U_RF : entity work.rf("Behavioural")
+  U_RF : entity work.rf(Behavioural)
     generic map (
       ADDR_W => C_RF_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -208,7 +208,7 @@ begin
       OUT2    => rf_dout2_d
     );
 
-  U_RF_DOUT1_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_RF_DOUT1_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rf_dout1_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -249,7 +249,7 @@ begin
            imm_i_type_ext_d;
 
   ----------------------------------------------------------- PIPELINE REGISTERS
-  U_RF_DOUT2_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_RF_DOUT2_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rf_dout2_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -262,7 +262,7 @@ begin
       DOUT   => rf_dout2_e
     );
 
-  U_IMM_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_IMM_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => imm_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -275,7 +275,7 @@ begin
       DOUT   => imm_e
     );
 
-  U_RS2_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_RS2_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rs2_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -288,7 +288,7 @@ begin
       DOUT   => rs2_e
     );
 
-  U_RS3_REG : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_RS3_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rs3_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -305,7 +305,7 @@ begin
   --*****************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  U_ALU : entity work.alu("Behavioural")
+  U_ALU : entity work.alu(Behavioural)
     generic map (
       DATA_W => C_ARCH_WORD_W
     )
@@ -340,7 +340,7 @@ begin
   ----------------------------------------------------------- PIPELINE REGISTERS
 
   -- TODO: rethink this design it gets busier the more registers we need maybe use a generate block
-  U_REG_ALU_OUT_E : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_ALU_OUT_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => alu_out_e'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -353,7 +353,7 @@ begin
       DOUT   => alu_out_m
     );
 
-  U_REG_DMEM_DOUT_E : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_DMEM_DOUT_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => dmem_din_e'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -366,7 +366,7 @@ begin
       DOUT   => dmem_din_m
     );
 
-  U_REG_RF_WADDR_E : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_RF_WADDR_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rf_waddr_e'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -379,7 +379,7 @@ begin
       DOUT   => rf_waddr_m
     );
 
-  U_REG_IS_0_E : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_IS_0_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => is_0_e'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -396,7 +396,7 @@ begin
   --*********************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  U_DMEM : entity work.dmem("Behavioural")
+  U_DMEM : entity work.dmem(Behavioural)
     generic map (
       ADDR_W => C_DMEM_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -413,7 +413,7 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
 
   ----------------------------------------------------------- PIPELINE REGISTERS
-  U_REG_ALU_OUT_M : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_ALU_OUT_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => alu_out_m'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -426,7 +426,7 @@ begin
       DOUT   => alu_out_wb
     );
 
-  U_REG_DMEM_DOUT_M : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_DMEM_DOUT_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => dmem_dout_m'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -439,7 +439,7 @@ begin
       DOUT   => dmem_dout_wb
     );
 
-  U_REG_RF_WADDR_M : entity work.reg_pipo("BEHAV_WITH_EN_INIT")
+  U_REG_RF_WADDR_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rf_waddr_m'length, INIT_VAL => C_REG_INIT_VAL
     )
