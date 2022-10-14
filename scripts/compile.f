@@ -31,7 +31,7 @@
 #../src/a.b-DATAPATH.core/RF/WRF_CU.vhd
 #../src/a.b-DATAPATH.core/RF/RF.vhd
 ../src/a.b-DATAPATH.core/a.b.b-RF.vhd
-#../src/a.b-DATAPATH.vhd
+../src/a.b-DATAPATH.vhd
 ../src/a.a-CU.vhd
 #../src/a-CPU.vhd
 

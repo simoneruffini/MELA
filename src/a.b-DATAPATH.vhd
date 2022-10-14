@@ -101,6 +101,7 @@ architecture BEHAVIORAL of DATAPATH is
   -- Memory Stage Signals (_m)
   signal alu_out_m          : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_din_m         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_dout_m        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal rf_waddr_m         : std_logic_vector(C_RF_ADDR_W - 1 downto 0);
 
   signal is_0_m             : std_logic;
@@ -130,19 +131,27 @@ begin
       DOUT   => pc_f
     );
 
-  U_IMEM : entity work.imem(Behavioural)
-    generic map (
-      ADDR_W => C_IMEM_ADDR_W,
-      DATA_W => C_ARCH_WORD_W
-    )
-    port map (
-      CLK    => CLK,
-      RST_AN => RST_AN,
-      RADDR  => pc_pls_4_f,
-      DOUT   => instr_f
-    );
+  -- U_IMEM : entity work.imem(Behavioural)
+  --  generic map (
+  --    ADDR_W => C_IMEM_ADDR_W,
+  --    DATA_W => C_ARCH_WORD_W
+  --  )
+  --  port map (
+  --    CLK    => CLK,
+  --    RST_AN => RST_AN,
+  --    RADDR  => pc_pls_4_f,
+  --    DOUT   => instr_f
+  --  );
 
   ----------------------------------------------------------- COMBINATORIAL
+
+  -- Instruction Memory signals
+  -- NOTE: the pc_pls_4_f signal is truncated if the memory address space is smaller
+  -- then the DLX architecture word width
+  IMEM_ADDR <= std_logic_vector(resize(unsigned(pc_pls_4_f), IMEM_ADDR'length));
+
+  instr_f <= IMEM_DOUT;
+
   -- PC + 4 adder
   pc_pls_4_f <= std_logic_vector(to_unsigned(to_integer(unsigned(npc_f)) + 4, pc_pls_4_f'length));
 
@@ -231,10 +240,10 @@ begin
   imm_j_type_d <= instr_d((C_INSTR_J_TYPE_IMM_START_POS_BIT + C_INSTR_J_TYPE_IMM_W) - 1 downto C_INSTR_J_TYPE_IMM_W);
 
   -- SIGN EXTEND on immediate for I-type instructions
-  imm_i_type_ext_d <= std_logic_vector(resize(signed(imm_i_type_d), C_ARCH_WORD_W)));
+  imm_i_type_ext_d <= std_logic_vector(resize(signed(imm_i_type_d), C_ARCH_WORD_W));
 
   -- SIGN EXTEND on immediate for J-type instructions
-  imm_j_type_ext_d <= std_logic_vector(resize(signed(imm_j_type_d), C_ARCH_WORD_W)));
+  imm_j_type_ext_d <= std_logic_vector(resize(signed(imm_j_type_d), C_ARCH_WORD_W));
 
   -- RF_WADDR MUX
   rf_waddr_d <= std_logic_vector(to_unsigned(C_JAL_RET_ADDR_REG, rf_waddr_d'length)) when CTRL_WORD.jal_en = '1' else
@@ -331,11 +340,11 @@ begin
                 rs2_e;
 
   -- ZERO detector
-  is_0_e <= '1' when rf_dout1_e = (others => '0') else
+  is_0_e <= '1' when unsigned(rf_dout1_e) = 0 else
             '0';
 
   -- Alias Signals for naming purposes
-  dmem_din_e <= rf_doutb_e;
+  dmem_din_e <= rf_dout2_e;
 
   ----------------------------------------------------------- PIPELINE REGISTERS
 
@@ -381,36 +390,43 @@ begin
 
   U_REG_IS_0_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => is_0_e'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => 1, INIT_VAL => C_REG_INIT_VAL
     )
     port map (
-      CLK    => CLK,
-      RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
-      DIN    => is_0_e,
-      DOUT   => is_0_m
+      CLK     => CLK,
+      RST_AN  => RST_AN,
+      EN_N    => '0',
+      INIT    => '0',
+      DIN(0)  => is_0_e,
+      DOUT(0) => is_0_m
     );
 
   --*************************************************************************** MEMORY STAGE
   --*********************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  U_DMEM : entity work.dmem(Behavioural)
-    generic map (
-      ADDR_W => C_DMEM_ADDR_W,
-      DATA_W => C_ARCH_WORD_W
-    )
-    port map (
-      CLK    => CLK,
-      RST_AN => RST_AN,
-      RWADDR => alu_out_m,
-      WEN    => CTRL_WORD.dmem_we,
-      DIN    => dmem_din_m,
-      DOUT   => dmem_dout_m,
-    );
+  -- U_DMEM : entity work.dmem(Behavioural)
+  --  generic map (
+  --    ADDR_W => C_DMEM_ADDR_W,
+  --    DATA_W => C_ARCH_WORD_W
+  --  )
+  --  port map (
+  --    CLK    => CLK,
+  --    RST_AN => RST_AN,
+  --    RWADDR => alu_out_m,
+  --    WEN    => CTRL_WORD.dmem_we,
+  --    DIN    => dmem_din_m,
+  --    DOUT   => dmem_dout_m,
+  --  );
 
   ----------------------------------------------------------- COMBINATORIAL
+
+  -- Data Memory Signals
+  -- NOTE: the alu_out_m signal is truncated if the memory address space is smaller
+  -- then the DLX architecture word width
+  DMEM_RWADDR <= std_logic_vector(resize(unsigned(alu_out_m), DMEM_RWADDR'length));
+  DMEM_DIN    <= dmem_din_m;
+  dmem_dout_m <= DMEM_DOUT;
 
   ----------------------------------------------------------- PIPELINE REGISTERS
   U_REG_ALU_OUT_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
@@ -459,7 +475,7 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
   rf_din_wb <= dmem_dout_wb when CTRL_WORD.rf_wb_dmem_dout_sel = '1' else
-               alu_dout_wb;
+               alu_out_wb;
 
 end architecture BEHAVIORAL;
 
