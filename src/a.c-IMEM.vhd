@@ -14,6 +14,8 @@
 --
 --------------------------------------------------------------------------------
 
+------------------------------------------------------------- PACKAGES/LIBRARIES
+
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
@@ -21,6 +23,8 @@ library ieee;
 
 library std;
   use std.textio.all;
+
+------------------------------------------------------------- ENTITY
 
 entity IMEM is
   generic (
@@ -35,9 +39,17 @@ entity IMEM is
   );
 end entity IMEM;
 
+------------------------------------------------------------- ARCHITECTURE
+
 architecture BEHAVIOURAL of IMEM is
 
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
   type mem_type is array ((2 ** ADDR_W) - 1 downto 0) of std_logic_vector(DATA_W - 1 downto 0);
+
+  ----------------------------------------------------------- FUNCTIONS
 
   -- Takes 32 hexadecimal values from RamFileName  and returns an array of them
   -- NOTE: values must be 32bit hex
@@ -72,7 +84,17 @@ architecture BEHAVIOURAL of IMEM is
 
   signal mem   : mem_type := initramfromfile("003-IMEM_INIT_FILE.txt");
 
+----------------------------------------------------------- CONSTANTS 2
+
+----------------------------------------------------------- SIGNALS
+
 begin
+
+  ----------------------------------------------------------- ENTITY DEFINITION
+
+  ----------------------------------------------------------- COMBINATORIAL
+
+  ----------------------------------------------------------- PROCESSES
 
   P_READ : process (CLK, RST_AN) is
   begin

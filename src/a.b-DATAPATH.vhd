@@ -10,6 +10,8 @@
 -- Revision:
 -- Revision 00 - Matteo Bonora
 --  * Created
+-- Revision 01 - Simone Ruffini
+--  * Overhaul for DLX
 -- Additional Comments:
 --
 --------------------------------------------------------------------------------
@@ -31,7 +33,10 @@ entity DATAPATH is
     RST_AN           : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
     CTRL_WORD        : in    ctrl_word_t;                                   -- Control Word from CU
     INSTR            : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
-    DMEM_ADDR        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory address
+    IMEM_ADDR        : out   std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);  -- Instructin Memory read address
+    IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructino Memory data output
+    DMEM_RWADDR      : out   std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);  -- Data Memory read/write address
+    DMEM_DIN         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory data input
     DMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)   -- Data Memory data output
   );
 end entity DATAPATH;

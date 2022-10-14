@@ -14,12 +14,17 @@
 --
 --------------------------------------------------------------------------------
 
+------------------------------------------------------------- PACKAGES/LIBRARIES
+
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
+  use ieee.std_logic_textio.all; -- synopsis
 
-library work;
-  use work.dlx_pkg.all;
+library std;
+  use std.textio.all;
+
+------------------------------------------------------------- ENTITY
 
 entity DMEM is
   generic (
@@ -36,9 +41,20 @@ entity DMEM is
   );
 end entity DMEM;
 
+------------------------------------------------------------- ARCHITECTURE
+
 architecture BEHAVIOURAL of DMEM is
 
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+
   type mem_type is array ((2 ** ADDR_W) - 1 downto 0) of std_logic_vector(DATA_W - 1 downto 0);
+
+  ----------------------------------------------------------- FUNCTIONS
+
+  -- Takes 32 hexadecimal values from RamFileName  and returns an array of them
+  -- NOTE: values must be 32bit hex
 
   impure function initramfromfile (RamFileName : in string) return mem_type is
 
@@ -70,9 +86,19 @@ architecture BEHAVIOURAL of DMEM is
 
   signal mem   : mem_type := initramfromfile("004-DMEM_INIT_FILE.txt");
 
+----------------------------------------------------------- CONSTANTS 2
+
+----------------------------------------------------------- SIGNALS
+
 begin
 
-  P_RW : process (CLK, RST_AN) is
+  ----------------------------------------------------------- ENTITY DEFINITION
+
+  ----------------------------------------------------------- COMBINATORIAL
+
+  ----------------------------------------------------------- PROCESSES
+
+  P_READ : process (CLK, RST_AN) is
   begin
 
     if (RST_AN = '0') then
