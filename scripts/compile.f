@@ -33,7 +33,7 @@
 ../src/a.b-DATAPATH.core/a.b.b-RF.vhd
 ../src/a.b-DATAPATH.vhd
 ../src/a.a-CU.vhd
-#../src/a-CPU.vhd
+../src/a-CPU.vhd
 
 # Testbench stuff
 ../sim/CLKGEN.vhd

@@ -100,7 +100,7 @@ begin
       CLK    => CLK,
       RST_AN => RST_AN,
       RWADDR => dmem_rwaddr,
-      WEN    => ctrl_word.dmem_we,
+      WEN    => ctrl_word.dmem_wen,
       DIN    => dmem_din,
       DOUT   => dmem_dout
     );
