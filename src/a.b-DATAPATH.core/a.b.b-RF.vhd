@@ -63,11 +63,36 @@ architecture BEHAVIOURAL of RF is
 
   ----------------------------------------------------------- FUNCTIONS
 
+  -- Initialize register file
+  -- NOTE reg(0) is always 0 therefore start_number will be assigned to reg(1)
+
+  function init_reg (start_number: integer; step: integer) return reg_array is
+
+    variable ret : reg_array;
+    variable cnt : integer := start_number;
+    variable i   : integer := 1;
+
+  begin
+
+    ret(0) := (others => '0');
+
+    while i < 2 ** ADDR_W loop
+
+      ret(i) := std_logic_vector(to_unsigned(cnt, DATA_W));
+      cnt    := cnt + step;
+      i      := i + 1;
+
+    end loop;
+
+    return ret;
+
+  end function init_reg;
+
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
 
-  signal registers : reg_array;
+  signal registers : reg_array := init_reg(1, 1);
 
 begin
 
