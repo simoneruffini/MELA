@@ -7,12 +7,12 @@ if ! which $COMMAND >/dev/null ; then
   exit 1
 fi
 
-VSG_CNFG_PATH=$(dirname $(realpath $0))
+VSG_CNFG_PATH=$(dirname "$(realpath $0)")
 VSG_CNFG="$VSG_CNFG_PATH/vsg-cnfg.json"
 
-echo "Vsg config path \n\t$VSG_CNFG"
+echo " * Vsg config path:  $VSG_CNFG"
 
-if [ ! -f $VSG_CNFG ]; then
+if [ ! -f "$VSG_CNFG" ]; then
   echo "Error: missing vsg config";
   exit 1
 fi
@@ -42,6 +42,6 @@ fi
 FILE_PATH=$1
 
 EXEC="$COMMAND $PARAMETERS '$FILE_PATH' $FIX"
-echo "Executing: \n\t$EXEC"
+echo " * Executing:     $EXEC"
 
 eval $EXEC
