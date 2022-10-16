@@ -49,8 +49,6 @@ package CARRY_GENERATOR_PKG is
 
   ----------------------------------------------------------- CONSTANTS 2
 
-  ----------------------------------------------------------- SIGNALS
-
 
 end package CARRY_GENERATOR_PKG;
 

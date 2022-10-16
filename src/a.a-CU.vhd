@@ -50,9 +50,9 @@ architecture BEHAVIORAL of CU is
 
   ----------------------------------------------------------- TYPES
 
-  type op_lut_t is array (integer range <>) of ctrl_word_t;
+  type op_lut_t is array (natural range <>) of ctrl_word_t;
 
-  type func_lut_t is array (integer range <>) of alu_func_t;
+  type func_lut_t is array (natural range <>) of alu_func_t;
 
   -- BAD code deduplication but I don't know an easier way that keeps things
   -- clean
@@ -434,7 +434,7 @@ architecture BEHAVIORAL of CU is
   -- alu_func_t signal. Therefore all R-type instructions are mapped to the same
   -- control word (RTYPE_CW) and the ALU part will be handled by a different LUT
   --
-  constant OPCODE_LUT               : op_lut_t(2 ** (C_INSTR_OPCODE_W) - 1 downto 0) :=
+  constant OPCODE_LUT               : op_lut_t((2 ** C_INSTR_OPCODE_W) - 1 downto 0) :=
   (
     -- SLL_OPCODE_i  => RTYPE_CW,
     -- SRL_OPCODE_i  => RTYPE_CW,
@@ -476,7 +476,7 @@ architecture BEHAVIORAL of CU is
   -- The ALU control words will drive directly ALU1 and ALU2 signals when the
   -- opcode is of an r-type instruction
   --
-  constant ALU_LUT                  : func_lut_t(2 ** (C_INSTR_FUNC_W) - 1 downto 0) :=
+  constant ALU_LUT                  : func_lut_t((2 ** C_INSTR_FUNC_W) - 1 downto 0) :=
   (
     SLL_FUNC_i  => SLL_FUNC_CW,
     SRL_FUNC_i  => SRL_FUNC_CW,
@@ -497,8 +497,8 @@ architecture BEHAVIORAL of CU is
   signal opcode                     : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);
   signal func                       : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0);
   -- helpers
-  signal opcode_i                   : integer;
-  signal func_i                     : integer;
+  signal opcode_i                   : natural range 0 to (2 ** C_INSTR_OPCODE_W) - 1;
+  signal func_i                     : natural range 0 to (2 ** C_INSTR_FUNC_W) - 1;
 
   signal control_word               : ctrl_word_t;
 
@@ -536,6 +536,7 @@ begin
   -- Extract the opcode and the func from the instruction word
   opcode <= INSTR((C_INSTR_OPCODE_START_POS_BIT + C_INSTR_OPCODE_W) - 1 downto C_INSTR_OPCODE_START_POS_BIT);
   func   <= INSTR((C_INSTR_FUNC_START_POS_BIT + C_INSTR_FUNC_W) - 1 downto C_INSTR_FUNC_START_POS_BIT);
+
   -- helpers
   opcode_i <= to_integer(unsigned(opcode));
   func_i   <= to_integer(unsigned(func));
