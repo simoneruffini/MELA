@@ -75,7 +75,7 @@ begin
 
   ----------------------------------------------------------- PROCESSES
 
-  P_ALU : process (FUNC, A, B) is
+  P_ALU : process (FUNC, A, a_u, B, b_u, a_s, shift_amount) is
   begin
 
     -- Defaults for disabling latch inference
@@ -182,7 +182,7 @@ begin
   shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
-  P_ALU : process (FUNC, A, B) is
+  P_ALU : process (FUNC, A, a_u, B, b_u, a_s, shift_amount, p4_adder_s) is
   begin
 
     -- Defaults for disabling latch inference
@@ -308,13 +308,14 @@ begin
   shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
-  P_ALU : process (FUNC, A, B) is
+  P_ALU : process (FUNC, a_u, B, b_u, a_s, shift_amount, p4_adder_s, t2_logic_s) is
   begin
 
     -- Defaults for disabling latch inference
     RES          <= (others => '0');
     p4_adder_cin <= '0';
     p4_adder_b   <= B;
+    t2_logic_op  <= (others => '0'); -- in theory xnor (aka ==)
 
     case FUNC is
 
@@ -329,15 +330,15 @@ begin
         RES          <= p4_adder_s;
 
       when BITAND =>
-        t2_logic_s  <= RES;
+        RES <= t2_logic_s;
         t2_logic_op <= "0001";
 
       when BITOR =>
-        t2_logic_s  <= RES;
+        RES <= t2_logic_s;
         t2_logic_op <= "0111";
 
       when BITXOR =>
-        t2_logic_s  <= RES;
+        RES <= t2_logic_s;
         t2_logic_op <= "0110";
 
       when LSL =>
@@ -449,14 +450,15 @@ begin
   rotate_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
-  P_ALU : process (FUNC, A, B) is
+  P_ALU : process (FUNC, a_u, B, b_u, rotate_amount, p4_adder_s, t2_logic_s, t2_shifter_s) is
   begin
 
     -- Defaults for disabling latch inference
     RES           <= (others => '0');
     p4_adder_cin  <= '0';
     p4_adder_b    <= B;
-    t2_shifter_op <= (others => '0');
+    t2_logic_op   <= (others => '0'); -- in theory xnor (aka ==)
+    t2_shifter_op <= (others => '0'); -- shift by 0 (identity operation)
 
     case FUNC is
 
@@ -471,15 +473,15 @@ begin
         RES          <= p4_adder_s;
 
       when BITAND =>
-        t2_logic_s  <= RES;
+        RES <= t2_logic_s;
         t2_logic_op <= "0001";
 
       when BITOR =>
-        t2_logic_s  <= RES;
+        RES <= t2_logic_s;
         t2_logic_op <= "0111";
 
       when BITXOR =>
-        t2_logic_s  <= RES;
+        RES <= t2_logic_s;
         t2_logic_op <= "0110";
 
       when LSL =>   -- Logical shift left
