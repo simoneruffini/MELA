@@ -28,7 +28,9 @@ library work;
 entity CPU is
   port (
     CLK              : in    std_logic; -- Clock Signal (rising-edge trigger)
-    RST_AN           : in    std_logic  -- Reset Signal: Asyncronous Active Low (Negative)
+    RST_AN           : in    std_logic;  -- Reset Signal: Asyncronous Active Low (Negative)
+    -- DEBUG ports
+    INSTR            : out   std_logic_vector(C_ARCH_WORD_W -1 downto 0) -- Instruction Word
   );
 end entity CPU;
 
@@ -104,6 +106,7 @@ begin
     );
 
 ----------------------------------------------------------- COMBINATORIAL
+INSTR<=imem_dout;
 
 ----------------------------------------------------------- PROCESSES
 
