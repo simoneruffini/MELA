@@ -1,0 +1,43 @@
+; LOAD IN MEMORY
+; A = (2, 8, -4, -16)
+addi r1,r0,10	2001000a	0
+addi r2,r0,2	20020002	4
+sw 0(r1),r2		ac220000	8
+addi r2,r0,8	20020008	12
+sw 4(r1),r2		ac220004	16
+addi r2,r0,-4	2002fffc	20
+sw 8(r1),r2		ac220008	24
+addi r2,r0,-16 	2002fff0	28
+sw 12(r1),r2	ac22000c	32
+
+;-------
+addi r1,r0,1 	20010001	36
+addi r2,r0,4 	20020004	40
+addi r3,r0,0 	20030000	44
+addi r4,r0,10 	2004000a	48
+
+; for (i = 0; i < 4; i++) M = M*A(i);
+loop:
+lw r5,0(r4)	 	8c850000	52
+mult r1,r5,r1   04a1080e	56
+addi r3,r3,1    20630001	60
+addi r4,r4,4    20840004	64
+seq r6,r2,r3    00433028	68
+beqz r6,loop    10c0ffe8	72
+
+nop				54000000	76
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
