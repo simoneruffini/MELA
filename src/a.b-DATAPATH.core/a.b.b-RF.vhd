@@ -108,7 +108,7 @@ begin
   P_WRITE : process (RST_AN, CLK) is
   begin
 
-    if (RST_AN = '1') then
+    if (RST_AN = '0') then
       -- reset signals
       for i IN reg_array'range loop
 
