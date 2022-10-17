@@ -146,14 +146,14 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
 
   -- Instruction Memory signals
-  -- NOTE: the pc_pls_4_f signal is truncated if the memory address space is smaller
+  -- NOTE: the pc_f signal is truncated if the memory address space is smaller
   -- then the DLX architecture word width
-  IMEM_ADDR <= std_logic_vector(resize(unsigned(pc_pls_4_f), IMEM_ADDR'length));
+  IMEM_ADDR <= std_logic_vector(resize(unsigned(pc_f), IMEM_ADDR'length));
 
   instr_f <= IMEM_DOUT;
 
   -- PC + 4 adder
-  pc_pls_4_f <= std_logic_vector(to_unsigned(to_integer(unsigned(npc_f)) + 4, pc_pls_4_f'length));
+  pc_pls_4_f <= std_logic_vector(to_unsigned(to_integer(unsigned(pc_f)) + 4, pc_pls_4_f'length));
 
   -- NPC MUX select signal logic
   npc_sel_f <= (is_0_m xor CTRL_WORD.comp_0_invert) when CTRL_WORD.branch_en = '1' else
@@ -314,7 +314,7 @@ begin
   --*****************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  U_ALU : entity work.alu(Behavioural)
+  U_ALU : entity work.alu(BEHAVIOURAL)
     generic map (
       DATA_W => C_ARCH_WORD_W
     )
