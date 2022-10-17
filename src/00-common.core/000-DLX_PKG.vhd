@@ -121,7 +121,7 @@ package DLX_PKG is
     r_type_sel          =>'0',
     imm_sel             =>'0',
     pc_pls_4_sel        =>'0',
-    alu_func            =>ADD,
+    alu_func            =>NOP,
     jump_en             =>'0',
     branch_en           =>'0',
     comp_0_invert       =>'0',

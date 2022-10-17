@@ -30,7 +30,8 @@ package ALU_PKG is
     RR,     -- rotate right          RES = A rr(B)
     GEQ,    -- greater then equal    RES = A >= B
     LEQ,    -- less then equal       RES = A <= B
-    NEQ     -- not equal             RES = A != B
+    NEQ,    -- not equal             RES = A != B
+    NOP     -- no operation
   );
 
 end package ALU_PKG;

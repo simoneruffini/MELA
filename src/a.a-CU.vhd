@@ -112,7 +112,7 @@ architecture BEHAVIOURAL of CU is
     r_type_sel   => '0',
     imm_sel      => '0',
     pc_pls_4_sel => '0',
-    alu_func     => ADD
+    alu_func     => NOP
   );
   constant C_MEMORY_STAGE_SIG_0S    : memory_stage_sig_t :=
   (
@@ -311,7 +311,7 @@ architecture BEHAVIOURAL of CU is
     r_type_sel          =>'0',
     imm_sel             =>'0',
     pc_pls_4_sel        =>'0',
-    alu_func            =>ADD,
+    alu_func            =>NOP,
     comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0'
