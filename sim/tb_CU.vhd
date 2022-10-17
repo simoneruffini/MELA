@@ -85,21 +85,50 @@ begin
   begin
 
     rst_an <= '0';
-    instr  <= (others => '0');
-    report "Instr = " & integer'image(to_integer(unsigned(instr)));
+    --instr  <= (others => '0');
+    --report "Instr = " & integer'image(to_integer(unsigned(instr)));
     wait for 5 * C_CLK_PERIOD_NS;
     rst_an <= '1';
 
-    wait for 100 * C_CLK_PERIOD_NS;
+    --wait for 100 * C_CLK_PERIOD_NS;
 
-    instr  <= std_logic_vector(shift_left(resize(unsigned(RTYPE_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
+    instr <= std_logic_vector(to_unsigned(RTYPE_OPCODE_i, C_INSTR_OPCODE_W)) & 
+              std_logic_vector(to_unsigned(1 ,C_INSTR_RS1_W)) &
+              std_logic_vector(to_unsigned(2 ,C_INSTR_RS2_W)) &
+              std_logic_vector(to_unsigned(3 ,C_INSTR_RS3_W)) &
+              std_logic_vector(to_unsigned(SUB_FUNC_i ,C_INSTR_FUNC_W));
+    --instr  <= std_logic_vector(shift_left(resize(unsigned(RTYPE_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
     report "Instr = " & integer'image(to_integer(unsigned(instr)));
     wait for 1 * C_CLK_PERIOD_NS;
     report print_ctrl_wrd (ctrl_word);
 
-    wait for 100 * C_CLK_PERIOD_NS;
+    wait for 10 * C_CLK_PERIOD_NS;
 
-    instr  <= std_logic_vector(shift_left(resize(unsigned(J_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
+    instr <= std_logic_vector(to_unsigned(LW_OPCODE_i, C_INSTR_OPCODE_W)) & 
+              std_logic_vector(to_unsigned(1 ,C_INSTR_RS1_W)) &
+              std_logic_vector(to_unsigned(2 ,C_INSTR_RS2_W)) &
+              std_logic_vector(to_unsigned(10 ,C_INSTR_I_TYPE_IMM_W));
+    --instr  <= std_logic_vector(shift_left(resize(unsigned(J_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
+    report "Instr = " & integer'image(to_integer(unsigned(instr)));
+    wait for 1 * C_CLK_PERIOD_NS;
+    report print_ctrl_wrd (ctrl_word);
+
+    wait for 10 * C_CLK_PERIOD_NS;
+
+    instr <= std_logic_vector(to_unsigned(SW_OPCODE_i, C_INSTR_OPCODE_W)) & 
+              std_logic_vector(to_unsigned(1 ,C_INSTR_RS1_W)) &
+              std_logic_vector(to_unsigned(2 ,C_INSTR_RS2_W)) &
+              std_logic_vector(to_unsigned(10 ,C_INSTR_I_TYPE_IMM_W));
+    --instr  <= std_logic_vector(shift_left(resize(unsigned(J_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
+    report "Instr = " & integer'image(to_integer(unsigned(instr)));
+    wait for 1 * C_CLK_PERIOD_NS;
+    report print_ctrl_wrd (ctrl_word);
+
+    wait for 10 * C_CLK_PERIOD_NS;
+
+    instr <= std_logic_vector(to_unsigned(JAL_OPCODE_i, C_INSTR_OPCODE_W)) & 
+              std_logic_vector(to_unsigned(10 ,C_INSTR_J_TYPE_IMM_W));
+    --instr  <= std_logic_vector(shift_left(resize(unsigned(J_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
     report "Instr = " & integer'image(to_integer(unsigned(instr)));
     wait for 1 * C_CLK_PERIOD_NS;
     report print_ctrl_wrd (ctrl_word);
