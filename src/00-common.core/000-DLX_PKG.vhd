@@ -96,7 +96,6 @@ package DLX_PKG is
     jal_en : std_logic;
     -- rf_ra_en : std_logic;
     -- rf_rb_en : std_logic;
-    rf_wen         : std_logic;
     j_type_imm_sel : std_logic;
     --======================= Execute
     r_type_sel   : std_logic;  -- selects whethere the write back address is the one obtained from an i-type INSTR or a R-TYPE
@@ -110,13 +109,13 @@ package DLX_PKG is
     dmem_wen      : std_logic;
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
+    rf_wen         : std_logic;
   end record ctrl_word_t;
 
   ----------------------------------------------------------- CONSTANTS 2
   constant C_CTRL_WORD_0S : ctrl_word_t :=
   (
     jal_en              =>'0',
-    rf_wen              =>'0',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'0',
@@ -126,7 +125,8 @@ package DLX_PKG is
     branch_en           =>'0',
     comp_0_invert       =>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'0'
   );
 
   ----------------------------------------------------------- FUNCTIONS
@@ -207,7 +207,6 @@ package body DLX_PKG is
 
     return "CTRL_WORD: {" &
   " jal_en =" & std_logic'image(ctrl_word.jal_en) &
- ", rf_wen =" & std_logic'image(ctrl_word.rf_wen) &
  ", j_type_imm_sel =" & std_logic'image(ctrl_word.j_type_imm_sel) &
  ", r_type_sel =" & std_logic'image(ctrl_word.r_type_sel) &
  ", imm_sel =" & std_logic'image(ctrl_word.imm_sel) &
@@ -217,7 +216,8 @@ package body DLX_PKG is
  ", branch_en =" & std_logic'image(ctrl_word.branch_en) &
  ", comp_0_invert =" & std_logic'image(ctrl_word.comp_0_invert) &
  ", dmem_wen =" & std_logic'image(ctrl_word.dmem_wen) &
- ", rf_wb_dmem_dout_sel =" & std_logic'image(ctrl_word.rf_wb_dmem_dout_sel) & "}";
+ ", rf_wb_dmem_dout_sel =" & std_logic'image(ctrl_word.rf_wb_dmem_dout_sel) & 
+ ", rf_wen =" & std_logic'image(ctrl_word.rf_wen) & "}";
 
   end function print_ctrl_wrd;
 

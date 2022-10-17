@@ -65,7 +65,6 @@ architecture BEHAVIOURAL of CU is
 
   type decode_stage_sig_t is record
     jal_en         : std_logic;
-    rf_wen         : std_logic;
     j_type_imm_sel : std_logic;
   end record decode_stage_sig_t;
 
@@ -91,6 +90,7 @@ architecture BEHAVIOURAL of CU is
 
   type writeback_stage_sig_t is record
     rf_wb_dmem_dout_sel : std_logic;
+    rf_wen         : std_logic;
   end record writeback_stage_sig_t;
 
   ----------------------------------------------------------- FUNCTIONS
@@ -104,7 +104,6 @@ architecture BEHAVIOURAL of CU is
   constant C_DECODE_STAGE_SIG_0S    : decode_stage_sig_t :=
   (
     jal_en         => '0',
-    rf_wen         => '0',
     j_type_imm_sel => '0'
   );
   constant C_EXECUTE_STAGE_SIG_0S   : execute_stage_sig_t :=
@@ -123,7 +122,8 @@ architecture BEHAVIOURAL of CU is
   );
   constant C_WRITEBACK_STAGE_SIG_0S : writeback_stage_sig_t :=
   (
-    rf_wb_dmem_dout_sel => '0'
+    rf_wb_dmem_dout_sel => '0',
+    rf_wen         => '0'
   );
 
   -- vsg_off constant_015 : vsg checking that constant have C_ prefix
@@ -132,22 +132,21 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'1',
     imm_sel             =>'0',
     pc_pls_4_sel        =>'0',
-    alu_func            =>ADD,
+    alu_func            =>NOP,
     comp_0_invert       =>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
   constant JTYPE_JUMP_CW            : ctrl_word_t :=
   (
     branch_en           =>'0',
     jump_en             =>'1',
     jal_en              =>'0',
-    rf_wen              =>'0',
     j_type_imm_sel      =>'1',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -155,14 +154,14 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'0'
   );
   constant JTYPE_JAL_CW             : ctrl_word_t :=
   (
     branch_en           =>'0',
     jump_en             =>'1',
     jal_en              =>'1',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'1',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -170,7 +169,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_BEQZ_CW            : ctrl_word_t :=
@@ -178,7 +178,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'1',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'0',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -186,7 +185,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'0'
   );
 
   constant ITYPE_BNEZ_CW            : ctrl_word_t :=
@@ -194,7 +194,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'1',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'0',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -202,7 +201,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'1',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'0'
   );
 
   constant ITYPE_ADDI_CW            : ctrl_word_t :=
@@ -210,7 +210,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -218,7 +217,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_SUBI_CW            : ctrl_word_t :=
@@ -226,7 +226,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -234,7 +233,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>SUB,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_ANDI_CW            : ctrl_word_t :=
@@ -242,7 +242,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -250,7 +249,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>BITAND,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_ORI_CW             : ctrl_word_t :=
@@ -258,7 +258,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -266,7 +265,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>BITOR,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_XORI_CW            : ctrl_word_t :=
@@ -274,7 +274,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -282,7 +281,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>BITXOR,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_SLLI_CW            : ctrl_word_t :=
@@ -290,7 +290,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -298,7 +297,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>LSL,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant NOP_CW                   : ctrl_word_t :=
@@ -306,7 +306,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'0',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'0',
@@ -314,7 +313,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>NOP,
     comp_0_invert       =>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'0'
   );
 
   constant ITYPE_SRLI_CW            : ctrl_word_t :=
@@ -322,7 +322,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -330,7 +329,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>LSR,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_SNEI_CW            : ctrl_word_t :=
@@ -338,7 +338,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -346,7 +345,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>NEQ,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_SLEI_CW            : ctrl_word_t :=
@@ -354,7 +354,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -362,7 +361,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>LEQ,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant ITYPE_SGEI_CW            : ctrl_word_t :=
@@ -370,7 +370,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -378,7 +377,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>GEQ,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'0'
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
   );
 
   constant LW_CW                    : ctrl_word_t :=
@@ -386,7 +386,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -394,7 +393,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'0',
     dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'1'
+    rf_wb_dmem_dout_sel =>'1',
+    rf_wen              =>'1'
   );
 
   constant SW_CW                    : ctrl_word_t :=
@@ -402,7 +402,6 @@ architecture BEHAVIOURAL of CU is
     branch_en           =>'0',
     jump_en             =>'0',
     jal_en              =>'0',
-    rf_wen              =>'1',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'1',
@@ -410,7 +409,8 @@ architecture BEHAVIOURAL of CU is
     alu_func            =>ADD,
     comp_0_invert=>'0',
     dmem_wen            =>'1',
-    rf_wb_dmem_dout_sel =>'1'
+    rf_wb_dmem_dout_sel =>'1',
+    rf_wen              =>'1'
   );
 
   constant SLL_FUNC_CW              : alu_func_t := LSL;
@@ -546,7 +546,6 @@ begin
   -- R-TYPE instructions
 
   control_word.jal_en              <= OPCODE_LUT(opcode_i).jal_en;
-  control_word.rf_wen              <= OPCODE_LUT(opcode_i).rf_wen;
   control_word.j_type_imm_sel      <= OPCODE_LUT(opcode_i).j_type_imm_sel;
   control_word.r_type_sel          <= OPCODE_LUT(opcode_i).r_type_sel;
   control_word.imm_sel             <= OPCODE_LUT(opcode_i).imm_sel;
@@ -558,6 +557,7 @@ begin
   control_word.comp_0_invert       <= OPCODE_LUT(opcode_i).comp_0_invert;
   control_word.dmem_wen            <= OPCODE_LUT(opcode_i).dmem_wen;
   control_word.rf_wb_dmem_dout_sel <= OPCODE_LUT(opcode_i).rf_wb_dmem_dout_sel;
+  control_word.rf_wen              <= OPCODE_LUT(opcode_i).rf_wen;
 
   -- Extract the signals from the control word in the helpers for the pipeline
 
@@ -565,7 +565,6 @@ begin
   --               );
   decode_sig  <= (
                   jal_en         => control_word.jal_en,
-                  rf_wen         => control_word.rf_wen,
                   j_type_imm_sel => control_word.j_type_imm_sel
                 );
   execute_sig <= (
@@ -583,12 +582,12 @@ begin
                );
 
   writeback_sig <= (
-                    rf_wb_dmem_dout_sel => control_word.rf_wb_dmem_dout_sel
+                  rf_wb_dmem_dout_sel => control_word.rf_wb_dmem_dout_sel,
+                  rf_wen         => control_word.rf_wen
                   );
 
   -- Final Control Word Output with pre-delayed control signals
   CTRL_WORD.jal_en              <= decode_sig_d1.jal_en;
-  CTRL_WORD.rf_wen              <= decode_sig_d1.rf_wen;
   CTRL_WORD.j_type_imm_sel      <= decode_sig_d1.j_type_imm_sel;
   CTRL_WORD.r_type_sel          <= execute_sig_d2.r_type_sel;
   CTRL_WORD.imm_sel             <= execute_sig_d2.imm_sel;
@@ -599,6 +598,7 @@ begin
   CTRL_WORD.comp_0_invert       <= memory_sig_d3.comp_0_invert;
   CTRL_WORD.dmem_wen            <= memory_sig_d3.dmem_wen;
   CTRL_WORD.rf_wb_dmem_dout_sel <= writeback_sig_d4.rf_wb_dmem_dout_sel;
+  CTRL_WORD.rf_wen              <= writeback_sig_d4.rf_wen;
 
   ----------------------------------------------------------- PROCESSES
 
