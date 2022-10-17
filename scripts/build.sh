@@ -39,4 +39,4 @@ echo "####                                 ####"
 echo "#########################################"
 
 # Simulate the acc_tb entity using sim.do tcl script
-vsim -onfinish stop -c -sv_seed random -do sim.do tb_CU
+vsim -onfinish stop -c -sv_seed random -do sim.do tb_CPU
