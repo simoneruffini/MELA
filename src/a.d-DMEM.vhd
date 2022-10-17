@@ -68,7 +68,7 @@ architecture BEHAVIOURAL of DMEM is
 
     while not endfile(RamFile) loop
 
-      assert i>=2 ** ADDR_W
+      assert i < (2 ** ADDR_W)
         report "Instruction file size exceeds memory size"
         severity failure;
 
@@ -84,7 +84,9 @@ architecture BEHAVIOURAL of DMEM is
 
   end function;
 
-  signal mem   : mem_type := initramfromfile("004-DMEM_INIT_FILE.txt");
+  signal mem   : mem_type := initramfromfile("../src/00-common.core/004-DMEM_INIT_FILE.txt");
+
+  signal truncated_rwaddr: std_logic_vector((ADDR_W -2)-1 downto 0); -- Word-addressed read address
 
   ----------------------------------------------------------- CONSTANTS 2
 
@@ -95,6 +97,7 @@ begin
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
+  truncated_rwaddr <= RWADDR(RWADDR'length-1 downto 2);
 
   ----------------------------------------------------------- PROCESSES
 
@@ -104,10 +107,10 @@ begin
     if (RST_AN = '0') then
       DOUT <= (others => '0');
     elsif (CLK = '1' and CLK'event) then
-      DOUT <= mem(to_integer(unsigned(RWADDR)));
+      DOUT <= mem(to_integer(unsigned(truncated_rwaddr)));
 
       if (WEN = '1') then
-        mem(to_integer(unsigned(RWADDR))) <= DIN;
+        mem(to_integer(unsigned(truncated_rwaddr))) <= DIN;
         DOUT                              <= DIN;
       end if;
     end if;

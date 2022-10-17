@@ -66,7 +66,7 @@ architecture BEHAVIOURAL of IMEM is
 
     while not endfile(RamFile) loop
 
-      assert i>=2 ** ADDR_W
+      assert i < (2 ** ADDR_W)
         report "Instruction file size exceeds memory size"
         severity failure;
 
@@ -82,7 +82,9 @@ architecture BEHAVIOURAL of IMEM is
 
   end function;
 
-  signal mem   : mem_type := initramfromfile("003-IMEM_INIT_FILE.txt");
+  signal mem   : mem_type := initramfromfile("../src/00-common.core/003-IMEM_INIT_FILE.txt");
+
+  signal truncated_raddr: std_logic_vector((ADDR_W -2)-1 downto 0); -- Word-addressed read address
 
 ----------------------------------------------------------- CONSTANTS 2
 
@@ -93,6 +95,7 @@ begin
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
+  truncated_raddr <= RADDR(RADDR'length-1 downto 2);
 
   ----------------------------------------------------------- PROCESSES
 
@@ -102,7 +105,7 @@ begin
     if (RST_AN = '0') then
       DOUT <= (others => '0');
     elsif (CLK = '1' and CLK'event) then
-      DOUT <= mem(to_integer(unsigned(RADDR)));
+      DOUT <= mem(to_integer(unsigned(truncated_raddr)));
     end if;
 
   end process P_READ;
