@@ -57,8 +57,7 @@ architecture BEHAVIOURAL of ALU is
   signal a_u               : unsigned (DATA_W - 1 downto 0);
   signal b_u               : unsigned (DATA_W - 1 downto 0);
   signal a_s               : signed (DATA_W - 1 downto 0);
-  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
-  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal shift_amount      : natural RANGE 0 to DATA_W;
 
   signal p4_adder_cin      : std_logic;
   signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
@@ -71,8 +70,8 @@ begin
   a_u <= unsigned(A);
   b_u <= unsigned(B);
   a_s <= signed(A);
-  a_i <= to_integer(a_u);
-  b_i <= to_integer(b_u);
+  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
+  shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
 
@@ -85,10 +84,10 @@ begin
     case FUNC is
 
       when ADD =>
-        RES <= std_logic_vector(to_unsigned(a_i + b_i, RES'length));
+        RES <= std_logic_vector(a_u + b_u);
 
       when SUB =>
-        RES <= std_logic_vector(to_unsigned(a_i - b_i, RES'length));
+        RES <= std_logic_vector(a_u - b_u);
 
       when BITAND =>
         RES <= A and B;
@@ -100,19 +99,19 @@ begin
         RES <= A xor B;
 
       when LSL =>
-        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+        RES <= std_logic_vector(SHIFT_LEFT(a_u, shift_amount));   -- Logical shift left
 
       when LSR =>
-        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+        RES <= std_logic_vector(SHIFT_RIGHT(a_u, shift_amount));  -- Logical shift right
 
       when ASR =>
-        RES <= std_logic_vector(SHIFT_RIGHT(a_s, b_i));  -- arithmetic shift right
+        RES <= std_logic_vector(SHIFT_RIGHT(a_s, shift_amount));  -- arithmetic shift right
 
       when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
 
       when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, shift_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');
@@ -153,8 +152,8 @@ architecture BEHAV_P4ADD of ALU is
   signal a_u               : unsigned (DATA_W - 1 downto 0);
   signal b_u               : unsigned (DATA_W - 1 downto 0);
   signal a_s               : signed (DATA_W - 1 downto 0);
-  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
-  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal shift_amount      : natural RANGE 0 to DATA_W;
+
 
   signal p4_adder_cin      : std_logic;
   signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
@@ -179,8 +178,8 @@ begin
   a_u <= unsigned(A);
   b_u <= unsigned(B);
   a_s <= signed(A);
-  a_i <= to_integer(a_u);
-  b_i <= to_integer(b_u);
+  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
+  shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
   P_ALU : process (FUNC, A, B) is
@@ -213,19 +212,19 @@ begin
         RES <= A xor B;
 
       when LSL =>
-        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+        RES <= std_logic_vector(SHIFT_LEFT(a_u, shift_amount));   -- Logical shift left
 
       when LSR =>
-        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+        RES <= std_logic_vector(SHIFT_RIGHT(a_u, shift_amount));  -- Logical shift right
 
       when ASR =>
-        RES <= std_logic_vector(SHIFT_RIGHT(a_s, b_i));  -- arithmetic shift right
+        RES <= std_logic_vector(SHIFT_RIGHT(a_s, shift_amount));  -- arithmetic shift right
 
       when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
 
       when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, shift_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');
@@ -266,8 +265,7 @@ architecture BEHAV_P4ADD_T2LOGIC of ALU is
   signal a_u               : unsigned (DATA_W - 1 downto 0);
   signal b_u               : unsigned (DATA_W - 1 downto 0);
   signal a_s               : signed (DATA_W - 1 downto 0);
-  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
-  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal shift_amount      : natural RANGE 0 to DATA_W;
 
   signal p4_adder_cin      : std_logic;
   signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
@@ -306,8 +304,8 @@ begin
   a_u <= unsigned(A);
   b_u <= unsigned(B);
   a_s <= signed(A);
-  a_i <= to_integer(a_u);
-  b_i <= to_integer(b_u);
+  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
+  shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
   P_ALU : process (FUNC, A, B) is
@@ -343,16 +341,16 @@ begin
         t2_logic_op <= "0110";
 
       when LSL =>
-        RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
+        RES <= std_logic_vector(SHIFT_LEFT(a_u, shift_amount));   -- Logical shift left
 
       when LSR =>
-        RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
+        RES <= std_logic_vector(SHIFT_RIGHT(a_u, shift_amount));  -- Logical shift right
 
       when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
 
       when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, shift_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');
@@ -392,8 +390,7 @@ architecture STRUCTURAL of ALU is
   ----------------------------------------------------------- SIGNALS
   signal a_u               : unsigned (DATA_W - 1 downto 0);
   signal b_u               : unsigned (DATA_W - 1 downto 0);
-  signal a_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
-  signal b_i               : integer RANGE 0 to ((2 ** DATA_W) - 1);
+  signal rotate_amount      : natural RANGE 0 to DATA_W;
 
   signal p4_adder_cin      : std_logic;
   signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
@@ -445,8 +442,8 @@ begin
   -- helpers
   a_u <= unsigned(A);
   b_u <= unsigned(B);
-  a_i <= to_integer(a_u);
-  b_i <= to_integer(b_u);
+  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
+  rotate_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
   P_ALU : process (FUNC, A, B) is
@@ -482,25 +479,23 @@ begin
         t2_logic_s  <= RES;
         t2_logic_op <= "0110";
 
-      when LSL =>
+      when LSL =>   -- Logical shift left
         t2_shifter_op <= "00";
         RES           <= t2_shifter_s;
-      -- RES <= std_logic_vector(SHIFT_LEFT(a_u, b_i));   -- Logical shift left
 
       when LSR =>
         t2_shifter_op <= "01";
         RES           <= t2_shifter_s;
-      -- RES <= std_logic_vector(SHIFT_RIGHT(a_u, b_i));  -- Logical shift right
 
       when ASR =>                                        -- Arithmetic shift right
         t2_shifter_op <= "10";
         RES           <= t2_shifter_s;
 
       when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  b_i)); -- rotate left
+        RES <= std_logic_vector(ROTATE_LEFT(a_u,  rotate_amount)); -- rotate left
 
       when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, b_i)); -- rotate right
+        RES <= std_logic_vector(ROTATE_RIGHT(a_u, rotate_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');

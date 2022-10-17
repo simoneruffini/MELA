@@ -88,7 +88,7 @@ architecture BEHAVIOURAL of DATAPATH is
   signal pc_pls_4_e         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal rf_dout1_e         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal rf_dout2_e         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal rf_waddr_e         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal rf_waddr_e         : std_logic_vector(C_RF_ADDR_W - 1 downto 0);
   signal imm_e              : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_din_e         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
 
