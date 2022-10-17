@@ -34,6 +34,7 @@ package DLX_ISA_ENC_PKG is
   --       OPCODE NAME     |         OPCODE VALUE      |
   constant SLL_OPCODE_i  : natural := RTYPE_OPCODE_i;
   constant SRL_OPCODE_i  : natural := RTYPE_OPCODE_i;
+  constant SRA_OPCODE_i  : natural := RTYPE_OPCODE_i;
   constant ADD_OPCODE_i  : natural := RTYPE_OPCODE_i;
   constant SUB_OPCODE_i  : natural := RTYPE_OPCODE_i;
   constant AND_OPCODE_i  : natural := RTYPE_OPCODE_i;
@@ -66,6 +67,7 @@ package DLX_ISA_ENC_PKG is
   --       FUNC NAME     |   OPCODE VALUE   |
   constant SLL_FUNC_i : natural := 16#04#;
   constant SRL_FUNC_i : natural := 16#06#;
+  constant SRA_FUNC_i : natural := 16#07#;
   constant ADD_FUNC_i : natural := 16#20#;
   constant SUB_FUNC_i : natural := 16#22#;
   constant AND_FUNC_i : natural := 16#24#;
@@ -80,6 +82,7 @@ package DLX_ISA_ENC_PKG is
   constant RTYPE_OPCODE : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(RTYPE_OPCODE_i, C_INSTR_OPCODE_W));
   constant SLL_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SLL_OPCODE_i, C_INSTR_OPCODE_W));
   constant SRL_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SRL_OPCODE_i, C_INSTR_OPCODE_W));
+  constant SRA_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SRA_OPCODE_i, C_INSTR_OPCODE_W));
   constant ADD_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(ADD_OPCODE_i, C_INSTR_OPCODE_W));
   constant SUB_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SUB_OPCODE_i, C_INSTR_OPCODE_W));
   constant AND_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(AND_OPCODE_i, C_INSTR_OPCODE_W));
@@ -109,6 +112,7 @@ package DLX_ISA_ENC_PKG is
   -- FUNC in std_logic_vector form
   constant SLL_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SLL_FUNC_i, C_INSTR_FUNC_W));
   constant SRL_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SRL_FUNC_i, C_INSTR_FUNC_W));
+  constant SRA_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SRA_FUNC_i, C_INSTR_FUNC_W));
   constant ADD_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(ADD_FUNC_i, C_INSTR_FUNC_W));
   constant SUB_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SUB_FUNC_i, C_INSTR_FUNC_W));
   constant AND_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(AND_FUNC_i, C_INSTR_FUNC_W));

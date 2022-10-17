@@ -415,6 +415,7 @@ architecture BEHAVIOURAL of CU is
 
   constant SLL_FUNC_CW              : alu_func_t := LSL;
   constant SRL_FUNC_CW              : alu_func_t := LSR;
+  constant SRA_FUNC_CW              : alu_func_t := ASR;
   constant ADD_FUNC_CW              : alu_func_t := ADD;
   constant SUB_FUNC_CW              : alu_func_t := SUB;
   constant AND_FUNC_CW              : alu_func_t := BITAND;
@@ -480,6 +481,7 @@ architecture BEHAVIOURAL of CU is
   (
     SLL_FUNC_i  => SLL_FUNC_CW,
     SRL_FUNC_i  => SRL_FUNC_CW,
+    SRA_FUNC_i  => SRA_FUNC_CW,
     ADD_FUNC_i  => ADD_FUNC_CW,
     SUB_FUNC_i  => SUB_FUNC_CW,
     AND_FUNC_i  => AND_FUNC_CW,

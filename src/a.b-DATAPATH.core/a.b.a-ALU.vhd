@@ -346,6 +346,9 @@ begin
       when LSR =>
         RES <= std_logic_vector(SHIFT_RIGHT(a_u, shift_amount));  -- Logical shift right
 
+      when ASR =>
+        RES <= std_logic_vector(SHIFT_RIGHT(a_s, shift_amount));  -- arithmetic shift right
+
       when RL =>
         RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
 
