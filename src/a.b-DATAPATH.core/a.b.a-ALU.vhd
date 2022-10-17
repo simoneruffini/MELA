@@ -43,7 +43,7 @@ end entity ALU;
 
 ------------------------------------------------------------- ARCHITECTURE BEHAVIOURAL
 
-architecture BEHAVIORAL of ALU is
+architecture BEHAVIOURAL of ALU is
 
   ----------------------------------------------------------- CONSTANTS 1
 
@@ -133,11 +133,11 @@ begin
 
   end process P_ALU;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
 ------------------------------------------------------------- END ARCHITECTURE BEHAVIOURAL
 
-------------------------------------------------------------- ARCHITECTURE BEHAVIOURLA + P4 ADDER
+------------------------------------------------------------- ARCHITECTURE BEHAVIOURAL + P4 ADDER
 
 architecture BEHAV_P4ADD of ALU is
 
@@ -525,7 +525,7 @@ end architecture STRUCTURAL;
 
 ------------------------------------------------------------- END ARCHITECTURE STRUCTURAL
 
--- configuration CFG_ALU_BEHAVIORAL of ALU is
---  for BEHAVIORAL
+-- configuration CFG_ALU_BEHAVIOURAL of ALU is
+--  for BEHAVIOURAL
 --  end for;
--- end CFG_ALU_BEHAVIORAL;
+-- end CFG_ALU_BEHAVIOURAL;

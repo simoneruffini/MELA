@@ -35,7 +35,7 @@ end entity TB_CU;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of TB_CU is
+architecture BEHAVIOURAL of TB_CU is
 
   ----------------------------------------------------------- CONSTANTS 1
   constant C_CLK_FREQ_HZ            : natural := 1000000; -- 1MHz
@@ -140,4 +140,4 @@ begin
 
   end process P_SIM;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;

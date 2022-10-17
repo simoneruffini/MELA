@@ -3,7 +3,7 @@
 --
 -- Create Date:   Mon Jun 07 18:38 2021
 -- Design Name:   CLKGEN
--- Module Name:   CLKGEN.vhd - Behavioral
+-- Module Name:   CLKGEN.vhd - BEHAVIOURAL
 -- Project Name:  COMMON
 -- Description:   Gneration of a clk signal, used for testbench purposes
 --
@@ -32,7 +32,7 @@ end entity CLKGEN;
 
 ----------------------------- ARCHITECTURE -------------------------------------
 
-architecture BEHAVIORAL of CLKGEN is
+architecture BEHAVIOURAL of CLKGEN is
 
   --########################### CONSTANTS ######################################
   constant C_CLOCK_PERIOD_NS : time := (1e9 / CLK_HZ) * 1 ns;
@@ -59,5 +59,5 @@ begin
 
   CLK <= clk_s;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 

@@ -32,7 +32,7 @@ end entity GP;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of GP is
+architecture BEHAVIOURAL of GP is
 
 ----------------------------------------------------------- CONSTANTS 1
 
@@ -48,10 +48,10 @@ begin
 
   P <= P_CURRENT and P_PREV;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
-CONFIGURATION CFG_GP_BEHAVIORAL OF GP IS
- FOR BEHAVIORAL
+CONFIGURATION CFG_GP_BEHAVIOURAL OF GP IS
+ FOR BEHAVIOURAL
  END FOR;
-END CFG_GP_BEHAVIORAL;
+END CFG_GP_BEHAVIOURAL;
 

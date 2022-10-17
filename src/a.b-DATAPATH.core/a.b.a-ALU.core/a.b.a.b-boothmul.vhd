@@ -30,7 +30,7 @@ entity BOOTHMUL is
   );
 end entity BOOTHMUL;
 
-architecture BEHAVIORAL of BOOTHMUL is
+architecture BEHAVIOURAL of BOOTHMUL is
 
   -- How many stages of encoders/muxes
   constant NSTAGE : integer := NBIT / 2;
@@ -201,13 +201,13 @@ begin
   -- Output of the last adder is our solution
   S <= ptmp(NSTAGE - 2)(S'length - 1 downto 0);
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
 -- CONFIGURATION CFG_BOOTHMUL_MIXED OF BOOTHMUL IS
---  FOR BEHAVIORAL
+--  FOR BEHAVIOURAL
 --    FOR GEN_BOOTHSTAGE
 --      FOR ALL : BOOTHENC
---        USE CONFIGURATION WORK.CFG_BOOTHENC_BEHAVIORAL;
+--        USE CONFIGURATION WORK.CFG_BOOTHENC_BEHAVIOURAL;
 --      END FOR;
 --    END FOR;
 --    FOR GEN_ADDERS

@@ -283,15 +283,15 @@ configuration CFG_CARRY_GENERATOR_STRUCTURAL of CARRY_GENERATOR is
    for GEN_PG_PRIM_NET
      for GEN_FIRST_RXMOST_PG_PRIM
        for all: PG_PRIM
-         USE CONFIGURATION WORK.CFG_PG_PRIM_BEHAVIORAL_XOR;
+         USE CONFIGURATION WORK.CFG_PG_PRIM_BEHAVIOURAL_XOR;
        end for;
        for all: GG
-         USE CONFIGURATION WORK.CFG_GG_BEHAVIORAL;
+         USE CONFIGURATION WORK.CFG_GG_BEHAVIOURAL;
        end for;
      end for;
      for GEN_OTHER_PG_PRIM
        for all: PG_PRIM
-         USE CONFIGURATION WORK.CFG_PG_PRIM_BEHAVIORAL_XOR;
+         USE CONFIGURATION WORK.CFG_PG_PRIM_BEHAVIOURAL_XOR;
        end for;
      end for;
    end for;
@@ -299,11 +299,11 @@ configuration CFG_CARRY_GENERATOR_STRUCTURAL of CARRY_GENERATOR is
      for GEN_BKBONE_GPGG_NET_ROW
        for GEN_BKBONE_GRP_UNITS
          for all: GG
-           USE CONFIGURATION WORK.CFG_GG_BEHAVIORAL;
+           USE CONFIGURATION WORK.CFG_GG_BEHAVIOURAL;
          end for;
          for GEN_GP_UNIT
            for all: GP
-             USE CONFIGURATION WORK.CFG_GP_BEHAVIORAL;
+             USE CONFIGURATION WORK.CFG_GP_BEHAVIOURAL;
            end for;
          end for;
        end for;
@@ -314,11 +314,11 @@ configuration CFG_CARRY_GENERATOR_STRUCTURAL of CARRY_GENERATOR is
        for GEN_LF_GRP_UNITS
          for GEN_LF_ALG
            for all: GG
-             USE CONFIGURATION WORK.CFG_GG_BEHAVIORAL;
+             USE CONFIGURATION WORK.CFG_GG_BEHAVIOURAL;
            end for;
            for GEN_LF_GP_UNITS
              for all: GP
-               USE CONFIGURATION WORK.CFG_GP_BEHAVIORAL;
+               USE CONFIGURATION WORK.CFG_GP_BEHAVIOURAL;
              end for;
            end for;
          end for;

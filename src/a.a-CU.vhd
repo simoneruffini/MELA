@@ -44,7 +44,7 @@ end entity CU;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of CU is
+architecture BEHAVIOURAL of CU is
 
   ----------------------------------------------------------- CONSTANTS 1
 
@@ -638,10 +638,10 @@ begin
 
   end process P_DELAYS;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
--- configuration CFG_CU_BEHAVIORAL of CU is
--- for BEHAVIORAL
+-- configuration CFG_CU_BEHAVIOURAL of CU is
+-- for BEHAVIOURAL
 -- end for;
 -- end configuration;
 

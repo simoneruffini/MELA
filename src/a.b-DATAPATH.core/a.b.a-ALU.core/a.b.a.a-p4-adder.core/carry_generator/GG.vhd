@@ -34,7 +34,7 @@ end entity GG;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of GG is
+architecture BEHAVIOURAL of GG is
 
 ----------------------------------------------------------- CONSTANTS 1
 
@@ -50,9 +50,9 @@ begin
 
   G <= (G_CURRENT or (P_CURRENT and G_PREV));
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
-CONFIGURATION CFG_GG_BEHAVIORAL OF GG IS
- FOR BEHAVIORAL
+CONFIGURATION CFG_GG_BEHAVIOURAL OF GG IS
+ FOR BEHAVIOURAL
  END FOR;
-END CFG_GG_BEHAVIORAL;
+END CFG_GG_BEHAVIOURAL;

@@ -34,7 +34,7 @@ end entity CPU;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of CPU is
+architecture BEHAVIOURAL of CPU is
 
   ----------------------------------------------------------- CONSTANTS 1
 
@@ -109,9 +109,9 @@ begin
 
 ----------------------------------------------------------- PROCESSES
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
--- configuration CFG_CPU_BEHAVIORAL of CPU is
---  for BEHAVIORAL
+-- configuration CFG_CPU_BEHAVIOURAL of CPU is
+--  for BEHAVIOURAL
 --  end for;
--- end CFG_CPU_BEHAVIORAL;
+-- end CFG_CPU_BEHAVIOURAL;

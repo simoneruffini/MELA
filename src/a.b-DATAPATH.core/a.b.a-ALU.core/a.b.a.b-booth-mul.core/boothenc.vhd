@@ -38,7 +38,7 @@ entity BOOTHENC is
   );
 end entity BOOTHENC;
 
-architecture BEHAVIORAL of BOOTHENC is
+architecture BEHAVIOURAL of BOOTHENC is
 
   signal bapp  : std_logic_vector(NBIT downto 0);
 
@@ -97,9 +97,9 @@ begin
 
   end process ENC;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
--- CONFIGURATION CFG_BOOTHENC_BEHAVIORAL OF BOOTHENC IS
---  FOR BEHAVIORAL
+-- CONFIGURATION CFG_BOOTHENC_BEHAVIOURAL OF BOOTHENC IS
+--  FOR BEHAVIOURAL
 --  END FOR;
--- END CFG_BOOTHENC_BEHAVIORAL;
+-- END CFG_BOOTHENC_BEHAVIOURAL;

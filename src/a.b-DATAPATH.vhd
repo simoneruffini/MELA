@@ -43,7 +43,7 @@ end entity DATAPATH;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of DATAPATH is
+architecture BEHAVIOURAL of DATAPATH is
 
   ----------------------------------------------------------- CONSTANTS 1
   constant C_REG_INIT_VAL   : integer := 0;
@@ -477,9 +477,9 @@ begin
   rf_din_wb <= dmem_dout_wb when CTRL_WORD.rf_wb_dmem_dout_sel = '1' else
                alu_out_wb;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
--- configuration CFG_DATAPATH_BEHAVIORAL of DATAPATH is
---  for BEHAVIORAL
+-- configuration CFG_DATAPATH_BEHAVIOURAL of DATAPATH is
+--  for BEHAVIOURAL
 --  end for;
--- end CFG_DATAPATH_BEHAVIORAL;
+-- end CFG_DATAPATH_BEHAVIOURAL;

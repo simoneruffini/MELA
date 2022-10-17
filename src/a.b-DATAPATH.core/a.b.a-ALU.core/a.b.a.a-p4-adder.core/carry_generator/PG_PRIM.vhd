@@ -34,7 +34,7 @@ end entity PG_PRIM;
 
 ------------------------------------------------------------- ARCHITECTURE
 
-architecture BEHAVIORAL of PG_PRIM is
+architecture BEHAVIOURAL of PG_PRIM is
 
 ----------------------------------------------------------- CONSTANTS 1
 
@@ -51,23 +51,23 @@ begin
   G <= A and B;
   P <= A xor B;
 
-end architecture BEHAVIORAL;
+end architecture BEHAVIOURAL;
 
-architecture BEHAVIORAL2 of PG_PRIM is
+architecture BEHAVIOURAL2 of PG_PRIM is
 
 begin
 
   G <= A and B;
   P <= A or B;
 
-end architecture BEHAVIORAL2;
+end architecture BEHAVIOURAL2;
 
-CONFIGURATION CFG_PG_PRIM_BEHAVIORAL_XOR OF PG_PRIM IS
- FOR BEHAVIORAL
+CONFIGURATION CFG_PG_PRIM_BEHAVIOURAL_XOR OF PG_PRIM IS
+ FOR BEHAVIOURAL
  END FOR;
-END CFG_PG_PRIM_BEHAVIORAL_XOR;
+END CFG_PG_PRIM_BEHAVIOURAL_XOR;
 
-CONFIGURATION CFG_PG_PRIM_BEHAVIORAL_OR OF PG_PRIM IS
- FOR BEHAVIORAL2
+CONFIGURATION CFG_PG_PRIM_BEHAVIOURAL_OR OF PG_PRIM IS
+ FOR BEHAVIOURAL2
  END FOR;
-END CFG_PG_PRIM_BEHAVIORAL_OR;
+END CFG_PG_PRIM_BEHAVIOURAL_OR;
