@@ -32,7 +32,6 @@ entity DATAPATH is
     CLK              : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
     RST_AN           : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
     CTRL_WORD        : in    ctrl_word_t;                                   -- Control Word from CU
-    INSTR            : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
     IMEM_ADDR        : out   std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);  -- Instructin Memory read address
     IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructino Memory data output
     DMEM_RWADDR      : out   std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);  -- Data Memory read/write address

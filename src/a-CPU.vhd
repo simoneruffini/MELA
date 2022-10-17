@@ -46,7 +46,6 @@ architecture BEHAVIOURAL of CPU is
 
   ----------------------------------------------------------- SIGNALS
 
-  signal instr            : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal ctrl_word        : ctrl_word_t;
   signal imem_addr        : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
   signal imem_dout        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
@@ -62,7 +61,7 @@ begin
     port map (
       CLK       => CLK,
       RST_AN    => RST_AN,
-      INSTR     => instr,
+      INSTR     => imem_dout,
       CTRL_WORD => ctrl_word
     );
 
@@ -75,7 +74,7 @@ begin
       CLK    => CLK,
       RST_AN => RST_AN,
       RADDR  => imem_addr,
-      DOUT   => instr
+      DOUT   => imem_dout
     );
 
   U_DATAPATH : entity work.datapath(Behavioural)
@@ -83,7 +82,6 @@ begin
       CLK         => CLK,
       RST_AN      => RST_AN,
       CTRL_WORD   => ctrl_word,
-      INSTR       => instr,
       IMEM_ADDR   => imem_addr,
       IMEM_DOUT   => imem_dout,
       DMEM_RWADDR => dmem_rwaddr,

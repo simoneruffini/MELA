@@ -51,8 +51,6 @@ architecture BEHAVIOURAL of TB_CPU is
 
   signal clk                        : std_logic;
   signal rst_an                     : std_logic;
-  signal instr                      : std_logic_vector(C_ARCH_WORD_W - 1 downto 0) := (others => '0');
-  signal ctrl_word                  : ctrl_word_t;
 
   -- this needs to be in the top level
   signal assertion_test_output      : natural := dlx_pkg_check_assertions;
@@ -68,7 +66,7 @@ begin
       CLK => clk
     );
 
-  U_CU : entity work.cpu(BEHAVIOURAL)
+  U_CPU : entity work.cpu(BEHAVIOURAL)
     port map (
       CLK    => clk,
       RST_AN => rst_an
@@ -83,29 +81,10 @@ begin
   begin
 
     rst_an <= '0';
-    instr  <= (others => '0');
-    report "Instr = " & integer'image(to_integer(unsigned(instr)));
     wait for 5 * C_CLK_PERIOD_NS;
     rst_an <= '1';
 
-    wait for 100 * C_CLK_PERIOD_NS;
-
-    instr <= std_logic_vector(shift_left(resize(unsigned(RTYPE_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
-    report "Instr = " & integer'image(to_integer(unsigned(instr)));
-    wait for 1 * C_CLK_PERIOD_NS;
-    report print_ctrl_wrd (ctrl_word);
-
-    wait for 100 * C_CLK_PERIOD_NS;
-
-    instr <= std_logic_vector(shift_left(resize(unsigned(J_OPCODE), C_ARCH_WORD_W), C_INSTR_OPCODE_START_POS_BIT));
-    report "Instr = " & integer'image(to_integer(unsigned(instr)));
-    wait for 1 * C_CLK_PERIOD_NS;
-    report print_ctrl_wrd (ctrl_word);
-
-    wait for 100 * C_CLK_PERIOD_NS;
-
-    report "Finish simulation";
-    finish; -- needs VHDL-2008 and std.env.finish
+    wait;
 
   end process P_SIM;
 
