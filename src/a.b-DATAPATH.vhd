@@ -165,7 +165,7 @@ begin
 
   ----------------------------------------------------------- PIPELINE REGISTERS
 
-  U_PC_PLS_4_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_PC_PLS_4_REG_F : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => pc_pls_4_f'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -178,7 +178,7 @@ begin
       DOUT   => pc_pls_4_d
     );
 
-  U_INSTR_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_INSTR_REG_F : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => instr_f'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -216,19 +216,6 @@ begin
       OUT2    => rf_dout2_d
     );
 
-  U_RF_DOUT1_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
-    generic map (
-      DATA_W => rf_dout1_d'length, INIT_VAL => C_REG_INIT_VAL
-    )
-    port map (
-      CLK    => CLK,
-      RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
-      DIN    => rf_dout1_d,
-      DOUT   => rf_dout1_e
-    );
-
   ----------------------------------------------------------- COMBINATORIAL
 
   rs1_d <= instr_d((C_INSTR_RS1_START_POS_BIT + C_INSTR_RS1_W) - 1 downto C_INSTR_RS1_START_POS_BIT);
@@ -257,7 +244,20 @@ begin
            imm_i_type_ext_d;
 
   ----------------------------------------------------------- PIPELINE REGISTERS
-  U_RF_DOUT2_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_DOUT1_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+    generic map (
+      DATA_W => rf_dout1_d'length, INIT_VAL => C_REG_INIT_VAL
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN_N   => '0',
+      INIT   => '0',
+      DIN    => rf_dout1_d,
+      DOUT   => rf_dout1_e
+    );
+
+  U_RF_DOUT2_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rf_dout2_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -270,7 +270,7 @@ begin
       DOUT   => rf_dout2_e
     );
 
-  U_IMM_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_IMM_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => imm_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -283,7 +283,7 @@ begin
       DOUT   => imm_e
     );
 
-  U_RS2_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RS2_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rs2_d'length, INIT_VAL => C_REG_INIT_VAL
     )
@@ -296,7 +296,7 @@ begin
       DOUT   => rs2_e
     );
 
-  U_RS3_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RS3_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rs3_d'length, INIT_VAL => C_REG_INIT_VAL
     )
