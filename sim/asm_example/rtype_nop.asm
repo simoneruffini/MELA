@@ -1,4 +1,4 @@
-seq r1,r3,r4
+sne r1,r3,r4
 nop
 nop
 nop
@@ -13,7 +13,7 @@ nop
 nop
 nop
 nop
-slt r4,r1,r2
+sll r4,r1,r2
 nop
 nop
 nop

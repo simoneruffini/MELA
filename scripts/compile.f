@@ -37,6 +37,8 @@
 
 # Testbench stuff
 ../sim/CLKGEN.vhd
+../sim/tb_IMEM.vhd
 ../sim/tb_CU.vhd
 ../sim/tb_CPU.vhd
 ../sim/tb_DATAPATH.vhd
+
