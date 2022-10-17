@@ -16,6 +16,7 @@
 -- Revision 01 - Simone Ruffini
 --  changed behavioural architecture with asynchronoud active low reset
 -- Additional Comments:
+--  Synchronous write, asynchronous read
 --
 --------------------------------------------------------------------------------
 
@@ -92,7 +93,7 @@ architecture BEHAVIOURAL of RF is
 
   ----------------------------------------------------------- SIGNALS
 
-  signal registers : reg_array := init_reg(1, 1);
+  signal registers : reg_array;
 
 begin
 
@@ -104,7 +105,7 @@ begin
 
   -- write your RF code
 
-  REG : process (RST_AN, CLK) is
+  P_WRITE : process (RST_AN, CLK) is
   begin
 
     if (RST_AN = '1') then
@@ -121,32 +122,29 @@ begin
         if (WR = '1') then
           registers(to_integer(unsigned(ADD_WR))) <= DATAIN;
         end if;
-        -- reading out2
-        if (RD2 = '1') then
-        end if;
       end if;
     end if;
 
-  end process REG;
+  end process P_WRITE;
 
-  READ : process (RD1, RD2) is
+  P_READ : process (ENABLE, ADD_RD1, ADD_RD2, RD1, RD2) is
   begin
 
     if (RD1 = '1' and ENABLE = '1') then
+      OUT1 <= registers(to_integer(unsigned(ADD_RD1)));
       if (unsigned(ADD_RD1) = 0) then
         OUT1 <= (others => '0');
       end if;
-      OUT1 <= registers(to_integer(unsigned(ADD_RD1)));
     end if;
 
     if (RD2 = '1' and ENABLE = '1') then
+      OUT2 <= registers(to_integer(unsigned(ADD_RD2)));
       if (unsigned(ADD_RD2) = 0) then
         OUT2 <= (others => '0');
       end if;
-      OUT2 <= registers(to_integer(unsigned(ADD_RD2)));
     end if;
 
-  end process READ;
+  end process P_READ;
 
 end architecture BEHAVIOURAL;
 
