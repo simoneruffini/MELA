@@ -109,7 +109,7 @@ package DLX_PKG is
     dmem_wen      : std_logic;
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
-    rf_wen         : std_logic;
+    rf_wen              : std_logic;
   end record ctrl_word_t;
 
   ----------------------------------------------------------- CONSTANTS 2
@@ -216,7 +216,7 @@ package body DLX_PKG is
  ", branch_en =" & std_logic'image(ctrl_word.branch_en) &
  ", comp_0_invert =" & std_logic'image(ctrl_word.comp_0_invert) &
  ", dmem_wen =" & std_logic'image(ctrl_word.dmem_wen) &
- ", rf_wb_dmem_dout_sel =" & std_logic'image(ctrl_word.rf_wb_dmem_dout_sel) & 
+ ", rf_wb_dmem_dout_sel =" & std_logic'image(ctrl_word.rf_wb_dmem_dout_sel) &
  ", rf_wen =" & std_logic'image(ctrl_word.rf_wen) & "}";
 
   end function print_ctrl_wrd;

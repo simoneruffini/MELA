@@ -38,14 +38,14 @@ package ALU_PKG is
     NOP     -- no operation
   );
 
-  constant T2_LOGIC_OP_AND  : std_logic_vector(3 downto 0) := "0001";
-  constant T2_LOGIC_OP_NAND : std_logic_vector(3 downto 0) := "1110";
-  constant T2_LOGIC_OP_OR   : std_logic_vector(3 downto 0) := "0111";
-  constant T2_LOGIC_OP_NOR  : std_logic_vector(3 downto 0) := "1000";
-  constant T2_LOGIC_OP_XOR  : std_logic_vector(3 downto 0) := "0110";
+  constant C_T2_LOGIC_OP_AND  : std_logic_vector(3 downto 0) := "0001";
+  constant C_T2_LOGIC_OP_NAND : std_logic_vector(3 downto 0) := "1110";
+  constant C_T2_LOGIC_OP_OR   : std_logic_vector(3 downto 0) := "0111";
+  constant C_T2_LOGIC_OP_NOR  : std_logic_vector(3 downto 0) := "1000";
+  constant C_T2_LOGIC_OP_XOR  : std_logic_vector(3 downto 0) := "0110";
 
-  constant T2_SHIFTER_OP_SLL : std_logic_vector(1 downto 0) := "00";
-  constant T2_SHIFTER_OP_SRL : std_logic_vector(1 downto 0) := "01";
-  constant T2_SHIFTER_OP_SRA : std_logic_vector(1 downto 0) := "10";
+  constant C_T2_SHIFTER_OP_SLL : std_logic_vector(1 downto 0) := "00";
+  constant C_T2_SHIFTER_OP_SRL : std_logic_vector(1 downto 0) := "01";
+  constant C_T2_SHIFTER_OP_SRA : std_logic_vector(1 downto 0) := "10";
 
 end package ALU_PKG;

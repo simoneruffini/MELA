@@ -1,1 +1,1 @@
-all_general_test_dump.txt
+../../sim/asm_example/rtype_all_noparallel_dump.txt

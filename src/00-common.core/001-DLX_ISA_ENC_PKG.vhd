@@ -24,7 +24,48 @@ library work;
 
 package DLX_ISA_ENC_PKG is
 
-  -- vsg_off constant_015 : vsg checking that constant have C_ prefix
+  ----------------------------------------------------------- CONSTANTS 1
+
+  ----------------------------------------------------------- TYPES
+  -- Instruction enum used only for simulation
+  type instr_t is (
+    SLLx,
+    SRLx,
+    ADDx,
+    SUBx,
+    ANDx,
+    ORx,
+    XORx,
+    SNEx,
+    SLEx,
+    SGEx,
+    Jx,
+    JALx,
+    BEQZx,
+    BNEZx,
+    ADDIx,
+    SUBIx,
+    ANDIx,
+    ORIx,
+    XORIx,
+    SLLIx,
+    NOPx,
+    SRLIx,
+    SRAIx,
+    SNEIx,
+    SLEIx,
+    SGEIx,
+    LWx,
+    SWx,
+    INSTR_NOT_FOUNDx
+  );
+
+  ----------------------------------------------------------- FUNCTIONS
+  function print_instr(instr: std_logic_vector) return instr_t;
+
+  ----------------------------------------------------------- CONSTANTS 2
+
+  -- vsg_off constant_015 constant_004 : vsg checking that constant have C_ prefix
 
   constant RTYPE_OPCODE_i : natural := 16#00#;
 
@@ -55,6 +96,7 @@ package DLX_ISA_ENC_PKG is
   constant SLLI_OPCODE_i : natural := 16#14#;
   constant NOP_OPCODE_i  : natural := 16#15#;
   constant SRLI_OPCODE_i : natural := 16#16#;
+  constant SRAI_OPCODE_i : natural := 16#17#;
   constant SNEI_OPCODE_i : natural := 16#19#;
   constant SLEI_OPCODE_i : natural := 16#1c#;
   constant SGEI_OPCODE_i : natural := 16#1d#;
@@ -103,6 +145,7 @@ package DLX_ISA_ENC_PKG is
   constant SLLI_OPCODE  : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SLLI_OPCODE_i, C_INSTR_OPCODE_W));
   constant NOP_OPCODE   : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(NOP_OPCODE_i, C_INSTR_OPCODE_W));
   constant SRLI_OPCODE  : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SRLI_OPCODE_i, C_INSTR_OPCODE_W));
+  constant SRAI_OPCODE  : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SRAI_OPCODE_i, C_INSTR_OPCODE_W));
   constant SNEI_OPCODE  : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SNEI_OPCODE_i, C_INSTR_OPCODE_W));
   constant SLEI_OPCODE  : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SLEI_OPCODE_i, C_INSTR_OPCODE_W));
   constant SGEI_OPCODE  : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0) := std_logic_vector(to_unsigned(SGEI_OPCODE_i, C_INSTR_OPCODE_W));
@@ -122,4 +165,59 @@ package DLX_ISA_ENC_PKG is
   constant SLE_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SLE_FUNC_i, C_INSTR_FUNC_W));
   constant SGE_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SGE_FUNC_i, C_INSTR_FUNC_W));
 
+
+
 end package DLX_ISA_ENC_PKG;
+
+package body DLX_ISA_ENC_PKG is
+
+  -- Prints the enum instruction rappresentation of instr
+  function print_instr(instr: std_logic_vector) return instr_t is 
+    variable opcode_u : std_logic_vector(C_INSTR_OPCODE_W-1 downto 0);
+    variable func_u : std_logic_vector(C_INSTR_FUNC_W-1 downto 0);
+    variable opcode : integer;
+    variable func : integer;
+  begin
+    opcode_u := INSTR((C_INSTR_OPCODE_START_POS_BIT + C_INSTR_OPCODE_W) - 1 downto C_INSTR_OPCODE_START_POS_BIT);
+    func_u   := INSTR((C_INSTR_FUNC_START_POS_BIT + C_INSTR_FUNC_W) - 1 downto C_INSTR_FUNC_START_POS_BIT);
+    opcode := to_integer(unsigned(opcode_u));
+    func   := to_integer(unsigned(func_u));
+
+    case (opcode) is  
+      when RTYPE_OPCODE_i=> 
+        case (func) is
+          when SLL_FUNC_i  => return sllx;
+          when SRL_FUNC_i  => return srlx;
+          when ADD_FUNC_i  => return addx;
+          when SUB_FUNC_i  => return subx;
+          when AND_FUNC_i  => return andx;
+          when OR_FUNC_i   => return orx;
+          when XOR_FUNC_i  => return xorx;
+          when SNE_FUNC_i  => return SNEx;
+          when SLE_FUNC_i  => return SLEx;
+          when SGE_FUNC_i  => return SGEx;
+          when others => return INSTR_NOT_FOUNDx;
+        end case;
+      when J_OPCODE_i    => return Jx;
+      when JAL_OPCODE_i  => return JALx;
+      when BEQZ_OPCODE_i => return BEQZx;
+      when BNEZ_OPCODE_i => return BNEZx;
+      when ADDI_OPCODE_i => return ADDIx;
+      when SUBI_OPCODE_i => return SUBIx;
+      when ANDI_OPCODE_i => return ANDIx;
+      when ORI_OPCODE_i  => return ORIx;
+      when XORI_OPCODE_i => return XORIx;
+      when SLLI_OPCODE_i => return SLLIx;
+      when NOP_OPCODE_i  => return NOPx;
+      when SRLI_OPCODE_i => return SRLIx;
+      when SRAI_OPCODE_i => return SRAIx;
+      when SNEI_OPCODE_i => return SNEIx;
+      when SLEI_OPCODE_i => return SLEIx;
+      when SGEI_OPCODE_i => return SGEIx;
+      when LW_OPCODE_i   => return LWx;
+      when SW_OPCODE_i   => return SWx;
+      when others        => return INSTR_NOT_FOUNDx;
+    end case;
+  end function print_instr; 
+
+end package body DLX_ISA_ENC_PKG;
