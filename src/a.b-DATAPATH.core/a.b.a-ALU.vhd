@@ -71,7 +71,7 @@ begin
   b_u <= unsigned(B);
   a_s <= signed(A);
   -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
+  shift_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
 
@@ -126,7 +126,7 @@ begin
         RES(0)<= '1' when a_u /= b_u else '0';
 
       when others =>
-        RES <= (others => '0');                          -- Disables latch inference
+        RES <= (others => '0');                                   -- Disables latch inference
 
     end case;
 
@@ -154,7 +154,6 @@ architecture BEHAV_P4ADD of ALU is
   signal a_s               : signed (DATA_W - 1 downto 0);
   signal shift_amount      : natural RANGE 0 to DATA_W;
 
-
   signal p4_adder_cin      : std_logic;
   signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
   signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
@@ -162,7 +161,7 @@ architecture BEHAV_P4ADD of ALU is
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  --P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  -- P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
   P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
@@ -180,7 +179,7 @@ begin
   b_u <= unsigned(B);
   a_s <= signed(A);
   -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
+  shift_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
   P_ALU : process (FUNC, A, a_u, B, b_u, a_s, shift_amount, p4_adder_s) is
@@ -199,8 +198,8 @@ begin
         RES          <= p4_adder_s;
 
       when SUB =>
-        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
-        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
+        p4_adder_b   <= not B;                                    -- Negate B to make the number 2's complement
+        p4_adder_cin <= '1';                                      -- Add 1 to make B negative in 2's complement
         RES          <= p4_adder_s;
 
       when BITAND =>
@@ -240,7 +239,7 @@ begin
         RES(0)<= '1' when a_u /= b_u else '0';
 
       when others =>
-        RES <= (others => '0');                          -- Disables latch inference
+        RES <= (others => '0');                                   -- Disables latch inference
 
     end case;
 
@@ -278,7 +277,7 @@ architecture BEHAV_P4ADD_T2LOGIC of ALU is
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  --P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  -- P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
   P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
@@ -307,7 +306,7 @@ begin
   b_u <= unsigned(B);
   a_s <= signed(A);
   -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  shift_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
+  shift_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
   P_ALU : process (FUNC, a_u, B, b_u, a_s, shift_amount, p4_adder_s, t2_logic_s) is
@@ -317,7 +316,7 @@ begin
     RES          <= (others => '0');
     p4_adder_cin <= '0';
     p4_adder_b   <= B;
-    t2_logic_op  <= (others => '0'); -- in theory xnor (aka ==)
+    t2_logic_op  <= (others => '0');                              -- in theory xnor (aka ==)
 
     case FUNC is
 
@@ -327,21 +326,21 @@ begin
         RES          <= p4_adder_s;
 
       when SUB =>
-        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
-        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
+        p4_adder_b   <= not B;                                    -- Negate B to make the number 2's complement
+        p4_adder_cin <= '1';                                      -- Add 1 to make B negative in 2's complement
         RES          <= p4_adder_s;
 
       when BITAND =>
-        RES <= t2_logic_s;
-        t2_logic_op <= "0001";
+        RES         <= t2_logic_s;
+        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_and), DATA_W));
 
       when BITOR =>
-        RES <= t2_logic_s;
-        t2_logic_op <= "0111";
+        RES         <= t2_logic_s;
+        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_or), DATA_W));
 
       when BITXOR =>
-        RES <= t2_logic_s;
-        t2_logic_op <= "0110";
+        RES         <= t2_logic_s;
+        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_xor), DATA_W));
 
       when LSL =>
         RES <= std_logic_vector(SHIFT_LEFT(a_u, shift_amount));   -- Logical shift left
@@ -371,7 +370,7 @@ begin
         RES(0)<= '1' when a_u /= b_u else '0';
 
       when others =>
-        RES <= (others => '0');                          -- Disables latch inference
+        RES <= (others => '0');                                   -- Disables latch inference
 
     end case;
 
@@ -394,24 +393,24 @@ architecture STRUCTURAL of ALU is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
-  signal a_u               : unsigned (DATA_W - 1 downto 0);
-  signal b_u               : unsigned (DATA_W - 1 downto 0);
+  signal a_u                : unsigned (DATA_W - 1 downto 0);
+  signal b_u                : unsigned (DATA_W - 1 downto 0);
   signal rotate_amount      : natural RANGE 0 to DATA_W;
 
-  signal p4_adder_cin      : std_logic;
-  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
-  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_cin       : std_logic;
+  signal p4_adder_b         : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s         : std_logic_vector(DATA_W - 1 downto 0);
 
-  signal t2_logic_s        : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_op       : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_s         : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_op        : std_logic_vector(DATA_W - 1 downto 0);
 
-  signal t2_shifter_op     : std_logic_vector(1 downto 0);
-  signal t2_shifter_s      : std_logic_vector(DATA_W - 1  downto 0);
+  signal t2_shifter_op      : std_logic_vector(1 downto 0);
+  signal t2_shifter_s       : std_logic_vector(DATA_W - 1  downto 0);
 
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  --P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  -- P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
   P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
@@ -429,7 +428,7 @@ begin
       DATA_W => C_ALU_PRECISION_BIT
     )
     port map (
-      OP => t2_logic_op,
+      OP => t2_logic_op(3 downto 0),
       A  => A,
       B  => B,
       S  => t2_logic_s
@@ -450,7 +449,7 @@ begin
   a_u <= unsigned(A);
   b_u <= unsigned(B);
   -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  rotate_amount <= to_integer(resize(b_u,vhfp_ilog2(DATA_W)));
+  rotate_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
   P_ALU : process (FUNC, a_u, B, b_u, rotate_amount, p4_adder_s, t2_logic_s, t2_shifter_s) is
@@ -460,8 +459,8 @@ begin
     RES           <= (others => '0');
     p4_adder_cin  <= '0';
     p4_adder_b    <= B;
-    t2_logic_op   <= (others => '0'); -- in theory xnor (aka ==)
-    t2_shifter_op <= (others => '0'); -- shift by 0 (identity operation)
+    t2_logic_op   <= (others => '0');                              -- in theory xnor (aka ==)
+    t2_shifter_op <= (others => '0');                              -- shift by 0 (identity operation)
 
     case FUNC is
 
@@ -471,32 +470,32 @@ begin
         RES          <= p4_adder_s;
 
       when SUB =>
-        p4_adder_b   <= not B;                           -- Negate B to make the number 2's complement
-        p4_adder_cin <= '1';                             -- Add 1 to make B negative in 2's complement
+        p4_adder_b   <= not B;                                     -- Negate B to make the number 2's complement
+        p4_adder_cin <= '1';                                       -- Add 1 to make B negative in 2's complement
         RES          <= p4_adder_s;
 
       when BITAND =>
-        RES <= t2_logic_s;
-        t2_logic_op <= "0001";
+        RES         <= t2_logic_s;
+        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_and), DATA_W));
 
       when BITOR =>
-        RES <= t2_logic_s;
-        t2_logic_op <= "0111";
+        RES         <= t2_logic_s;
+        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_or), DATA_W));
 
       when BITXOR =>
-        RES <= t2_logic_s;
-        t2_logic_op <= "0110";
+        RES         <= t2_logic_s;
+        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_xor), DATA_W));
 
-      when LSL =>   -- Logical shift left
-        t2_shifter_op <= "00";
+      when LSL =>                                                  -- Logical shift left
+        t2_shifter_op <= t2_shifter_op_sll;
         RES           <= t2_shifter_s;
 
       when LSR =>
-        t2_shifter_op <= "01";
+        t2_shifter_op <= t2_shifter_op_srl;
         RES           <= t2_shifter_s;
 
-      when ASR =>                                        -- Arithmetic shift right
-        t2_shifter_op <= "10";
+      when ASR =>                                                  -- Arithmetic shift right
+        t2_shifter_op <= t2_shifter_op_sra;
         RES           <= t2_shifter_s;
 
       when RL =>
@@ -518,7 +517,7 @@ begin
         RES(0)<= '1' when a_u /= b_u else '0';
 
       when others =>
-        RES <= (others => '0');                          -- Disables latch inference
+        RES <= (others => '0');                                    -- Disables latch inference
 
     end case;
 
