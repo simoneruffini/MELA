@@ -90,7 +90,7 @@ architecture BEHAVIOURAL of CU is
 
   type writeback_stage_sig_t is record
     rf_wb_dmem_dout_sel : std_logic;
-    rf_wen         : std_logic;
+    rf_wen              : std_logic;
   end record writeback_stage_sig_t;
 
   ----------------------------------------------------------- FUNCTIONS
@@ -115,15 +115,15 @@ architecture BEHAVIOURAL of CU is
   );
   constant C_MEMORY_STAGE_SIG_0S    : memory_stage_sig_t :=
   (
-    dmem_wen => '0',
-    branch_en => '0',
-    jump_en   => '0',
-    comp_0_invert   => '0'
+    dmem_wen      => '0',
+    branch_en     => '0',
+    jump_en       => '0',
+    comp_0_invert => '0'
   );
   constant C_WRITEBACK_STAGE_SIG_0S : writeback_stage_sig_t :=
   (
     rf_wb_dmem_dout_sel => '0',
-    rf_wen         => '0'
+    rf_wen              => '0'
   );
 
   -- vsg_off constant_015 : vsg checking that constant have C_ prefix
@@ -152,7 +152,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'0'
@@ -167,7 +167,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -183,7 +183,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'0'
@@ -199,7 +199,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'1',
     alu_func            =>ADD,
-    comp_0_invert=>'1',
+    comp_0_invert       =>'1',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'0'
@@ -215,7 +215,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -231,7 +231,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>SUB,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -247,7 +247,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>BITAND,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -263,7 +263,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>BITOR,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -279,7 +279,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>BITXOR,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -295,7 +295,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>LSL,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -327,7 +327,23 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>LSR,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
+    dmem_wen            =>'0',
+    rf_wb_dmem_dout_sel =>'0',
+    rf_wen              =>'1'
+  );
+
+  constant ITYPE_SRAI_CW            : ctrl_word_t :=
+  (
+    branch_en           =>'0',
+    jump_en             =>'0',
+    jal_en              =>'0',
+    j_type_imm_sel      =>'0',
+    r_type_sel          =>'0',
+    imm_sel             =>'1',
+    pc_pls_4_sel        =>'0',
+    alu_func            =>ASR,
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -343,7 +359,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>NEQ,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -359,7 +375,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>LEQ,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -375,7 +391,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>GEQ,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
     rf_wen              =>'1'
@@ -391,7 +407,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'1',
     rf_wen              =>'1'
@@ -407,7 +423,7 @@ architecture BEHAVIOURAL of CU is
     imm_sel             =>'1',
     pc_pls_4_sel        =>'0',
     alu_func            =>ADD,
-    comp_0_invert=>'0',
+    comp_0_invert       =>'0',
     dmem_wen            =>'1',
     rf_wb_dmem_dout_sel =>'1',
     rf_wen              =>'1'
@@ -461,6 +477,7 @@ architecture BEHAVIOURAL of CU is
     SLLI_OPCODE_i => ITYPE_SLLI_CW,
     NOP_OPCODE_i  => NOP_CW,
     SRLI_OPCODE_i => ITYPE_SRLI_CW,
+    SRAI_OPCODE_i => ITYPE_SRAI_CW,
     SNEI_OPCODE_i => ITYPE_SNEI_CW,
     SLEI_OPCODE_i => ITYPE_SLEI_CW,
     SGEI_OPCODE_i => ITYPE_SGEI_CW,
@@ -584,8 +601,8 @@ begin
                );
 
   writeback_sig <= (
-                  rf_wb_dmem_dout_sel => control_word.rf_wb_dmem_dout_sel,
-                  rf_wen         => control_word.rf_wen
+                    rf_wb_dmem_dout_sel => control_word.rf_wb_dmem_dout_sel,
+                    rf_wen         => control_word.rf_wen
                   );
 
   -- Final Control Word Output with pre-delayed control signals

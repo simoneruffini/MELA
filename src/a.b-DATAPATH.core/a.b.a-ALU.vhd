@@ -332,15 +332,15 @@ begin
 
       when BITAND =>
         RES         <= t2_logic_s;
-        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_and), DATA_W));
+        t2_logic_op <= std_logic_vector(resize(unsigned(C_T2_LOGIC_OP_AND), DATA_W));
 
       when BITOR =>
         RES         <= t2_logic_s;
-        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_or), DATA_W));
+        t2_logic_op <= std_logic_vector(resize(unsigned(C_T2_LOGIC_OP_OR), DATA_W));
 
       when BITXOR =>
         RES         <= t2_logic_s;
-        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_xor), DATA_W));
+        t2_logic_op <= std_logic_vector(resize(unsigned(C_T2_LOGIC_OP_XOR), DATA_W));
 
       when LSL =>
         RES <= std_logic_vector(SHIFT_LEFT(a_u, shift_amount));   -- Logical shift left
@@ -476,26 +476,26 @@ begin
 
       when BITAND =>
         RES         <= t2_logic_s;
-        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_and), DATA_W));
+        t2_logic_op <= std_logic_vector(resize(unsigned(C_T2_LOGIC_OP_AND), DATA_W));
 
       when BITOR =>
         RES         <= t2_logic_s;
-        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_or), DATA_W));
+        t2_logic_op <= std_logic_vector(resize(unsigned(C_T2_LOGIC_OP_OR), DATA_W));
 
       when BITXOR =>
         RES         <= t2_logic_s;
-        t2_logic_op <= std_logic_vector(resize(unsigned(t2_logic_op_xor), DATA_W));
+        t2_logic_op <= std_logic_vector(resize(unsigned(C_T2_LOGIC_OP_XOR), DATA_W));
 
       when LSL =>                                                  -- Logical shift left
-        t2_shifter_op <= t2_shifter_op_sll;
+        t2_shifter_op <= C_T2_SHIFTER_OP_SLL;
         RES           <= t2_shifter_s;
 
       when LSR =>
-        t2_shifter_op <= t2_shifter_op_srl;
+        t2_shifter_op <= C_T2_SHIFTER_OP_SRL;
         RES           <= t2_shifter_s;
 
       when ASR =>                                                  -- Arithmetic shift right
-        t2_shifter_op <= t2_shifter_op_sra;
+        t2_shifter_op <= C_T2_SHIFTER_OP_SRA;
         RES           <= t2_shifter_s;
 
       when RL =>
