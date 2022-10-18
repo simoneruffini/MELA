@@ -162,7 +162,8 @@ architecture BEHAV_P4ADD of ALU is
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  --P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
     )
@@ -277,7 +278,8 @@ architecture BEHAV_P4ADD_T2LOGIC of ALU is
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  --P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
     )
@@ -409,7 +411,8 @@ architecture STRUCTURAL of ALU is
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  --P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+  P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
     )
