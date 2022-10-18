@@ -244,6 +244,20 @@ begin
            imm_i_type_ext_d;
 
   ----------------------------------------------------------- PIPELINE REGISTERS
+
+  U_PC_PLS_4_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+    generic map (
+      DATA_W => pc_pls_4_d'length, INIT_VAL => C_REG_INIT_VAL
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN_N   => '0',
+      INIT   => '0',
+      DIN    => pc_pls_4_f,
+      DOUT   => pc_pls_4_e
+    );
+
   U_RF_DOUT1_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => rf_dout1_d'length, INIT_VAL => C_REG_INIT_VAL
