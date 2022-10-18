@@ -43,7 +43,7 @@ nop
 nop
 nop
 nop
-xor  r10,r9,r7
+xor r10,r9,r7
 nop
 nop
 nop
