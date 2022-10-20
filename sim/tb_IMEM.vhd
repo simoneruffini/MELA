@@ -40,7 +40,7 @@ begin
       DATA_W => 32
     )
     port map (
-    clk,
+    --clk,
     rst,
     raddr,
     dout

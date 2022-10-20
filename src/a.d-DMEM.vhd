@@ -5,13 +5,13 @@
 -- Create Date:     Mon Sep 26 03:57:07 PM CEST 2022
 -- Module Name:     DMEM
 -- Project Name:    DLX
--- Description:     Data Memory, 1 shared read write port, 1 data in port
+-- Description:     Data Memory
 --
 -- Revision:
 -- Revision 00 - Simone Ruffini
 --  * Created
 -- Additional Comments:
---
+--  1 shared read write port, 1 data in port, asynchronous, word adressed
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -32,7 +32,7 @@ entity DMEM is
     DATA_W : integer  -- Data memory data port bit width
   );
   port (
-    CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
+    -- CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
     RST_AN : in    std_logic;                             -- Reset Signal: Asyncronous Active Low (Negative)
     RWADDR : in    std_logic_vector(ADDR_W - 1 downto 0); -- Read Write Address Port
     WEN    : in    std_logic;                             -- Write Enable port, active high
@@ -84,37 +84,40 @@ architecture BEHAVIOURAL of DMEM is
 
   end function;
 
-  signal mem   : mem_type := initramfromfile("../src/00-common.core/004-DMEM_INIT_FILE.txt");
+  signal mem              : mem_type := initramfromfile("../src/00-common.core/004-DMEM_INIT_FILE.txt");
 
-  signal truncated_rwaddr: std_logic_vector((ADDR_W -2)-1 downto 0); -- Word-addressed read address
+  signal truncated_rwaddr : std_logic_vector((ADDR_W - 2) - 1 downto 0); -- Word-addressed read address
 
-  ----------------------------------------------------------- CONSTANTS 2
+----------------------------------------------------------- CONSTANTS 2
 
-  ----------------------------------------------------------- SIGNALS
+----------------------------------------------------------- SIGNALS
 
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
-  truncated_rwaddr <= RWADDR(RWADDR'length-1 downto 2);
+  -- this memory doesn't have byte adressing
+  truncated_rwaddr <= RWADDR(RWADDR'length-1 downto 2); 
 
-  ----------------------------------------------------------- PROCESSES
-
-  P_READ : process (CLK, RST_AN) is
+  --P_WRITE_AND_READ : process (CLK, RST_AN) is
+  P_WRITE_AND_READ : process (RST_AN,DIN,truncated_rwaddr,WEN) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
-    elsif (CLK = '1' and CLK'event) then
+    -- elsif (CLK = '1' and CLK'event) then
+    else
       DOUT <= mem(to_integer(unsigned(truncated_rwaddr)));
 
       if (WEN = '1') then
         mem(to_integer(unsigned(truncated_rwaddr))) <= DIN;
-        DOUT                              <= DIN;
+        DOUT                                        <= DIN; -- do not infer latch just propagate input
       end if;
     end if;
 
-  end process P_READ;
+  end process P_WRITE_AND_READ;
+
+  ----------------------------------------------------------- SEQUENTIAL
 
 end architecture BEHAVIOURAL;

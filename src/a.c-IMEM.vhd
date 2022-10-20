@@ -5,13 +5,13 @@
 -- Create Date:     Mon Sep 26 03:57:07 PM CEST 2022
 -- Module Name:     IMEM
 -- Project Name:    DLX
--- Description:     Instruction Memory, 1 read port
+-- Description:     Instruction Memory
 --
 -- Revision:
 -- Revision 00 - Bonora Matteo
 --  * Created
 -- Additional Comments:
---
+-- 1 read port 1 out port, asynchronous, word adressed 
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -32,7 +32,7 @@ entity IMEM is
     DATA_W : integer  -- Instruction memory data port bit width
   );
   port (
-    CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
+    -- CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
     RST_AN : in    std_logic;                             -- Reset Signal: Asyncronous Active Low (Negative)
     RADDR  : in    std_logic_vector(ADDR_W - 1 downto 0); -- Read Address Port
     DOUT   : out   std_logic_vector(DATA_W - 1 downto 0)  -- Data Output Port
@@ -82,9 +82,9 @@ architecture BEHAVIOURAL of IMEM is
 
   end function;
 
-  signal mem   : mem_type := initramfromfile("../src/00-common.core/003-IMEM_INIT_FILE.txt");
+  signal mem             : mem_type := initramfromfile("../src/00-common.core/003-IMEM_INIT_FILE.txt");
 
-  signal truncated_raddr: std_logic_vector((ADDR_W -2)-1 downto 0); -- Word-addressed read address
+  signal truncated_raddr : std_logic_vector((ADDR_W - 2) - 1 downto 0); -- Word-addressed read address
 
 ----------------------------------------------------------- CONSTANTS 2
 
@@ -97,17 +97,19 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
   truncated_raddr <= RADDR(RADDR'length-1 downto 2);
 
-  ----------------------------------------------------------- PROCESSES
-
-  P_READ : process (CLK, RST_AN) is
+  --P_READ : process (CLK, RST_AN) is
+  P_READ : process (RST_AN,truncated_raddr) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
-    elsif (CLK = '1' and CLK'event) then
+    -- elsif (CLK = '1' and CLK'event) then
+    else
       DOUT <= mem(to_integer(unsigned(truncated_raddr)));
     end if;
 
   end process P_READ;
+
+  ----------------------------------------------------------- SEQUENTIAL
 
 end architecture BEHAVIOURAL;
