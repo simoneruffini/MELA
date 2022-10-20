@@ -36,3 +36,5 @@ fi
 echo "Linking '$output_dir/${asmfile}_dump.txt' to '$(realpath -s $2)' "
 ## found here https://unix.stackexchange.com/a/513357
 ln -fs $(realpath --relative-to="$(dirname "$2")" "$output_dir/${asmfile}_dump.txt") "$2"
+## sanity check 
+ls -l --color=always "$2"
