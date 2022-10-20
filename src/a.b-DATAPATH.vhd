@@ -254,7 +254,7 @@ begin
       RST_AN => RST_AN,
       EN_N   => '0',
       INIT   => '0',
-      DIN    => pc_pls_4_f,
+      DIN    => pc_pls_4_d,
       DOUT   => pc_pls_4_e
     );
 
