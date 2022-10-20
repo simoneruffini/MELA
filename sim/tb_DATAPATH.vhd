@@ -49,14 +49,14 @@ architecture BEHAVIOURAL of TB_DATAPATH is
 
   ----------------------------------------------------------- SIGNALS
 
-  signal clk                        : std_logic;
-  signal rst_an                     : std_logic;
-  signal ctrl_word                  : ctrl_word_t;
-  signal IMEM_ADDR        :    std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);  -- Instructin Memory read address
-  signal IMEM_DOUT        :    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructino Memory data output
-  signal DMEM_RWADDR      :    std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);  -- Data Memory read/write address
-  signal DMEM_DIN         :    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory data input
-  signal DMEM_DOUT        :    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);   -- Data Memory data output
+  signal clk              : std_logic;
+  signal rst_an           : std_logic;
+  signal ctrl_word        : ctrl_word_t;
+  signal IMEM_ADDR        : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);  -- Instructin Memory read address
+  signal IMEM_DOUT        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructino Memory data output
+  signal DMEM_RWADDR      : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);  -- Data Memory read/write address
+  signal DMEM_DIN         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory data input
+  signal DMEM_DOUT        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);   -- Data Memory data output
 
   -- this needs to be in the top level
   signal assertion_test_output      : natural := dlx_pkg_check_assertions;

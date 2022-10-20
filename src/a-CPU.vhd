@@ -27,10 +27,10 @@ library work;
 
 entity CPU is
   port (
-    CLK              : in    std_logic; -- Clock Signal (rising-edge trigger)
-    RST_AN           : in    std_logic;  -- Reset Signal: Asyncronous Active Low (Negative)
+    CLK              : in    std_logic;                                   -- Clock Signal (rising-edge trigger)
+    RST_AN           : in    std_logic;                                   -- Reset Signal: Asyncronous Active Low (Negative)
     -- DEBUG ports
-    INSTR            : out   std_logic_vector(C_ARCH_WORD_W -1 downto 0) -- Instruction Word
+    INSTR            : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0) -- Instruction Word
   );
 end entity CPU;
 
@@ -59,7 +59,7 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  U_CU : entity work.cu(Behavioural)
+  U_CU : entity work.cu(BEHAVIOURAL)
     port map (
       CLK       => CLK,
       RST_AN    => RST_AN,
@@ -67,19 +67,19 @@ begin
       CTRL_WORD => ctrl_word
     );
 
-  U_IMEM : entity work.imem(Behavioural)
+  U_IMEM : entity work.imem(BEHAVIOURAL)
     generic map (
       ADDR_W => C_IMEM_ADDR_W,
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      CLK    => CLK,
+      --CLK    => CLK,
       RST_AN => RST_AN,
       RADDR  => imem_addr,
       DOUT   => imem_dout
     );
 
-  U_DATAPATH : entity work.datapath(Behavioural)
+  U_DATAPATH : entity work.datapath(BEHAVIOURAL)
     port map (
       CLK         => CLK,
       RST_AN      => RST_AN,
@@ -91,7 +91,7 @@ begin
       DMEM_DOUT   => dmem_dout
     );
 
-  U_DMEM : entity work.dmem(Behavioural)
+  U_DMEM : entity work.dmem(BEHAVIOURAL)
     generic map (
       ADDR_W => C_DMEM_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -105,10 +105,10 @@ begin
       DOUT   => dmem_dout
     );
 
------------------------------------------------------------ COMBINATORIAL
-INSTR<=imem_dout;
+  ----------------------------------------------------------- COMBINATORIAL
+  INSTR <= imem_dout;
 
------------------------------------------------------------ PROCESSES
+----------------------------------------------------------- SEQUENTIAL
 
 end architecture BEHAVIOURAL;
 
