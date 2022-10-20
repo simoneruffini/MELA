@@ -107,12 +107,6 @@ begin
       when ASR =>
         RES <= std_logic_vector(SHIFT_RIGHT(a_s, shift_amount));  -- arithmetic shift right
 
-      when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
-
-      when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, shift_amount)); -- rotate right
-
       when GEQ =>
         RES <= (others => '0');
         RES(0)<= '1' when a_u >= b_u else '0';
@@ -219,12 +213,6 @@ begin
 
       when ASR =>
         RES <= std_logic_vector(SHIFT_RIGHT(a_s, shift_amount));  -- arithmetic shift right
-
-      when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
-
-      when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, shift_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');
@@ -350,12 +338,6 @@ begin
 
       when ASR =>
         RES <= std_logic_vector(SHIFT_RIGHT(a_s, shift_amount));  -- arithmetic shift right
-
-      when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  shift_amount)); -- rotate left
-
-      when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, shift_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');
@@ -497,12 +479,6 @@ begin
       when ASR =>                                                  -- Arithmetic shift right
         t2_shifter_op <= C_T2_SHIFTER_OP_SRA;
         RES           <= t2_shifter_s;
-
-      when RL =>
-        RES <= std_logic_vector(ROTATE_LEFT(a_u,  rotate_amount)); -- rotate left
-
-      when RR =>
-        RES <= std_logic_vector(ROTATE_RIGHT(a_u, rotate_amount)); -- rotate right
 
       when GEQ =>
         RES <= (others => '0');
