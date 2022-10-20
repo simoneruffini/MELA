@@ -31,6 +31,7 @@ package DLX_ISA_ENC_PKG is
   type instr_t is (
     SLLx,
     SRLx,
+    SRAx,
     ADDx,
     SUBx,
     ANDx,
@@ -173,21 +174,22 @@ package body DLX_ISA_ENC_PKG is
 
   -- Prints the enum instruction rappresentation of instr
   function print_instr(instr: std_logic_vector) return instr_t is 
-    variable opcode_u : std_logic_vector(C_INSTR_OPCODE_W-1 downto 0);
-    variable func_u : std_logic_vector(C_INSTR_FUNC_W-1 downto 0);
-    variable opcode : integer;
-    variable func : integer;
+    variable opcode_slv : std_logic_vector(C_INSTR_OPCODE_W-1 downto 0);
+    variable func_slv   : std_logic_vector(C_INSTR_FUNC_W-1 downto 0);
+    variable opcode     : integer;
+    variable func       : integer;
   begin
-    opcode_u := INSTR((C_INSTR_OPCODE_START_POS_BIT + C_INSTR_OPCODE_W) - 1 downto C_INSTR_OPCODE_START_POS_BIT);
-    func_u   := INSTR((C_INSTR_FUNC_START_POS_BIT + C_INSTR_FUNC_W) - 1 downto C_INSTR_FUNC_START_POS_BIT);
-    opcode := to_integer(unsigned(opcode_u));
-    func   := to_integer(unsigned(func_u));
+    opcode_slv := INSTR((C_INSTR_OPCODE_START_POS_BIT + C_INSTR_OPCODE_W) - 1 downto C_INSTR_OPCODE_START_POS_BIT);
+    func_slv   := INSTR((C_INSTR_FUNC_START_POS_BIT + C_INSTR_FUNC_W) - 1 downto C_INSTR_FUNC_START_POS_BIT);
+    opcode     := to_integer(unsigned(opcode_slv));
+    func       := to_integer(unsigned(func_slv));
 
     case (opcode) is  
       when RTYPE_OPCODE_i=> 
         case (func) is
           when SLL_FUNC_i  => return sllx;
           when SRL_FUNC_i  => return srlx;
+          when SRA_FUNC_i  => return srax;
           when ADD_FUNC_i  => return addx;
           when SUB_FUNC_i  => return subx;
           when AND_FUNC_i  => return andx;
