@@ -11,7 +11,7 @@
 -- Revision 00 - Bonora Matteo
 --  * Created
 -- Additional Comments:
--- 1 read port 1 out port, asynchronous, word adressed 
+-- 1 read port 1 out port, asynchronous, word adressed
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -22,6 +22,8 @@ library ieee;
   use ieee.std_logic_textio.all; -- synopsis
 
 library std;
+  use work.dlx_pkg.all;
+  use work.dlx_isa_enc_pkg.all;
   use std.textio.all;
 
 ------------------------------------------------------------- ENTITY
@@ -97,19 +99,20 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
   truncated_raddr <= RADDR(RADDR'length-1 downto 2);
 
-  --P_READ : process (CLK, RST_AN) is
-  P_READ : process (RST_AN,truncated_raddr) is
+  -- P_READ : process (CLK, RST_AN) is
+  P_READ : process (RST_AN, truncated_raddr) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
     -- elsif (CLK = '1' and CLK'event) then
-    else
-      DOUT <= mem(to_integer(unsigned(truncated_raddr)));
+    elsif (to_integer(unsigned(RADDR)) = (2 ** ADDR_W) - 1) then
+      -- The last address of the IMEM is where the PC is pointing when is reset. In order to not mess up the start, we need NOP here.
+      DOUT <= std_logic_vector(shift_left(resize(unsigned(NOP_OPCODE), DATA_W), DATA_W - C_INSTR_OPCODE_W));
     end if;
 
   end process P_READ;
 
-  ----------------------------------------------------------- SEQUENTIAL
+----------------------------------------------------------- SEQUENTIAL
 
 end architecture BEHAVIOURAL;

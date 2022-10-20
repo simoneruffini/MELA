@@ -29,7 +29,7 @@ architecture TEST of IMEM_TB is
 
   signal clk   : std_logic := '0';
   signal rst   : std_logic := '1';
-  signal raddr : std_logic_vector(8 - 1 downto 0) := "10101010";
+  signal raddr : std_logic_vector(8 - 1 downto 0) := "11111111";
   signal dout  : std_logic_vector(32 - 1 downto 0);
 
 begin
