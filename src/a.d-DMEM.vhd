@@ -69,7 +69,7 @@ architecture BEHAVIOURAL of DMEM is
     while not endfile(RamFile) loop
 
       assert i < (2 ** ADDR_W)
-        report "Instruction file size exceeds memory size"
+        report "Data memory file size exceeds memory size"
         severity failure;
 
       readline (RamFile, ramfileline);
