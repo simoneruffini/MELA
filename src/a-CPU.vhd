@@ -97,7 +97,7 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      CLK    => CLK,
+      --CLK    => CLK,
       RST_AN => RST_AN,
       RWADDR => dmem_rwaddr,
       WEN    => ctrl_word.dmem_wen,
