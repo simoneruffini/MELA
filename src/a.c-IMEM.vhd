@@ -25,6 +25,8 @@ library work;
   use work.vhdl_help_func_pkg.all;
 
 library std;
+  use work.dlx_pkg.all;
+  use work.dlx_isa_enc_pkg.all;
   use std.textio.all;
 
 ------------------------------------------------------------- ENTITY
@@ -128,8 +130,9 @@ begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
-    else
-      DOUT <= mem(to_integer(unsigned(truncated_raddr)));
+    elsif (to_integer(unsigned(RADDR)) = (2 ** ADDR_W) - 1) then
+      -- The last address of the IMEM is where the PC is pointing when is reset. In order to not mess up the start, we need NOP here.
+      DOUT <= std_logic_vector(shift_left(resize(unsigned(NOP_OPCODE), DATA_W), DATA_W - C_INSTR_OPCODE_W));
     end if;
 
   end process P_READ;
