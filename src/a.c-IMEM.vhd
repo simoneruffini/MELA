@@ -106,6 +106,8 @@ architecture BEHAVIOURAL of IMEM is
 
     end if;
 
+    ram(63) := std_logic_vector(shift_left(resize(unsigned(NOP_OPCODE), DATA_W), DATA_W - C_INSTR_OPCODE_W));
+
     return ram;
 
   end function;
@@ -130,9 +132,10 @@ begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
-    elsif (to_integer(unsigned(RADDR)) = (2 ** ADDR_W) - 1) then
-      -- The last address of the IMEM is where the PC is pointing when is reset. In order to not mess up the start, we need NOP here.
-      DOUT <= std_logic_vector(shift_left(resize(unsigned(NOP_OPCODE), DATA_W), DATA_W - C_INSTR_OPCODE_W));
+    else
+
+      DOUT <= mem(to_integer(unsigned(truncated_raddr)));
+
     end if;
 
   end process P_READ;

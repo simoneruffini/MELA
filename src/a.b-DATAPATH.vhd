@@ -274,13 +274,6 @@ begin
 
   end process P_EXTRACT_FROM_INSTR;
 
-  -- rs1_d <= instr_d((C_INSTR_RS1_START_POS_BIT + C_INSTR_RS1_W) - 1 downto C_INSTR_RS1_START_POS_BIT);
-  -- rs2_d <= instr_d((C_INSTR_RS2_START_POS_BIT + C_INSTR_RS2_W) - 1 downto C_INSTR_RS2_START_POS_BIT);
-  -- rs3_d <= instr_d((C_INSTR_RS3_START_POS_BIT + C_INSTR_RS3_W) - 1 downto C_INSTR_RS3_START_POS_BIT);
-
-  -- imm_i_type_d <= instr_d((C_INSTR_I_TYPE_IMM_START_POS_BIT + C_INSTR_I_TYPE_IMM_W) - 1 downto C_INSTR_I_TYPE_IMM_START_POS_BIT);
-  -- imm_j_type_d <= instr_d((C_INSTR_J_TYPE_IMM_START_POS_BIT + C_INSTR_J_TYPE_IMM_W) - 1 downto C_INSTR_J_TYPE_IMM_START_POS_BIT);
-
   -- SIGN EXTEND on immediate for I-type instructions
   imm_i_type_ext_d <= std_logic_vector(resize(signed(imm_i_type_d), C_ARCH_WORD_W));
 
