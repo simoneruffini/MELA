@@ -24,19 +24,26 @@ library ieee;
 
 library work;
   use work.dlx_pkg.all;
+  use work.dlx_isa_enc_pkg.all;
 
 ------------------------------------------------------------- ENTITY
 
 entity DATAPATH is
   port (
-    CLK              : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
-    RST_AN           : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
-    CTRL_WORD        : in    ctrl_word_t;                                   -- Control Word from CU
-    IMEM_ADDR        : out   std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);  -- Instructin Memory read address
-    IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructino Memory data output
-    DMEM_RWADDR      : out   std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);  -- Data Memory read/write address
-    DMEM_DIN         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory data input
-    DMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)   -- Data Memory data output
+    CLK              : in    std_logic;                                       -- Clock Signal (rising-edge trigger)
+    RST_AN           : in    std_logic;                                       -- Reset Signal: Asyncronous Active Low (Negative)
+    -- CU ports
+    CTRL_WORD        : in    ctrl_word_t;                                     -- Control Word from CU
+    INSTR_CU         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- instruction word to CU at fetch stage
+    -- HU ports
+    HZRD_SIG         : in    hzrd_sig_t;                                      -- hazard signals from HU
+    DP_SIG           : out   dp_sig_t;                                        -- some datapath signals used by HU
+    -- xMEM ports
+    IMEM_ADDR        : out   std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);    -- Instructin Memory read address
+    IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructino Memory data output
+    DMEM_RWADDR      : out   std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);    -- Data Memory read/write address
+    DMEM_DIN         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Data Memory data input
+    DMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)     -- Data Memory data output
   );
 end entity DATAPATH;
 
@@ -46,7 +53,8 @@ architecture BEHAVIOURAL of DATAPATH is
 
   ----------------------------------------------------------- CONSTANTS 1
   constant C_REG_INIT_VAL   : integer := 0;
-
+  -- TODO fix this costant
+  constant C_PC_INIT_VAL    : std_logic_vector(C_ARCH_WORD_W - 1 downto 0) := (1=>'0', 0=>'0', others => '1');
   ----------------------------------------------------------- TYPES
 
   ----------------------------------------------------------- FUNCTIONS
@@ -54,6 +62,7 @@ architecture BEHAVIOURAL of DATAPATH is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
+  signal pc_init            : std_logic;
 
   -- Fetch Stage Signals (_f)
 
@@ -67,6 +76,7 @@ architecture BEHAVIOURAL of DATAPATH is
 
   signal pc_pls_4_d         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);        -- see in fetch stage
   signal instr_d            : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);        -- see in fetch stage
+  signal instr_opcode_d     : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);     -- extracted opcode from instruction
   signal rs1_d              : std_logic_vector(C_INSTR_RS2_W - 1 downto 0);
   signal rs2_d              : std_logic_vector(C_INSTR_RS2_W - 1 downto 0);
   signal rs3_d              : std_logic_vector(C_INSTR_RS3_W - 1 downto 0);
@@ -81,6 +91,8 @@ architecture BEHAVIOURAL of DATAPATH is
   signal rf_dout2_d         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
 
   -- Execute Stage Signals (_e)
+  signal instr_opcode_e     : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);     -- see in decode stage
+
   signal rs2_e              : std_logic_vector(C_INSTR_RS2_W - 1 downto 0);
   signal rs3_e              : std_logic_vector(C_INSTR_RS3_W - 1 downto 0);
 
@@ -98,6 +110,8 @@ architecture BEHAVIOURAL of DATAPATH is
   signal is_0_e             : std_logic;
 
   -- Memory Stage Signals (_m)
+  signal instr_opcode_m     : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);     -- see in execute stage
+
   signal alu_out_m          : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_din_m         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_dout_m        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
@@ -113,34 +127,53 @@ architecture BEHAVIOURAL of DATAPATH is
 
 begin
 
-  --*************************************************************************** FETCH STAGE
+  --*************************************************************************** PROGRAM COUNTER
   --*********************************************************************************************
+  -- the program counter is a CLK cycle on it's own so it is not directly part of the FETCH stage
 
-  ----------------------------------------------------------- ENTITY DEFINITION
-  U_PC_REG : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_PC_REG : entity work.reg_pipo(BEHAV_WITH_EN_RSTINIT)
     generic map (
-      DATA_W => pc_f'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => pc_f'length, INIT_VAL => C_PC_INIT_VAL, RST_INIT_VAL => C_PC_INIT_VAL
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => pc_init,
       DIN    => npc_f,
       DOUT   => pc_f
     );
 
-  -- U_IMEM : entity work.imem(Behavioural)
-  --  generic map (
-  --    ADDR_W => C_IMEM_ADDR_W,
-  --    DATA_W => C_ARCH_WORD_W
-  --  )
-  --  port map (
-  --    CLK    => CLK,
-  --    RST_AN => RST_AN,
-  --    RADDR  => pc_pls_4_f,
-  --    DOUT   => instr_f
-  --  );
+  -- **** THIS CODE CAN BE ADDED IF THERE ARE BUGS (AT PHYSICAL LEVEL) ****
+  -- It solves glitches at program start inserting one extra NOP instruction
+  --
+  -- HOWTO:
+  -- 1) comment the below assignment
+  -- 2) UNcomment U_INIT_PC process
+  -- 3) change U_PC_REG instantiation to use BEHAV_WITH_EN_INIT_RSTINIT architecture
+
+  pc_init <= '0';
+
+  -- This process initializes synchronously the PC so that its value is 0 for
+  -- the first CLK cycle
+  -- NOTE: the reset signal is used "inproperly" i.e. synchronously
+  --       therefore RST_AN is not in the sensitivity list
+  -- U_INIT_PC : process (CLK) is
+  -- begin
+
+  --  if (CLK'event and CLK = '1') then
+  --    pc_init <= '0';
+  --    if(RST_AN = '0') then
+  --      pc_init <= '1';
+  --    end if;
+  --  end if;
+
+  -- end process U_INIT_PC;
+
+  --*************************************************************************** FETCH STAGE
+  --*********************************************************************************************
+
+  ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
 
@@ -150,6 +183,8 @@ begin
   IMEM_ADDR <= std_logic_vector(resize(unsigned(pc_f), IMEM_ADDR'length));
 
   instr_f <= IMEM_DOUT;
+
+  INSTR_CU <= instr_f;
 
   -- PC + 4 adder
   pc_pls_4_f <= std_logic_vector(to_unsigned(to_integer(unsigned(pc_f)) + 4, pc_pls_4_f'length));
@@ -163,40 +198,47 @@ begin
   npc_f <= alu_out_m when npc_sel_f = '1' else
            pc_pls_4_f;
 
-  ----------------------------------------------------------- PIPELINE REGISTERS
+  -----------------------------------------------------------------------------------------------
 
-  U_PC_PLS_4_REG_F : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  --*********************************************************** PIPELINE REGISTERS FETCH/DECODE
+  --*********************************************************************************************
+
+  -- TODO: rethink this design it gets busier the more registers we need maybe use a generate block
+
+  U_PC_PLS_4_REG_FD : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => pc_pls_4_f'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => pc_pls_4_f'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_f'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_fd,
       DIN    => pc_pls_4_f,
       DOUT   => pc_pls_4_d
     );
 
-  U_INSTR_REG_F : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_INSTR_REG_FD : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => instr_f'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => instr_f'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_f'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_fd,
       DIN    => instr_f,
       DOUT   => instr_d
     );
+
+  -----------------------------------------------------------------------------------------------
 
   --*************************************************************************** DECODE STAGE
   --*********************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  U_RF : entity work.rf(Behavioural)
+  U_RF : entity work.rf(BEHAVIOURAL)
     generic map (
       ADDR_W => C_RF_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -218,12 +260,26 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
 
-  rs1_d <= instr_d((C_INSTR_RS1_START_POS_BIT + C_INSTR_RS1_W) - 1 downto C_INSTR_RS1_START_POS_BIT);
-  rs2_d <= instr_d((C_INSTR_RS2_START_POS_BIT + C_INSTR_RS2_W) - 1 downto C_INSTR_RS2_START_POS_BIT);
-  rs3_d <= instr_d((C_INSTR_RS3_START_POS_BIT + C_INSTR_RS3_W) - 1 downto C_INSTR_RS3_START_POS_BIT);
+  P_EXTRACT_FROM_INSTR : process (instr_d) is
+  begin
 
-  imm_i_type_d <= instr_d((C_INSTR_I_TYPE_IMM_START_POS_BIT + C_INSTR_I_TYPE_IMM_W) - 1 downto C_INSTR_I_TYPE_IMM_START_POS_BIT);
-  imm_j_type_d <= instr_d((C_INSTR_J_TYPE_IMM_START_POS_BIT + C_INSTR_J_TYPE_IMM_W) - 1 downto C_INSTR_J_TYPE_IMM_START_POS_BIT);
+    instr_opcode_d <= get_opcode(instr_d);
+
+    rs1_d <= get_rs1(instr_d);
+    rs2_d <= get_rs2(instr_d);
+    rs3_d <= get_rs3(instr_d);
+
+    imm_i_type_d <= get_i_type_imm(instr_d);
+    imm_j_type_d <= get_j_type_imm(instr_d);
+
+  end process P_EXTRACT_FROM_INSTR;
+
+  -- rs1_d <= instr_d((C_INSTR_RS1_START_POS_BIT + C_INSTR_RS1_W) - 1 downto C_INSTR_RS1_START_POS_BIT);
+  -- rs2_d <= instr_d((C_INSTR_RS2_START_POS_BIT + C_INSTR_RS2_W) - 1 downto C_INSTR_RS2_START_POS_BIT);
+  -- rs3_d <= instr_d((C_INSTR_RS3_START_POS_BIT + C_INSTR_RS3_W) - 1 downto C_INSTR_RS3_START_POS_BIT);
+
+  -- imm_i_type_d <= instr_d((C_INSTR_I_TYPE_IMM_START_POS_BIT + C_INSTR_I_TYPE_IMM_W) - 1 downto C_INSTR_I_TYPE_IMM_START_POS_BIT);
+  -- imm_j_type_d <= instr_d((C_INSTR_J_TYPE_IMM_START_POS_BIT + C_INSTR_J_TYPE_IMM_W) - 1 downto C_INSTR_J_TYPE_IMM_START_POS_BIT);
 
   -- SIGN EXTEND on immediate for I-type instructions
   imm_i_type_ext_d <= std_logic_vector(resize(signed(imm_i_type_d), C_ARCH_WORD_W));
@@ -243,85 +299,103 @@ begin
   imm_d <= imm_j_type_ext_d when CTRL_WORD.j_type_imm_sel = '1' else
            imm_i_type_ext_d;
 
-  ----------------------------------------------------------- PIPELINE REGISTERS
+  -----------------------------------------------------------------------------------------------
 
-  U_PC_PLS_4_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  --*********************************************************** PIPELINE REGISTERS DECODE/EXECUTE
+  --*********************************************************************************************
+
+  U_INSTR_OPCODE_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => pc_pls_4_d'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => instr_opcode_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_opcode_d'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
+      DIN    => instr_opcode_d,
+      DOUT   => instr_opcode_e
+    );
+
+  U_PC_PLS_4_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+    generic map (
+      DATA_W => pc_pls_4_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_d'length))
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
       DIN    => pc_pls_4_d,
       DOUT   => pc_pls_4_e
     );
 
-  U_RF_DOUT1_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_DOUT1_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => rf_dout1_d'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => rf_dout1_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_dout1_d'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
       DIN    => rf_dout1_d,
       DOUT   => rf_dout1_e
     );
 
-  U_RF_DOUT2_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_DOUT2_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => rf_dout2_d'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => rf_dout2_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_dout2_d'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
       DIN    => rf_dout2_d,
       DOUT   => rf_dout2_e
     );
 
-  U_IMM_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_IMM_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => imm_d'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => imm_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,imm_d'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
       DIN    => imm_d,
       DOUT   => imm_e
     );
 
-  U_RS2_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RS2_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => rs2_d'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => rs2_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rs2_d'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
       DIN    => rs2_d,
       DOUT   => rs2_e
     );
 
-  U_RS3_REG_D : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RS3_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => rs3_d'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => rs3_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rs3_d'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_de,
       DIN    => rs3_d,
       DOUT   => rs3_e
     );
+
+  -----------------------------------------------------------------------------------------------
 
   --*************************************************************************** EXECUTE STAGE
   --*****************************************************************************************
@@ -359,127 +433,140 @@ begin
   -- Alias Signals for naming purposes
   dmem_din_e <= rf_dout2_e;
 
-  ----------------------------------------------------------- PIPELINE REGISTERS
+  -----------------------------------------------------------------------------------------------
 
-  -- TODO: rethink this design it gets busier the more registers we need maybe use a generate block
-  U_REG_ALU_OUT_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  --*********************************************************** PIPELINE REGISTERS EXECUTE/MEMORY
+  --*********************************************************************************************
+
+  U_INSTR_OPCODE_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => alu_out_e'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => instr_opcode_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_opcode_e'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_em,
+      DIN    => instr_opcode_e,
+      DOUT   => instr_opcode_m
+    );
+
+  U_ALU_OUT_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+    generic map (
+      DATA_W => alu_out_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_e'length))
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_em,
       DIN    => alu_out_e,
       DOUT   => alu_out_m
     );
 
-  U_REG_DMEM_DOUT_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_DMEM_DOUT_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => dmem_din_e'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => dmem_din_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,dmem_din_e'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_em,
       DIN    => dmem_din_e,
       DOUT   => dmem_din_m
     );
 
-  U_REG_RF_WADDR_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_WADDR_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => rf_waddr_e'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => rf_waddr_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_waddr_e'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_em,
       DIN    => rf_waddr_e,
       DOUT   => rf_waddr_m
     );
 
-  U_REG_IS_0_E : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_IS_0_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => 1, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => 1, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,1))
     )
     port map (
       CLK     => CLK,
       RST_AN  => RST_AN,
-      EN_N    => '0',
-      INIT    => '0',
+      EN      => '1',
+      INIT    => HZRD_SIG.flush_em,
       DIN(0)  => is_0_e,
       DOUT(0) => is_0_m
     );
+
+  -----------------------------------------------------------------------------------------------
 
   --*************************************************************************** MEMORY STAGE
   --*********************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  -- U_DMEM : entity work.dmem(Behavioural)
-  --  generic map (
-  --    ADDR_W => C_DMEM_ADDR_W,
-  --    DATA_W => C_ARCH_WORD_W
-  --  )
-  --  port map (
-  --    CLK    => CLK,
-  --    RST_AN => RST_AN,
-  --    RWADDR => alu_out_m,
-  --    WEN    => CTRL_WORD.dmem_we,
-  --    DIN    => dmem_din_m,
-  --    DOUT   => dmem_dout_m,
-  --  );
 
   ----------------------------------------------------------- COMBINATORIAL
 
   -- Data Memory Signals
   -- NOTE: the alu_out_m signal is truncated if the memory address space is smaller
   -- then the DLX architecture word width
-  DMEM_RWADDR <= std_logic_vector(resize(unsigned(alu_out_m), DMEM_RWADDR'length));
-  DMEM_DIN    <= dmem_din_m;
-  dmem_dout_m <= DMEM_DOUT;
+  DMEM_RWADDR  <= std_logic_vector(resize(unsigned(alu_out_m), DMEM_RWADDR'length));
+  DMEM_DIN     <= dmem_din_m;
+  dmem_dout_m  <= DMEM_DOUT;
 
-  ----------------------------------------------------------- PIPELINE REGISTERS
-  U_REG_ALU_OUT_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  DP_SIG.cmpr_0_is_0_m  <= is_0_m;
+  DP_SIG.instr_opcode_m <= instr_opcode_m;
+
+  -----------------------------------------------------------------------------------------------
+
+  --********************************************************* PIPELINE REGISTERS MEMORY/WRITEBACK
+  --*********************************************************************************************
+
+  U_ALU_OUT_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => alu_out_m'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => alu_out_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_m'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_mwb,
       DIN    => alu_out_m,
       DOUT   => alu_out_wb
     );
 
-  U_REG_DMEM_DOUT_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_DMEM_DOUT_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => dmem_dout_m'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => dmem_dout_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,dmem_dout_m'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_mwb,
       DIN    => dmem_dout_m,
       DOUT   => dmem_dout_wb
     );
 
-  U_REG_RF_WADDR_M : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_WADDR_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
-      DATA_W => rf_waddr_m'length, INIT_VAL => C_REG_INIT_VAL
+      DATA_W => rf_waddr_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_waddr_m'length))
     )
     port map (
       CLK    => CLK,
       RST_AN => RST_AN,
-      EN_N   => '0',
-      INIT   => '0',
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_mwb,
       DIN    => rf_waddr_m,
       DOUT   => rf_waddr_wb
     );
+
+  -----------------------------------------------------------------------------------------------
 
   --*************************************************************************** WRITE BACK STAGE
   --*********************************************************************************************

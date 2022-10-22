@@ -16,8 +16,8 @@
 -- Revision 01 - Simone Ruffini
 --  changed behavioural architecture with asynchronoud active low reset
 -- Additional Comments:
---  Synchronous write, asynchronous read
---
+--  2 read ports, 1 write port, Synchronous falling edge write, asynchronous read
+--  NOTE: may not work correctly if ADDR_W >= 32
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -58,6 +58,9 @@ architecture BEHAVIOURAL of RF is
 
   ----------------------------------------------------------- TYPES
 
+  -- NOTE: this subtipe is dangerous if ADDR_W >= 32, we have overflow and the
+  --       range doesn't work, this is a VHDL limitation and no betters
+  --       solutions are available
   subtype reg_addr_range is natural range 0 to ((2 ** ADDR_W) - 1); -- using natural type
 
   type reg_array is array (reg_addr_range) of std_logic_vector(DATA_W - 1 downto 0);
@@ -110,13 +113,13 @@ begin
 
     if (RST_AN = '0') then
       -- reset signals
-      for i IN reg_array'range loop
+      for i in reg_array'range loop
 
         registers(i) <= (OTHERS => '0');
 
       end loop;
 
-    elsif (CLK'EVENT and CLK= '1') then
+    elsif (CLK'EVENT and CLK = '0') then -- faling edge
       if (ENABLE = '1') then
         -- writing
         if (WR = '1') then

@@ -22,15 +22,14 @@ library ieee;
 
 library work;
   use work.dlx_pkg.all;
+  use work.dlx_isa_enc_pkg.all;
 
 ------------------------------------------------------------- ENTITY
 
 entity CPU is
   port (
     CLK              : in    std_logic;                                   -- Clock Signal (rising-edge trigger)
-    RST_AN           : in    std_logic;                                   -- Reset Signal: Asyncronous Active Low (Negative)
-    -- DEBUG ports
-    INSTR            : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0) -- Instruction Word
+    RST_AN           : in    std_logic                                    -- Reset Signal: Asyncronous Active Low (Negative)
   );
 end entity CPU;
 
@@ -48,12 +47,25 @@ architecture BEHAVIOURAL of CPU is
 
   ----------------------------------------------------------- SIGNALS
 
-  signal ctrl_word        : ctrl_word_t;
-  signal imem_addr        : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
-  signal imem_dout        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal dmem_rwaddr      : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
-  signal dmem_din         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal dmem_dout        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal ctrl_word                  : ctrl_word_t;
+  signal instr_cu                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal imem_addr                  : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
+  signal imem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_rwaddr                : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
+  signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dp_sig                     : dp_sig_t;
+  signal hzrd_sig                   : hzrd_sig_t;
+
+  -- this needs to be in the top level
+  signal assertion_test_output      : natural := dlx_pkg_check_assertions;
+
+  -- DEBUG
+  signal dbg_fetch                  : instr_t;
+  signal dbg_decode                 : instr_t;
+  signal dbg_execute                : instr_t;
+  signal dbg_memory                 : instr_t;
+  signal dbg_writeback              : instr_t;
 
 begin
 
@@ -63,7 +75,8 @@ begin
     port map (
       CLK       => CLK,
       RST_AN    => RST_AN,
-      INSTR     => imem_dout,
+      INSTR     => instr_cu,
+      HZRD_SIG  => hzrd_sig,
       CTRL_WORD => ctrl_word
     );
 
@@ -73,7 +86,6 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      --CLK    => CLK,
       RST_AN => RST_AN,
       RADDR  => imem_addr,
       DOUT   => imem_dout
@@ -84,6 +96,9 @@ begin
       CLK         => CLK,
       RST_AN      => RST_AN,
       CTRL_WORD   => ctrl_word,
+      INSTR_CU    => instr_cu,
+      HZRD_SIG    => hzrd_sig,
+      DP_SIG      => dp_sig,
       IMEM_ADDR   => imem_addr,
       IMEM_DOUT   => imem_dout,
       DMEM_RWADDR => dmem_rwaddr,
@@ -97,7 +112,6 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      --CLK    => CLK,
       RST_AN => RST_AN,
       RWADDR => dmem_rwaddr,
       WEN    => ctrl_word.dmem_wen,
@@ -105,10 +119,57 @@ begin
       DOUT   => dmem_dout
     );
 
-  ----------------------------------------------------------- COMBINATORIAL
-  INSTR <= imem_dout;
+  U_HU : entity work.hu(BEHAVIOURAL)
+    port map (
+      CLK      => CLK,
+      RST_AN   => RST_AN,
+      DP_SIG   => dp_sig,
+      HZRD_SIG => hzrd_sig
+    );
 
------------------------------------------------------------ SEQUENTIAL
+  ----------------------------------------------------------- COMBINATORIAL
+
+  ----------------------------------------------------------- SEQUENTIAL
+
+  -- DEBUG: will not be synthesized
+  P_DBG_FETCH : process (instr_cu) is
+  begin
+
+    dbg_fetch <= print_instr(instr_cu);
+
+  end process P_DBG_FETCH;
+
+  P_DBG_PIPELINE_STAGE_PRINT : process (CLK, RST_AN) is
+  begin
+
+    if (RST_AN = '0') then
+      dbg_decode    <= INSTR_NOT_FOUNDx;
+      dbg_execute   <= INSTR_NOT_FOUNDx;
+      dbg_memory    <= INSTR_NOT_FOUNDx;
+      dbg_writeback <= INSTR_NOT_FOUNDx;
+    elsif (CLK'event and CLK = '1') then
+      dbg_decode <= dbg_fetch;
+      if (hzrd_sig.flush_fd = '1') then
+        dbg_decode <= INSTR_NOT_FOUNDx;
+      end if;
+
+      dbg_execute <= dbg_decode;
+      if (hzrd_sig.flush_de = '1') then
+        dbg_execute <= INSTR_NOT_FOUNDx;
+      end if;
+
+      dbg_memory <= dbg_execute;
+      if (hzrd_sig.flush_em = '1') then
+        dbg_memory <= INSTR_NOT_FOUNDx;
+      end if;
+
+      dbg_writeback <= dbg_memory;
+      if (hzrd_sig.flush_mwb = '1') then
+        dbg_memory <= INSTR_NOT_FOUNDx;
+      end if;
+    end if;
+
+  end process P_DBG_PIPELINE_STAGE_PRINT;
 
 end architecture BEHAVIOURAL;
 

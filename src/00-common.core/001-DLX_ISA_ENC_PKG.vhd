@@ -28,7 +28,9 @@ package DLX_ISA_ENC_PKG is
 
   ----------------------------------------------------------- TYPES
   -- Instruction enum used only for simulation
+
   type instr_t is (
+    RTYPx,
     SLLx,
     SRLx,
     SRAx,
@@ -62,7 +64,12 @@ package DLX_ISA_ENC_PKG is
   );
 
   ----------------------------------------------------------- FUNCTIONS
-  function print_instr(instr: std_logic_vector) return instr_t;
+
+  function print_instr_op (opcode: std_logic_vector) return instr_t;
+
+  function print_instr (instr: std_logic_vector) return instr_t;
+
+  function print_instr (opcode: std_logic_vector; func: std_logic_vector) return instr_t;
 
   ----------------------------------------------------------- CONSTANTS 2
 
@@ -166,60 +173,150 @@ package DLX_ISA_ENC_PKG is
   constant SLE_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SLE_FUNC_i, C_INSTR_FUNC_W));
   constant SGE_FUNC : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0) := std_logic_vector(to_unsigned(SGE_FUNC_i, C_INSTR_FUNC_W));
 
-
-
 end package DLX_ISA_ENC_PKG;
 
 package body DLX_ISA_ENC_PKG is
 
-  -- Prints the enum instruction rappresentation of instr
-  function print_instr(instr: std_logic_vector) return instr_t is 
-    variable opcode_slv : std_logic_vector(C_INSTR_OPCODE_W-1 downto 0);
-    variable func_slv   : std_logic_vector(C_INSTR_FUNC_W-1 downto 0);
-    variable opcode     : integer;
-    variable func       : integer;
+  function print_instr_op (opcode: std_logic_vector) return instr_t is
   begin
-    opcode_slv := INSTR((C_INSTR_OPCODE_START_POS_BIT + C_INSTR_OPCODE_W) - 1 downto C_INSTR_OPCODE_START_POS_BIT);
-    func_slv   := INSTR((C_INSTR_FUNC_START_POS_BIT + C_INSTR_FUNC_W) - 1 downto C_INSTR_FUNC_START_POS_BIT);
-    opcode     := to_integer(unsigned(opcode_slv));
-    func       := to_integer(unsigned(func_slv));
 
-    case (opcode) is  
-      when RTYPE_OPCODE_i=> 
-        case (func) is
-          when SLL_FUNC_i  => return sllx;
-          when SRL_FUNC_i  => return srlx;
-          when SRA_FUNC_i  => return srax;
-          when ADD_FUNC_i  => return addx;
-          when SUB_FUNC_i  => return subx;
-          when AND_FUNC_i  => return andx;
-          when OR_FUNC_i   => return orx;
-          when XOR_FUNC_i  => return xorx;
-          when SNE_FUNC_i  => return SNEx;
-          when SLE_FUNC_i  => return SLEx;
-          when SGE_FUNC_i  => return SGEx;
-          when others => return INSTR_NOT_FOUNDx;
-        end case;
-      when J_OPCODE_i    => return Jx;
-      when JAL_OPCODE_i  => return JALx;
-      when BEQZ_OPCODE_i => return BEQZx;
-      when BNEZ_OPCODE_i => return BNEZx;
-      when ADDI_OPCODE_i => return ADDIx;
-      when SUBI_OPCODE_i => return SUBIx;
-      when ANDI_OPCODE_i => return ANDIx;
-      when ORI_OPCODE_i  => return ORIx;
-      when XORI_OPCODE_i => return XORIx;
-      when SLLI_OPCODE_i => return SLLIx;
-      when NOP_OPCODE_i  => return NOPx;
-      when SRLI_OPCODE_i => return SRLIx;
-      when SRAI_OPCODE_i => return SRAIx;
-      when SNEI_OPCODE_i => return SNEIx;
-      when SLEI_OPCODE_i => return SLEIx;
-      when SGEI_OPCODE_i => return SGEIx;
-      when LW_OPCODE_i   => return LWx;
-      when SW_OPCODE_i   => return SWx;
-      when others        => return INSTR_NOT_FOUNDx;
+    case (opcode) is
+
+      when RTYPE_OPCODE =>
+        return RTYPx;
+
+      when J_OPCODE =>
+        return Jx;
+
+      when JAL_OPCODE =>
+        return JALx;
+
+      when BEQZ_OPCODE =>
+        return BEQZx;
+
+      when BNEZ_OPCODE =>
+        return BNEZx;
+
+      when ADDI_OPCODE =>
+        return ADDIx;
+
+      when SUBI_OPCODE =>
+        return SUBIx;
+
+      when ANDI_OPCODE =>
+        return ANDIx;
+
+      when ORI_OPCODE =>
+        return ORIx;
+
+      when XORI_OPCODE =>
+        return XORIx;
+
+      when SLLI_OPCODE =>
+        return SLLIx;
+
+      when NOP_OPCODE =>
+        return NOPx;
+
+      when SRLI_OPCODE =>
+        return SRLIx;
+
+      when SRAI_OPCODE =>
+        return SRAIx;
+
+      when SNEI_OPCODE =>
+        return SNEIx;
+
+      when SLEI_OPCODE =>
+        return SLEIx;
+
+      when SGEI_OPCODE =>
+        return SGEIx;
+
+      when LW_OPCODE =>
+        return LWx;
+
+      when SW_OPCODE =>
+        return SWx;
+
+      when others =>
+        return INSTR_NOT_FOUNDx;
+
     end case;
-  end function print_instr; 
+
+  end function print_instr_op;
+
+  function print_instr (opcode: std_logic_vector;func: std_logic_vector) return instr_t is
+
+    variable ret : instr_t;
+
+  begin
+
+    ret := print_instr_op(opcode);
+
+    if (ret = RTYPx) then
+
+      case (func) is
+
+        when SLL_FUNC =>
+          ret := sllx;
+
+        when SRL_FUNC =>
+          ret := srlx;
+
+        when SRA_FUNC =>
+          ret := srax;
+
+        when ADD_FUNC =>
+          ret := addx;
+
+        when SUB_FUNC =>
+          ret := subx;
+
+        when AND_FUNC =>
+          ret := andx;
+
+        when OR_FUNC =>
+          ret := orx;
+
+        when XOR_FUNC =>
+          ret := xorx;
+
+        when SNE_FUNC =>
+          ret := SNEx;
+
+        when SLE_FUNC =>
+          ret := SLEx;
+
+        when SGE_FUNC =>
+          ret := SGEx;
+
+        when others =>
+          ret := INSTR_NOT_FOUNDx;
+
+      end case;
+
+    end if;
+
+    return ret;
+
+  end function print_instr;
+
+  -- Prints the enum instruction rappresentation of instr
+
+  function print_instr (instr: std_logic_vector) return instr_t is
+
+    variable opcode : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);
+    variable func   : std_logic_vector(C_INSTR_FUNC_W - 1 downto 0);
+    variable ret    : instr_t;
+
+  begin
+
+    opcode := get_opcode(instr);
+    func   := get_func(instr);
+    ret    := print_instr(opcode, func);
+    return ret;
+
+  end function print_instr;
 
 end package body DLX_ISA_ENC_PKG;

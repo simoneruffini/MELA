@@ -1,1 +1,1 @@
-../../sim/asm_example/rtype_all_noparallel_dump.txt
+../../sim/asm_example/jump_simple_dump.txt

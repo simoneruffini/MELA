@@ -12,6 +12,7 @@
 --  * Created
 -- Additional Comments:
 --  1 shared read write port, 1 data in port, asynchronous, word adressed
+--  NOTE: may not work correctly if ADDR_W >= 32
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -20,6 +21,9 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
   use ieee.std_logic_textio.all; -- synopsis
+
+library work;
+  use work.vhdl_help_func_pkg.all;
 
 library std;
   use std.textio.all;
@@ -32,7 +36,6 @@ entity DMEM is
     DATA_W : integer  -- Data memory data port bit width
   );
   port (
-    -- CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
     RST_AN : in    std_logic;                             -- Reset Signal: Asyncronous Active Low (Negative)
     RWADDR : in    std_logic_vector(ADDR_W - 1 downto 0); -- Read Write Address Port
     WEN    : in    std_logic;                             -- Write Enable port, active high
@@ -48,6 +51,10 @@ architecture BEHAVIOURAL of DMEM is
   ----------------------------------------------------------- CONSTANTS 1
 
   ----------------------------------------------------------- TYPES
+
+  -- NOTE: this subtipe is dangerous if ADDR_W >= 32, we have overflow and the
+  --       range doesn't work, this is a VHDL limitation and no betters
+  --       solutions are available
 
   type mem_type is array ((2 ** ADDR_W) - 1 downto 0) of std_logic_vector(DATA_W - 1 downto 0);
 
@@ -66,31 +73,51 @@ architecture BEHAVIOURAL of DMEM is
 
   begin
 
-    while not endfile(RamFile) loop
+    if (vhfp_file_exists(RamFileName)) then
 
-      assert i < (2 ** ADDR_W)
-        report "Instruction file size exceeds memory size"
-        severity failure;
+      while not endfile(RamFile) loop
 
-      readline (RamFile, ramfileline);
-      hread(ramfileline, tmpword);
-      ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
+        assert i < (2 ** ADDR_W)
+          report "Input file size exceeds memory size"
+          severity failure;
 
-      i := i + 1;
+        readline (RamFile, ramfileline);
+        hread(ramfileline, tmpword);
+        ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
 
-    end loop;
+        i := i + 1;
+
+      end loop;
+
+      -- fill remaining with 0s
+      while i < mem_type'length loop
+
+        ram(i) := (others => '0');
+        i      := i + 1;
+
+      end loop;
+
+    else
+
+      for i in  mem_type'range loop
+
+        ram(i) := (others => '0');
+
+      end loop;
+
+    end if;
 
     return ram;
 
   end function;
 
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+
   signal mem              : mem_type := initramfromfile("../src/00-common.core/004-DMEM_INIT_FILE.txt");
 
   signal truncated_rwaddr : std_logic_vector((ADDR_W - 2) - 1 downto 0); -- Word-addressed read address
-
------------------------------------------------------------ CONSTANTS 2
-
------------------------------------------------------------ SIGNALS
 
 begin
 
@@ -98,15 +125,13 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
   -- this memory doesn't have byte adressing
-  truncated_rwaddr <= RWADDR(RWADDR'length-1 downto 2); 
+  truncated_rwaddr <= RWADDR(RWADDR'length-1 downto 2);
 
-  --P_WRITE_AND_READ : process (CLK, RST_AN) is
-  P_WRITE_AND_READ : process (RST_AN,DIN,truncated_rwaddr,WEN) is
+  P_WRITE_AND_READ : process (RST_AN, DIN, truncated_rwaddr, WEN) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
-    -- elsif (CLK = '1' and CLK'event) then
     else
       DOUT <= mem(to_integer(unsigned(truncated_rwaddr)));
 
@@ -118,6 +143,6 @@ begin
 
   end process P_WRITE_AND_READ;
 
-  ----------------------------------------------------------- SEQUENTIAL
+----------------------------------------------------------- SEQUENTIAL
 
 end architecture BEHAVIOURAL;

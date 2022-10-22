@@ -53,15 +53,7 @@ architecture BEHAVIOURAL of TB_CPU is
 
   signal clk                        : std_logic;
   signal rst_an                     : std_logic;
-  signal instr                      : std_logic_vector(C_ARCH_WORD_W-1 downto 0);
-  signal fetch : instr_t;
-  signal decode: instr_t;
-  signal execute: instr_t;
-  signal memory: instr_t;
-  signal writeback: instr_t;
 
-  -- this needs to be in the top level
-  signal assertion_test_output      : natural := dlx_pkg_check_assertions;
 
 
 begin
@@ -78,33 +70,12 @@ begin
   U_CPU : entity work.cpu(BEHAVIOURAL)
     port map (
       CLK    => clk,
-      RST_AN => rst_an,
-      -- DEBUG
-      INSTR => instr
+      RST_AN => rst_an
     );
 
   ----------------------------------------------------------- COMBINATORIAL
 
   ----------------------------------------------------------- PROCESSES
-  P_FETCH : process(instr) is 
-  begin
-      fetch <= print_instr(instr);
-  end process P_FETCH;
-
-  P_PIPELINE_STAGE_PRINT: process (CLK,RST_AN) is 
-  begin
-    if(RST_AN = '0') then
-        decode    <= INSTR_NOT_FOUNDx;
-        execute   <= INSTR_NOT_FOUNDx;
-        memory    <= INSTR_NOT_FOUNDx;
-        writeback <= INSTR_NOT_FOUNDx;
-    elsif(rising_edge(CLK)) then
-        decode <= fetch;
-        execute <= decode;
-        memory <= execute;
-        writeback <= memory;
-    end if;
-  end process;
 
   -- simulation process
   P_SIM : process is

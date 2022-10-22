@@ -73,6 +73,7 @@ begin
       CLK       => clk,
       RST_AN    => rst_an,
       INSTR     => instr,
+      HZRD_SIG  => C_HZRD_SIG_0S,
       CTRL_WORD => ctrl_word
     );
 

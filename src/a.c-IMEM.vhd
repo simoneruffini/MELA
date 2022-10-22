@@ -11,7 +11,7 @@
 -- Revision 00 - Bonora Matteo
 --  * Created
 -- Additional Comments:
--- 1 read port 1 out port, asynchronous, word adressed 
+-- 1 read port 1 out port, asynchronous, word adressed
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -20,6 +20,9 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
   use ieee.std_logic_textio.all; -- synopsis
+
+library work;
+  use work.vhdl_help_func_pkg.all;
 
 library std;
   use std.textio.all;
@@ -32,7 +35,6 @@ entity IMEM is
     DATA_W : integer  -- Instruction memory data port bit width
   );
   port (
-    -- CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
     RST_AN : in    std_logic;                             -- Reset Signal: Asyncronous Active Low (Negative)
     RADDR  : in    std_logic_vector(ADDR_W - 1 downto 0); -- Read Address Port
     DOUT   : out   std_logic_vector(DATA_W - 1 downto 0)  -- Data Output Port
@@ -46,6 +48,10 @@ architecture BEHAVIOURAL of IMEM is
   ----------------------------------------------------------- CONSTANTS 1
 
   ----------------------------------------------------------- TYPES
+
+  -- NOTE: this subtipe is dangerous if ADDR_W >= 32, we have overflow and the
+  --       range doesn't work, this is a VHDL limitation and no betters
+  --       solutions are available
 
   type mem_type is array ((2 ** ADDR_W) - 1 downto 0) of std_logic_vector(DATA_W - 1 downto 0);
 
@@ -64,31 +70,51 @@ architecture BEHAVIOURAL of IMEM is
 
   begin
 
-    while not endfile(RamFile) loop
+    if (vhfp_file_exists(RamFileName)) then
 
-      assert i < (2 ** ADDR_W)
-        report "Instruction file size exceeds memory size"
-        severity failure;
+      while not endfile(RamFile) loop
 
-      readline (RamFile, ramfileline);
-      hread(ramfileline, tmpword);
-      ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
+        assert i < (2 ** ADDR_W)
+          report "Input file size exceeds memory size"
+          severity failure;
 
-      i := i + 1;
+        readline (RamFile, ramfileline);
+        hread(ramfileline, tmpword);
+        ram(i) := std_logic_vector(resize(unsigned(tmpword), DATA_W));
 
-    end loop;
+        i := i + 1;
+
+      end loop;
+
+      -- fill remaining with 0s
+      while i < mem_type'length loop
+
+        ram(i) := (others => '0');
+        i      := i + 1;
+
+      end loop;
+
+    else
+
+      for i in  mem_type'range loop
+
+        ram(i) := (others => '0');
+
+      end loop;
+
+    end if;
 
     return ram;
 
   end function;
 
+  ----------------------------------------------------------- CONSTANTS 2
+
+  ----------------------------------------------------------- SIGNALS
+
   signal mem             : mem_type := initramfromfile("../src/00-common.core/003-IMEM_INIT_FILE.txt");
 
   signal truncated_raddr : std_logic_vector((ADDR_W - 2) - 1 downto 0); -- Word-addressed read address
-
------------------------------------------------------------ CONSTANTS 2
-
------------------------------------------------------------ SIGNALS
 
 begin
 
@@ -97,19 +123,17 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
   truncated_raddr <= RADDR(RADDR'length-1 downto 2);
 
-  --P_READ : process (CLK, RST_AN) is
-  P_READ : process (RST_AN,truncated_raddr) is
+  P_READ : process (RST_AN, truncated_raddr) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
-    -- elsif (CLK = '1' and CLK'event) then
     else
       DOUT <= mem(to_integer(unsigned(truncated_raddr)));
     end if;
 
   end process P_READ;
 
-  ----------------------------------------------------------- SEQUENTIAL
+----------------------------------------------------------- SEQUENTIAL
 
 end architecture BEHAVIOURAL;

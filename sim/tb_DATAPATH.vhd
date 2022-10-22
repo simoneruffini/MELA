@@ -74,14 +74,16 @@ begin
 
   U_DATAPATH : entity work.datapath
     port map (
-      CLK       => clk,
-      RST_AN    => rst_an,
-      CTRL_WORD => ctrl_word,
-      IMEM_ADDR     =>   IMEM_ADDR  ,
-      IMEM_DOUT     =>   IMEM_DOUT  ,
-      DMEM_RWADDR   =>   DMEM_RWADDR,
-      DMEM_DIN      =>   DMEM_DIN   ,
-      DMEM_DOUT     =>   DMEM_DOUT  
+      CLK           => clk,
+      RST_AN        => rst_an,
+      CTRL_WORD     => ctrl_word,
+      HZRD_SIG      => C_HZRD_SIG_0S,
+      DP_SIG        => open,
+      IMEM_ADDR     => IMEM_ADDR  ,
+      IMEM_DOUT     => IMEM_DOUT  ,
+      DMEM_RWADDR   => DMEM_RWADDR,
+      DMEM_DIN      => DMEM_DIN   ,
+      DMEM_DOUT     => DMEM_DOUT  
     );
 
   ----------------------------------------------------------- COMBINATORIAL

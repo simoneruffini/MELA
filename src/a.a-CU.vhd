@@ -38,6 +38,7 @@ entity CU is
     CLK              : in    std_logic;                                     -- Clock Signal (rising-edge trigger)
     RST_AN           : in    std_logic;                                     -- Reset Signal: Asyncronous Active Low (Negative)
     INSTR            : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instruction Word from Instr.MEM
+    HZRD_SIG         : in    hzrd_sig_t;                                    -- hazard signals (TODO remove this dependency by moving pipeline delays out of CU)
     CTRL_WORD        : out   ctrl_word_t                                    -- Control Word
   );
 end entity CU;
@@ -580,12 +581,16 @@ begin
 
   -- Extract the signals from the control word in the helpers for the pipeline
 
+  -- the fetch stage has no control signals
   -- fetch_sig   <= (
   --               );
-  decode_sig  <= (
-                  jal_en         => control_word.jal_en,
-                  j_type_imm_sel => control_word.j_type_imm_sel
-                );
+
+  -- signals that will reach the decode stage
+  decode_sig <= (
+                 jal_en         => control_word.jal_en,
+                 j_type_imm_sel => control_word.j_type_imm_sel
+               );
+  -- signals that will reach the execute stage
   execute_sig <= (
                   r_type_sel   => control_word.r_type_sel,
                   imm_sel      => control_word.imm_sel,
@@ -593,6 +598,7 @@ begin
                   alu_func     => control_word.alu_func
                 );
 
+  -- signals that will reach the memory stage
   memory_sig <= (
                  jump_en       => control_word.jump_en,
                  branch_en     => control_word.branch_en,
@@ -600,12 +606,15 @@ begin
                  dmem_wen      => control_word.dmem_wen
                );
 
+  -- signals that will reach the writeback stage
   writeback_sig <= (
                     rf_wb_dmem_dout_sel => control_word.rf_wb_dmem_dout_sel,
-                    rf_wen         => control_word.rf_wen
+                    rf_wen              => control_word.rf_wen
                   );
 
+  --======================================================== CONTROL WORD OUTPUT
   -- Final Control Word Output with pre-delayed control signals
+  --
   CTRL_WORD.jal_en              <= decode_sig_d1.jal_en;
   CTRL_WORD.j_type_imm_sel      <= decode_sig_d1.j_type_imm_sel;
   CTRL_WORD.r_type_sel          <= execute_sig_d2.r_type_sel;
@@ -621,38 +630,69 @@ begin
 
   ----------------------------------------------------------- PROCESSES
 
-  -- process to pipeline control words
+  -- Genereate delays for each pipeline stage
+  -- I      FETCH        |      DECODE      |     EXECUTE      |     MEMORY       |     WRITEBACK      |
+  -- N   + decode_sig    | [decode_sig_d1]  |                  |                  |                    |
+  -- S ->| execute_sig   | execute_sig_d1   | [execute_sig_d2] |                  |                    |
+  -- T   | memory_sig    | memory_sig_d1    | memory_sig_d2    | [memory_sig_d3]  |                    |
+  -- R   + writeback_sig | writeback_sig_d1 | writeback_sig_d2 | writeback_sig_d3 | [writeback_sig_d4] |
   P_DELAYS : process (CLK, RST_AN) is
   begin
 
     if (RST_AN = '0') then
-      decode_sig_d1 <= C_DECODE_STAGE_SIG_0S;
-
-      execute_sig_d1 <= C_EXECUTE_STAGE_SIG_0S;
-      execute_sig_d2 <= C_EXECUTE_STAGE_SIG_0S;
-
-      memory_sig_d1 <= C_MEMORY_STAGE_SIG_0S;
-      memory_sig_d2 <= C_MEMORY_STAGE_SIG_0S;
-      memory_sig_d3 <= C_MEMORY_STAGE_SIG_0S;
-
+      decode_sig_d1    <= C_DECODE_STAGE_SIG_0S;
+      execute_sig_d1   <= C_EXECUTE_STAGE_SIG_0S;
+      memory_sig_d1    <= C_MEMORY_STAGE_SIG_0S;
       writeback_sig_d1 <= C_WRITEBACK_STAGE_SIG_0S;
+
+      execute_sig_d2   <= C_EXECUTE_STAGE_SIG_0S;
+      memory_sig_d2    <= C_MEMORY_STAGE_SIG_0S;
       writeback_sig_d2 <= C_WRITEBACK_STAGE_SIG_0S;
+
+      memory_sig_d3    <= C_MEMORY_STAGE_SIG_0S;
       writeback_sig_d3 <= C_WRITEBACK_STAGE_SIG_0S;
+
       writeback_sig_d4 <= C_WRITEBACK_STAGE_SIG_0S;
     elsif (CLK'event and CLK = '1') then
-      decode_sig_d1 <= decode_sig;
-
-      execute_sig_d1 <= execute_sig;
-      execute_sig_d2 <= execute_sig_d1;
-
-      memory_sig_d1 <= memory_sig;
-      memory_sig_d2 <= memory_sig_d1;
-      memory_sig_d3 <= memory_sig_d2;
-
+      -- sample signals generated in the fetch stage and propagate them to the decode stage
+      decode_sig_d1    <= decode_sig;
+      execute_sig_d1   <= execute_sig;
+      memory_sig_d1    <= memory_sig;
       writeback_sig_d1 <= writeback_sig;
+      -- flush signals coming from fetch stage, decode stage will se 0S
+      if (HZRD_SIG.flush_fd = '1') then
+        decode_sig_d1    <= C_DECODE_STAGE_SIG_0S;
+        execute_sig_d1   <= C_EXECUTE_STAGE_SIG_0S;
+        memory_sig_d1    <= C_MEMORY_STAGE_SIG_0S;
+        writeback_sig_d1 <= C_WRITEBACK_STAGE_SIG_0S;
+      end if;
+
+      -- sample signals propagated from decode stage and propagate them to execute stage
+      execute_sig_d2   <= execute_sig_d1;
+      memory_sig_d2    <= memory_sig_d1;
       writeback_sig_d2 <= writeback_sig_d1;
+      -- flush signals coming from decode stage (d1), execute stage will se 0S
+      if (HZRD_SIG.flush_de = '1') then
+        execute_sig_d2   <= C_EXECUTE_STAGE_SIG_0S;
+        memory_sig_d2    <= C_MEMORY_STAGE_SIG_0S;
+        writeback_sig_d2 <= C_WRITEBACK_STAGE_SIG_0S;
+      end if;
+
+      -- sample signals propagated from execute stage and propagate them to memory stage
+      memory_sig_d3    <= memory_sig_d2;
       writeback_sig_d3 <= writeback_sig_d2;
+      -- flush signals coming from execute stage (d2), memory stage will se 0S
+      if (HZRD_SIG.flush_em = '1') then
+        memory_sig_d3    <= C_MEMORY_STAGE_SIG_0S;
+        writeback_sig_d3 <= C_WRITEBACK_STAGE_SIG_0S;
+      end if;
+
+      -- sample signals propagated from memory stage and propagate them to write back stage
       writeback_sig_d4 <= writeback_sig_d3;
+      -- flush signals coming from memory stage (d3), memory stage will se 0S
+      if (HZRD_SIG.flush_mwb = '1') then
+        writeback_sig_d4 <= C_WRITEBACK_STAGE_SIG_0S;
+      end if;
     end if;
 
   end process P_DELAYS;
