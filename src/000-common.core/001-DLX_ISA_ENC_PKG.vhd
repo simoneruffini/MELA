@@ -80,7 +80,7 @@ package DLX_ISA_ENC_PKG is
   -- opcodes in integer form
   -- the encoding of the opcodes can be changed to optimize the resulting design
   --
-  --       OPCODE NAME     |         OPCODE VALUE      |
+  --       OPCODE NAME   |         OPCODE VALUE      |
   constant SLL_OPCODE_i  : natural := RTYPE_OPCODE_i;
   constant SRL_OPCODE_i  : natural := RTYPE_OPCODE_i;
   constant SRA_OPCODE_i  : natural := RTYPE_OPCODE_i;

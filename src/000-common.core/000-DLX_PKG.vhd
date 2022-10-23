@@ -93,9 +93,6 @@ package DLX_PKG is
   type ctrl_word_t is record
     --======================= Fetch
     --======================= Decode
-    jal_en : std_logic;
-    -- rf_ra_en : std_logic;
-    -- rf_rb_en : std_logic;
     j_type_imm_sel : std_logic;
     --======================= Execute
     r_type_sel   : std_logic;  -- selects whethere the write back address is the one obtained from an i-type INSTR or a R-TYPE
@@ -109,13 +106,13 @@ package DLX_PKG is
     dmem_wen      : std_logic;
     --======================= Writeback
     rf_wb_dmem_dout_sel : std_logic;
+    jal_en              : std_logic;
     rf_wen              : std_logic;
   end record ctrl_word_t;
 
   ----------------------------------------------------------- CONSTANTS 2
   constant C_CTRL_WORD_0S : ctrl_word_t :=
   (
-    jal_en              =>'0',
     j_type_imm_sel      =>'0',
     r_type_sel          =>'0',
     imm_sel             =>'0',
@@ -126,6 +123,7 @@ package DLX_PKG is
     comp_0_invert       =>'0',
     dmem_wen            =>'0',
     rf_wb_dmem_dout_sel =>'0',
+    jal_en              =>'0',
     rf_wen              =>'0'
   );
 

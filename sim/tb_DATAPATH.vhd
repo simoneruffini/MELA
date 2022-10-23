@@ -52,9 +52,9 @@ architecture BEHAVIOURAL of TB_DATAPATH is
   signal clk              : std_logic;
   signal rst_an           : std_logic;
   signal ctrl_word        : ctrl_word_t;
-  signal IMEM_ADDR        : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);  -- Instructin Memory read address
+  signal IMEM_ADDR        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructin Memory read address
   signal IMEM_DOUT        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Instructino Memory data output
-  signal DMEM_RWADDR      : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);  -- Data Memory read/write address
+  signal DMEM_RWADDR      : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory read/write address
   signal DMEM_DIN         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);  -- Data Memory data input
   signal DMEM_DOUT        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);   -- Data Memory data output
 
@@ -123,18 +123,18 @@ begin
     wait for 10 * C_CLK_PERIOD_NS;
 
     ctrl_word <= (
-    branch_en           =>'0',
-    jump_en             =>'0',
-    jal_en              =>'0',
-    rf_wen              =>'1',
-    j_type_imm_sel      =>'0',
-    r_type_sel          =>'0',
-    imm_sel             =>'1',
-    pc_pls_4_sel        =>'0',
-    alu_func            =>ADD,
-    comp_0_invert=>'0',
-    dmem_wen            =>'0',
-    rf_wb_dmem_dout_sel =>'1'
+      branch_en           =>'0',
+      jump_en             =>'0',
+      jal_en              =>'0',
+      rf_wen              =>'1',
+      j_type_imm_sel      =>'0',
+      r_type_sel          =>'0',
+      imm_sel             =>'1',
+      pc_pls_4_sel        =>'0',
+      alu_func            =>ADD,
+      comp_0_invert=>'0',
+      dmem_wen            =>'0',
+      rf_wb_dmem_dout_sel =>'1'
     );
     wait for 1 * C_CLK_PERIOD_NS;
     report print_ctrl_wrd (ctrl_word);

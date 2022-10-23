@@ -112,6 +112,8 @@ architecture BEHAVIOURAL of DATAPATH is
   -- Memory Stage Signals (_m)
   signal instr_opcode_m     : std_logic_vector(C_INSTR_OPCODE_W - 1 downto 0);     -- see in execute stage
 
+  signal pc_pls_4_m         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+
   signal alu_out_m          : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_din_m         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_dout_m        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
@@ -120,6 +122,7 @@ architecture BEHAVIOURAL of DATAPATH is
   signal is_0_m             : std_logic;
 
   -- Write Back Stage Signals (_wb)
+  signal pc_pls_4_wb        : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal alu_out_wb         : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_dout_wb       : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal rf_waddr_wb        : std_logic_vector(C_RF_ADDR_W - 1 downto 0);
@@ -286,9 +289,8 @@ begin
   rf_waddr_d <= std_logic_vector(to_unsigned(C_JAL_RET_ADDR_REG, rf_waddr_d'length)) when CTRL_WORD.jal_en = '1' else
                 rf_waddr_wb;
 
-  -- RF_DIN MUX
-  rf_din_d <= pc_pls_4_d when CTRL_WORD.jal_en = '1' else
-              rf_din_wb;
+  -- RF_DIN 
+  rf_din_d <= rf_din_wb;
 
   -- IMMEDIATE FROM JTYPE MUX
   imm_d <= imm_j_type_ext_d when CTRL_WORD.j_type_imm_sel = '1' else
@@ -447,6 +449,19 @@ begin
       DOUT   => instr_opcode_m
     );
 
+  U_PC_PLS_4_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+    generic map (
+      DATA_W => pc_pls_4_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_e'length))
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_em,
+      DIN    => pc_pls_4_e,
+      DOUT   => pc_pls_4_m
+    );
+
   U_ALU_OUT_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => alu_out_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_e'length))
@@ -524,6 +539,19 @@ begin
   --********************************************************* PIPELINE REGISTERS MEMORY/WRITEBACK
   --*********************************************************************************************
 
+  U_PC_PLS_4_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+    generic map (
+      DATA_W => pc_pls_4_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_m'length))
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      EN     => '1',
+      INIT   => HZRD_SIG.flush_mwb,
+      DIN    => pc_pls_4_m,
+      DOUT   => pc_pls_4_wb
+    );
+
   U_ALU_OUT_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
     generic map (
       DATA_W => alu_out_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_m'length))
@@ -572,6 +600,7 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
   rf_din_wb <= dmem_dout_wb when CTRL_WORD.rf_wb_dmem_dout_sel = '1' else
+               pc_pls_4_wb  when CTRL_WORD.jal_en = '1' else
                alu_out_wb;
 
 end architecture BEHAVIOURAL;

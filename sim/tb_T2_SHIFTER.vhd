@@ -25,8 +25,8 @@ end entity T2_SHIFTER_TB;
 
 architecture TEST of T2_SHIFTER_TB is
 
-  signal a : std_logic_vector(31 downto 0) := x"00000000";
-  signal amount : std_logic_vector(5 downto 0) := "100000";
+  signal a : std_logic_vector(31 downto 0) := x"F0000000";
+  signal amount : std_logic_vector(5 downto 0) := "001000";
   signal op : std_logic_vector(1 downto 0):= "10";
   signal s  : std_logic_vector(31 downto 0);
 
