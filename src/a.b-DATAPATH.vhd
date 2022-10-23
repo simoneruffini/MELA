@@ -39,9 +39,9 @@ entity DATAPATH is
     HZRD_SIG         : in    hzrd_sig_t;                                      -- hazard signals from HU
     DP_SIG           : out   dp_sig_t;                                        -- some datapath signals used by HU
     -- xMEM ports
-    IMEM_ADDR        : out   std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);    -- Instructin Memory read address
+    IMEM_ADDR        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructin Memory read address
     IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructino Memory data output
-    DMEM_RWADDR      : out   std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);    -- Data Memory read/write address
+    DMEM_RWADDR      : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Data Memory read/write address
     DMEM_DIN         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Data Memory data input
     DMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)     -- Data Memory data output
   );
@@ -178,9 +178,11 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
 
   -- Instruction Memory signals
+  -- NOTE: IMEM is word addressed, trucante addresses (bit0,1 removed)
   -- NOTE: the pc_f signal is truncated if the memory address space is smaller
   -- then the DLX architecture word width
-  IMEM_ADDR <= std_logic_vector(resize(unsigned(pc_f), IMEM_ADDR'length));
+  --IMEM_ADDR <= std_logic_vector( resize(unsigned(pc_f(pc_f'length-1 downto 2), IMEM_ADDR'length));
+  IMEM_ADDR <= pc_f;
 
   instr_f <= IMEM_DOUT;
 
@@ -395,6 +397,7 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
   U_ALU : entity work.alu(BEHAVIOURAL)
+  --U_ALU : entity work.alu(STRUCTURAL)
     generic map (
       DATA_W => C_ARCH_WORD_W
     )
@@ -508,9 +511,10 @@ begin
   -- Data Memory Signals
   -- NOTE: the alu_out_m signal is truncated if the memory address space is smaller
   -- then the DLX architecture word width
-  DMEM_RWADDR  <= std_logic_vector(resize(unsigned(alu_out_m), DMEM_RWADDR'length));
-  DMEM_DIN     <= dmem_din_m;
-  dmem_dout_m  <= DMEM_DOUT;
+  --DMEM_RWADDR <= std_logic_vector(resize(unsigned(alu_out_m), DMEM_RWADDR'length));
+  DMEM_RWADDR <= alu_out_m;
+  DMEM_DIN    <= dmem_din_m;
+  dmem_dout_m <= DMEM_DOUT;
 
   DP_SIG.cmpr_0_is_0_m  <= is_0_m;
   DP_SIG.instr_opcode_m <= instr_opcode_m;

@@ -49,9 +49,11 @@ architecture BEHAVIOURAL of CPU is
 
   signal ctrl_word                  : ctrl_word_t;
   signal instr_cu                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal imem_addr                  : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
+  signal imem_addr                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal imem_addr_trunc            : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
   signal imem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal dmem_rwaddr                : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
+  signal dmem_rwaddr                : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_rwaddr_trunc          : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
   signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dp_sig                     : dp_sig_t;
@@ -87,7 +89,7 @@ begin
     )
     port map (
       RST_AN => RST_AN,
-      RADDR  => imem_addr,
+      RADDR  => imem_addr_trunc,
       DOUT   => imem_dout
     );
 
@@ -112,8 +114,9 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
+      CLK    => CLK,
       RST_AN => RST_AN,
-      RWADDR => dmem_rwaddr,
+      RWADDR => dmem_rwaddr_trunc,
       WEN    => ctrl_word.dmem_wen,
       DIN    => dmem_din,
       DOUT   => dmem_dout
@@ -129,7 +132,17 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
 
-  ----------------------------------------------------------- SEQUENTIAL
+  -- NOTE: IMEM is word addressed, trucante addresses (bit0,1 removed)
+  -- NOTE: the imem_addr signal is additionaly truncated if the memory address
+  --       space (imem size) is smaller then the DLX architecture word width
+  imem_addr_trunc <= std_logic_vector(resize(unsigned(imem_addr(imem_addr'length-1 downto 2)), imem_addr_trunc'length));
+
+  -- NOTE: DMEM is word addressed, but dmem_rwaddr is already a word-addressed
+  --       address (no first 2 bits trucation)
+  -- NOTE: the dmem_rwaddr signal is still truncated if the memory address
+  --       space (dmem size) is smaller then the DLX architecture word width
+  dmem_rwaddr_trunc <= std_logic_vector(resize(unsigned(dmem_rwaddr), dmem_rwaddr_trunc'length));
+
 
   -- DEBUG: will not be synthesized
   P_DBG_FETCH : process (instr_cu) is
@@ -138,6 +151,8 @@ begin
     dbg_fetch <= print_instr(instr_cu);
 
   end process P_DBG_FETCH;
+
+  ----------------------------------------------------------- SEQUENTIAL
 
   P_DBG_PIPELINE_STAGE_PRINT : process (CLK, RST_AN) is
   begin

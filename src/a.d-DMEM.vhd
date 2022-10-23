@@ -11,7 +11,8 @@
 -- Revision 00 - Simone Ruffini
 --  * Created
 -- Additional Comments:
---  1 shared read write port, 1 data in port, asynchronous, word adressed
+--  1 shared read write port, 1 data in port, asynchronous read,
+--  synchronous wirte (falling edge), word adressed
 --  NOTE: may not work correctly if ADDR_W >= 32
 --------------------------------------------------------------------------------
 
@@ -36,6 +37,7 @@ entity DMEM is
     DATA_W : integer  -- Data memory data port bit width
   );
   port (
+    CLK    : in    std_logic;                             -- Clock Signal (falling-edge trigger)
     RST_AN : in    std_logic;                             -- Reset Signal: Asyncronous Active Low (Negative)
     RWADDR : in    std_logic_vector(ADDR_W - 1 downto 0); -- Read Write Address Port
     WEN    : in    std_logic;                             -- Write Enable port, active high
@@ -115,33 +117,41 @@ architecture BEHAVIOURAL of DMEM is
 
   ----------------------------------------------------------- SIGNALS
 
-  signal mem              : mem_type := initramfromfile("../src/00-common.core/004-DMEM_INIT_FILE.txt");
-
-  signal truncated_rwaddr : std_logic_vector((ADDR_W - 2) - 1 downto 0); -- Word-addressed read address
+  signal mem              : mem_type := initramfromfile("../src/000-common.core/004-DMEM_INIT_FILE.txt");
 
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
-  -- this memory doesn't have byte adressing
-  truncated_rwaddr <= RWADDR(RWADDR'length-1 downto 2);
 
-  P_WRITE_AND_READ : process (RST_AN, DIN, truncated_rwaddr, WEN) is
+  P_READ : process (RST_AN, DIN, WEN) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
     else
-      DOUT <= mem(to_integer(unsigned(truncated_rwaddr)));
+      DOUT <= mem(to_integer(unsigned(RWADDR)));
 
       if (WEN = '1') then
-        mem(to_integer(unsigned(truncated_rwaddr))) <= DIN;
-        DOUT                                        <= DIN; -- do not infer latch just propagate input
+        DOUT <= DIN; -- do not infer latch just propagate input
       end if;
     end if;
 
-  end process P_WRITE_AND_READ;
+  end process P_READ;
+
+  P_WRITE : process (RST_AN, CLK) is
+  begin
+
+    if (RST_AN = '0') then
+    -- nothing to reset
+    elsif (CLK'event and CLK = '0') then
+      if (WEN = '1') then
+        mem(to_integer(unsigned(RWADDR))) <= DIN;
+      end if;
+    end if;
+
+  end process P_WRITE;
 
 ----------------------------------------------------------- SEQUENTIAL
 

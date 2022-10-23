@@ -11,7 +11,8 @@
 -- Revision 00 - Bonora Matteo
 --  * Created
 -- Additional Comments:
--- 1 read port 1 out port, asynchronous, word adressed
+-- 1 read port 1 out port, asynchronous, word addressed:
+-- addr 0x03 => return mem[3], addr 0x5 => return mem[5]
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------- PACKAGES/LIBRARIES
@@ -88,10 +89,10 @@ architecture BEHAVIOURAL of IMEM is
 
       end loop;
 
-      -- fill remaining with 0s
+      -- fill remaining with 1s (not an instruction)
       while i < mem_type'length loop
 
-        ram(i) := (others => '0');
+        ram(i) := (others => '1');
         i      := i + 1;
 
       end loop;
@@ -100,13 +101,11 @@ architecture BEHAVIOURAL of IMEM is
 
       for i in  mem_type'range loop
 
-        ram(i) := (others => '0');
+        ram(i) := (others => '1');
 
       end loop;
 
     end if;
-
-    ram(63) := std_logic_vector(shift_left(resize(unsigned(NOP_OPCODE), DATA_W), DATA_W - C_INSTR_OPCODE_W));
 
     return ram;
 
@@ -116,25 +115,22 @@ architecture BEHAVIOURAL of IMEM is
 
   ----------------------------------------------------------- SIGNALS
 
-  signal mem             : mem_type := initramfromfile("../src/00-common.core/003-IMEM_INIT_FILE.txt");
-
-  signal truncated_raddr : std_logic_vector((ADDR_W - 2) - 1 downto 0); -- Word-addressed read address
+  signal mem             : mem_type := initramfromfile("../src/000-common.core/003-IMEM_INIT_FILE.txt");
 
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
-  truncated_raddr <= RADDR(RADDR'length-1 downto 2);
 
-  P_READ : process (RST_AN, truncated_raddr) is
+  P_READ : process (RST_AN, RADDR) is
   begin
 
     if (RST_AN = '0') then
       DOUT <= (others => '0');
     else
 
-      DOUT <= mem(to_integer(unsigned(truncated_raddr)));
+      DOUT <= mem(to_integer(unsigned(RADDR)));
 
     end if;
 
