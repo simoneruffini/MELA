@@ -47,6 +47,11 @@ architecture BEHAVIOURAL of ALU is
 
   ----------------------------------------------------------- CONSTANTS 1
 
+  -- max possibile shifts for a DATA_W architecture are of DATA_W positions
+  --  this gives a warning at compile time but is not so importatnt
+  --  https://electronics.stackexchange.com/questions/337121/vhdl-non-locally-static-choice-warning
+  constant C_MAX_SHIFTABLE_AMOUNT : unsigned (DATA_W - 1 downto 0) := (vhfp_ilog2(DATA_W) =>'1', others=>'0');
+
   ----------------------------------------------------------- TYPES
 
   ----------------------------------------------------------- FUNCTIONS
@@ -54,26 +59,31 @@ architecture BEHAVIOURAL of ALU is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
-  signal a_u               : unsigned (DATA_W - 1 downto 0);
-  signal b_u               : unsigned (DATA_W - 1 downto 0);
-  signal a_s               : signed (DATA_W - 1 downto 0);
-  signal shift_amount      : natural RANGE 0 to DATA_W;
 
-  signal p4_adder_cin      : std_logic;
-  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
-  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal a_u                      : unsigned (DATA_W - 1 downto 0);
+  signal b_u                      : unsigned (DATA_W - 1 downto 0);
+  signal a_s                      : signed (DATA_W - 1 downto 0);
+  signal shift_amount             : natural range 0 to DATA_W;
+
+  signal p4_adder_cin             : std_logic;
+  signal p4_adder_b               : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s               : std_logic_vector(DATA_W - 1 downto 0);
 
 begin
 
-  ----------------------------------------------------------- ENTITY DEFINITION
   -- helpers
   a_u <= unsigned(A);
   b_u <= unsigned(B);
   a_s <= signed(A);
-  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  shift_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
-  ----------------------------------------------------------- PROCESSES
+  ----------------------------------------------------------- ENTITY DEFINITION
+
+  ----------------------------------------------------------- COMBINATORIAL
+
+  -- If we need to shift less then DATA_W bits then we get the data from b_u
+  -- otherwise just shift DATA_W bits
+  shift_amount <= DATA_W when b_u >= C_MAX_SHIFTABLE_AMOUNT else
+                  to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
   P_ALU : process (FUNC, A, a_u, B, b_u, a_s, shift_amount) is
   begin
@@ -136,6 +146,11 @@ architecture BEHAV_P4ADD of ALU is
 
   ----------------------------------------------------------- CONSTANTS 1
 
+  -- max possibile shifts for a DATA_W architecture are of DATA_W positions
+  --  this gives a warning at compile time but is not so importatnt
+  --  https://electronics.stackexchange.com/questions/337121/vhdl-non-locally-static-choice-warning
+  constant C_MAX_SHIFTABLE_AMOUNT : unsigned (DATA_W - 1 downto 0) := (vhfp_ilog2(DATA_W) =>'1', others=>'0');
+
   ----------------------------------------------------------- TYPES
 
   ----------------------------------------------------------- FUNCTIONS
@@ -143,19 +158,24 @@ architecture BEHAV_P4ADD of ALU is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
-  signal a_u               : unsigned (DATA_W - 1 downto 0);
-  signal b_u               : unsigned (DATA_W - 1 downto 0);
-  signal a_s               : signed (DATA_W - 1 downto 0);
-  signal shift_amount      : natural RANGE 0 to DATA_W;
+  signal a_u                      : unsigned (DATA_W - 1 downto 0);
+  signal b_u                      : unsigned (DATA_W - 1 downto 0);
+  signal a_s                      : signed (DATA_W - 1 downto 0);
+  signal shift_amount             : natural range 0 to (2 * DATA_W) - 1;
 
-  signal p4_adder_cin      : std_logic;
-  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
-  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_cin             : std_logic;
+  signal p4_adder_b               : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s               : std_logic_vector(DATA_W - 1 downto 0);
 
 begin
 
+  -- helpers
+  a_u <= unsigned(A);
+  b_u <= unsigned(B);
+  a_s <= signed(A);
+
   ----------------------------------------------------------- ENTITY DEFINITION
-  -- P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+
   P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
@@ -168,14 +188,13 @@ begin
       COUT => open
     );
 
-  -- helpers
-  a_u <= unsigned(A);
-  b_u <= unsigned(B);
-  a_s <= signed(A);
-  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  shift_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
+  ----------------------------------------------------------- COMBINATORIAL
 
-  ----------------------------------------------------------- PROCESSES
+  -- If we need to shift less then DATA_W bits then we get the data from b_u
+  -- otherwise just shift DATA_W bits
+  shift_amount <= DATA_W when b_u >= C_MAX_SHIFTABLE_AMOUNT else
+                  to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
+
   P_ALU : process (FUNC, A, a_u, B, b_u, a_s, shift_amount, p4_adder_s) is
   begin
 
@@ -235,13 +254,18 @@ begin
 
 end architecture BEHAV_P4ADD;
 
-------------------------------------------------------------- END ARCHITECTURE BEHAVIOURLA + P4 ADDER
+------------------------------------------------------------- END ARCHITECTURE BEHAVIOURAL + P4 ADDER
 
-------------------------------------------------------------- ARCHITECTURE BEHAVIOURLA + P4 ADDER + T2 LOGIC
+------------------------------------------------------------- ARCHITECTURE BEHAVIOURAL + P4 ADDER + T2 LOGIC
 
 architecture BEHAV_P4ADD_T2LOGIC of ALU is
 
   ----------------------------------------------------------- CONSTANTS 1
+
+  -- max possibile shifts for a DATA_W architecture are of DATA_W positions
+  --  this gives a warning at compile time but is not so importatnt
+  --  https://electronics.stackexchange.com/questions/337121/vhdl-non-locally-static-choice-warning
+  constant C_MAX_SHIFTABLE_AMOUNT : unsigned (DATA_W - 1 downto 0) := (vhfp_ilog2(DATA_W) =>'1', others=>'0');
 
   ----------------------------------------------------------- TYPES
 
@@ -250,22 +274,27 @@ architecture BEHAV_P4ADD_T2LOGIC of ALU is
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
-  signal a_u               : unsigned (DATA_W - 1 downto 0);
-  signal b_u               : unsigned (DATA_W - 1 downto 0);
-  signal a_s               : signed (DATA_W - 1 downto 0);
-  signal shift_amount      : natural RANGE 0 to DATA_W;
+  signal a_u                      : unsigned (DATA_W - 1 downto 0);
+  signal b_u                      : unsigned (DATA_W - 1 downto 0);
+  signal a_s                      : signed (DATA_W - 1 downto 0);
+  signal shift_amount             : natural range 0 to (2 * DATA_W) - 1;
 
-  signal p4_adder_cin      : std_logic;
-  signal p4_adder_b        : std_logic_vector(DATA_W - 1 downto 0);
-  signal p4_adder_s        : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_cin             : std_logic;
+  signal p4_adder_b               : std_logic_vector(DATA_W - 1 downto 0);
+  signal p4_adder_s               : std_logic_vector(DATA_W - 1 downto 0);
 
-  signal t2_logic_s        : std_logic_vector(DATA_W - 1 downto 0);
-  signal t2_logic_op       : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_s               : std_logic_vector(DATA_W - 1 downto 0);
+  signal t2_logic_op              : std_logic_vector(DATA_W - 1 downto 0);
 
 begin
 
+  -- helpers
+  a_u <= unsigned(A);
+  b_u <= unsigned(B);
+  a_s <= signed(A);
+
   ----------------------------------------------------------- ENTITY DEFINITION
-  -- P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+
   P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
@@ -289,14 +318,13 @@ begin
       S  => t2_logic_s
     );
 
-  -- helpers
-  a_u <= unsigned(A);
-  b_u <= unsigned(B);
-  a_s <= signed(A);
-  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  shift_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
+  ----------------------------------------------------------- COMBINATORIAL
 
-  ----------------------------------------------------------- PROCESSES
+  -- If we need to shift less then DATA_W bits then we get the data from b_u
+  -- otherwise just shift DATA_W bits
+  shift_amount <= DATA_W when b_u >= C_MAX_SHIFTABLE_AMOUNT else
+                  to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
+
   P_ALU : process (FUNC, a_u, B, b_u, a_s, shift_amount, p4_adder_s, t2_logic_s) is
   begin
 
@@ -360,7 +388,7 @@ begin
 
 end architecture BEHAV_P4ADD_T2LOGIC;
 
-------------------------------------------------------------- END ARCHITECTURE BEHAVIOURLA + P4 ADDER + T2 LOGIC
+------------------------------------------------------------- END ARCHITECTURE BEHAVIOURAL + P4 ADDER + T2 LOGIC
 
 ------------------------------------------------------------- ARCHITECTURE STRUCTURAL
 
@@ -377,7 +405,6 @@ architecture STRUCTURAL of ALU is
   ----------------------------------------------------------- SIGNALS
   signal a_u                : unsigned (DATA_W - 1 downto 0);
   signal b_u                : unsigned (DATA_W - 1 downto 0);
-  signal rotate_amount      : natural RANGE 0 to DATA_W;
 
   signal p4_adder_cin       : std_logic;
   signal p4_adder_b         : std_logic_vector(DATA_W - 1 downto 0);
@@ -392,7 +419,7 @@ architecture STRUCTURAL of ALU is
 begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  -- P4_ADDER_U : entity work.p4_adder(STRUCTURAL)
+
   P4_ADDER_U : configuration work.CFG_P4_ADDER_STRUCTURAL
     generic map (
       NBIT => C_ALU_PRECISION_BIT
@@ -416,13 +443,16 @@ begin
       S  => t2_logic_s
     );
 
+  -- the shift AMOUNT can be at max log2(DATA_W)+1 positions, therefore we truncate B.
+  -- If DATA_W = 32 then we could shift by 32 positions, the number 32 can only
+  -- be rapresented in 6 bits
   T2_SHIFTER_U : entity work.t2_shifter(BEHAVIOURAL)
     generic map (
       DATA_W => C_ALU_PRECISION_BIT
     )
     port map (
       A      => A,
-      AMOUNT => B(vhfp_ilog2(DATA_W) - 1 downto 0),
+      AMOUNT => B,
       OP     => t2_shifter_op,
       S      => t2_shifter_s
     );
@@ -430,11 +460,9 @@ begin
   -- helpers
   a_u <= unsigned(A);
   b_u <= unsigned(B);
-  -- the shift amount can be at max DATA_W positions, therefore we truncate b_u
-  rotate_amount <= to_integer(resize(b_u, vhfp_ilog2(DATA_W)));
 
   ----------------------------------------------------------- PROCESSES
-  P_ALU : process (FUNC, a_u, B, b_u, rotate_amount, p4_adder_s, t2_logic_s, t2_shifter_s) is
+  P_ALU : process (FUNC, a_u, B, b_u, p4_adder_s, t2_logic_s, t2_shifter_s) is
   begin
 
     -- Defaults for disabling latch inference
@@ -472,7 +500,7 @@ begin
         t2_shifter_op <= C_T2_SHIFTER_OP_SLL;
         RES           <= t2_shifter_s;
 
-      when LSR =>
+      when LSR =>                                                  -- Logical shift right
         t2_shifter_op <= C_T2_SHIFTER_OP_SRL;
         RES           <= t2_shifter_s;
 
