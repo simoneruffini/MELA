@@ -31,7 +31,8 @@ entity COARSE_SHIFT is
     MASK8        : in    std_logic_vector(MASK_SIZE - 1 downto 0);
     MASK16       : in    std_logic_vector(MASK_SIZE - 1 downto 0);
     MASK24       : in    std_logic_vector(MASK_SIZE - 1 downto 0);
-    AMOUNT       : in    std_logic_vector(1 downto 0);                -- Shift Amount (MSB)
+    MSB          : in    std_logic;
+    AMOUNT       : in    std_logic_vector(DATA_W - 3 - 1  downto 0);                -- Shift Amount (MSB)
     S            : out   std_logic_vector(MASK_SIZE - 1 downto 0)
   );
 end entity COARSE_SHIFT;
@@ -40,27 +41,26 @@ architecture BEHAVIOURAL of COARSE_SHIFT is
 
 begin
 
-  COARSESHIFT : process (MASK0, MASK8, MASK16, MASK24, AMOUNT) is
+  COARSESHIFT : process (MASK0, MASK8, MASK16, MASK24, MSB, AMOUNT) is
+
+    constant C_MASK0_SEL  : std_logic_vector(DATA_W - 3 - 1 downto 0) := (others => '0');
+    constant C_MASK8_SEL  : std_logic_vector(DATA_W - 3 - 1 downto 0) := (DATA_W - 3 - 1 downto 2 => '0') & "01";
+    constant C_MASK16_SEL : std_logic_vector(DATA_W - 3 - 1 downto 0) := (DATA_W - 3 - 1 downto 2 => '0') & "10";
+    constant C_MASK24_SEL : std_logic_vector(DATA_W - 3 - 1 downto 0) := (DATA_W - 3 - 1 downto 2 => '0') & "11";
+
   begin
 
-    case AMOUNT is
-
-      when "00" =>
-        S <= MASK0;
-
-      when "01" =>
-        S <= MASK8;
-
-      when "10" =>
-        S <= MASK16;
-
-      when "11" =>
-        S <= MASK24;
-
-      when others =>
-        S <= (others => 'X');
-
-    end case;
+    if (AMOUNT=C_MASK0_SEL) then
+      S <= MASK0;
+    elsif (AMOUNT=C_MASK8_SEL) then
+      S <= MASK8;
+    elsif (AMOUNT=C_MASK16_SEL) then
+      S <= MASK16;
+    elsif (AMOUNT=C_MASK24_SEL) then
+      S <= MASK24;
+    else
+      S <= (others => MSB);
+    end if;
 
   end process COARSESHIFT;
 

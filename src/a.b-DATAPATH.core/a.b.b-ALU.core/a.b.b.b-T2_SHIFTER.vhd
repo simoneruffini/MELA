@@ -23,13 +23,13 @@ library work;
 
 entity T2_SHIFTER is
   generic (
-    DATA_W : integer  -- Instruction memory data port bit width
+    DATA_W : integer := 32 -- Instruction memory data port bit width
   );
   port (
-    A         : in    std_logic_vector(DATA_W - 1 downto 0);  -- Operand
-    AMOUNT    : in    std_logic_vector(4 downto 0);           -- Shift amount
-    OP        : in    std_logic_vector(1 downto 0);           -- Opcode
-    S         : out   std_logic_vector(DATA_W - 1 downto 0)   -- Data Output Port
+    A         : in    std_logic_vector(DATA_W - 1 downto 0);           -- Operand
+    AMOUNT    : in    std_logic_vector(DATA_W - 1 downto 0);           -- Shift amount
+    OP        : in    std_logic_vector(1 downto 0);                    -- Opcode
+    S         : out   std_logic_vector(DATA_W - 1 downto 0)            -- Data Output Port
   );
 end entity T2_SHIFTER;
 
@@ -41,6 +41,7 @@ architecture BEHAVIOURAL of T2_SHIFTER is
   signal m8            : std_logic_vector(C_MASK_SIZE - 1 downto 0);
   signal m16           : std_logic_vector(C_MASK_SIZE - 1 downto 0);
   signal m24           : std_logic_vector(C_MASK_SIZE - 1 downto 0);
+  signal msb           : std_logic;
   signal m_selected    : std_logic_vector(C_MASK_SIZE - 1 downto 0); -- Mask selected by the coarse shift block
 
   signal op_fine       : std_logic_vector(2 downto 0);               -- Op code for the fine shift block
@@ -58,7 +59,8 @@ begin
       MASK0  => m0,
       MASK8  => m8,
       MASK16 => m16,
-      MASK24 => m24
+      MASK24 => m24,
+      MSB    => msb
     );
 
   COARSESHIFT : entity work.coarse_shift(BEHAVIOURAL)
@@ -71,7 +73,8 @@ begin
       MASK8  => m8,
       MASK16 => m16,
       MASK24 => m24,
-      AMOUNT => AMOUNT(4 downto 3),
+      MSB    => msb,
+      AMOUNT => AMOUNT(DATA_W - 1 downto 3),
       S      => m_selected
     );
 
