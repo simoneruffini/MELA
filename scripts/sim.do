@@ -12,7 +12,7 @@ puts $dump_file "REGISTER FILE MEMORY DUMP"
 puts $dump_file $reg_val 
 puts $dump_file ""
 puts "DATA MEMORY DUMP"
-set dmem_val [examine sim:/tb_cpu/U_CPU/U_DMEM/mem]
+set dmem_val [examine sim:/tb_cpu/U_DMEM/mem]
 puts $dmem_val
 puts $dump_file "DATA MEMORY DUMP"
 puts $dump_file $dmem_val

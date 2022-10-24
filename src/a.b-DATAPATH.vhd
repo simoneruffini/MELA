@@ -181,10 +181,6 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
 
   -- Instruction Memory signals
-  -- NOTE: IMEM is word addressed, trucante addresses (bit0,1 removed)
-  -- NOTE: the pc_f signal is truncated if the memory address space is smaller
-  -- then the DLX architecture word width
-  --IMEM_ADDR <= std_logic_vector( resize(unsigned(pc_f(pc_f'length-1 downto 2), IMEM_ADDR'length));
   IMEM_ADDR <= pc_f;
 
   instr_f <= IMEM_DOUT;
@@ -398,8 +394,8 @@ begin
   --*****************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  U_ALU : entity work.alu(BEHAVIOURAL)
-  --U_ALU : entity work.alu(STRUCTURAL)
+  --U_ALU : entity work.alu(BEHAVIOURAL)
+  U_ALU : entity work.alu(STRUCTURAL)
     generic map (
       DATA_W => C_ARCH_WORD_W
     )
@@ -524,9 +520,6 @@ begin
   ----------------------------------------------------------- COMBINATORIAL
 
   -- Data Memory Signals
-  -- NOTE: the alu_out_m signal is truncated if the memory address space is smaller
-  -- then the DLX architecture word width
-  --DMEM_RWADDR <= std_logic_vector(resize(unsigned(alu_out_m), DMEM_RWADDR'length));
   DMEM_RWADDR <= alu_out_m;
   DMEM_DIN    <= dmem_din_m;
   dmem_dout_m <= DMEM_DOUT;

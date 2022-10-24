@@ -1,1 +1,1 @@
-../../sim/asm_example/jump_simple_dump.txt
+../../sim/asm_example/moat_dump.txt

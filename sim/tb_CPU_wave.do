@@ -26,10 +26,9 @@ add wave -noupdate -expand -group RF /tb_cpu/U_CPU/U_DATAPATH/U_RF/OUT2
 add wave -noupdate -expand -group RF -color Wheat /tb_cpu/U_CPU/U_DATAPATH/U_RF/WR
 add wave -noupdate -expand -group RF -color Wheat /tb_cpu/U_CPU/U_DATAPATH/U_RF/DATAIN
 add wave -noupdate -expand -group RF -color Wheat -radix unsigned /tb_cpu/U_CPU/U_DATAPATH/U_RF/ADD_WR
-add wave -noupdate -group IMEM -expand /tb_cpu/U_CPU/U_IMEM/mem
-add wave -noupdate -group IMEM /tb_cpu/U_CPU/U_IMEM/RADDR
-add wave -noupdate -group IMEM /tb_cpu/U_CPU/U_IMEM/truncated_raddr
-add wave -noupdate -group IMEM /tb_cpu/U_CPU/U_IMEM/DOUT
+add wave -noupdate -group IMEM -expand /tb_cpu/U_IMEM/mem
+add wave -noupdate -group IMEM /tb_cpu/U_IMEM/RADDR
+add wave -noupdate -group IMEM /tb_cpu/U_IMEM/DOUT
 add wave -noupdate -group FETCH_DECODE /tb_cpu/U_CPU/U_DATAPATH/U_PC_PLS_4_REG_FD/reg_mem
 add wave -noupdate -group FETCH_DECODE /tb_cpu/U_CPU/U_DATAPATH/U_INSTR_REG_FD/reg_mem
 add wave -noupdate -expand -group DECODE_EXECUTE -radix decimal /tb_cpu/U_CPU/U_DATAPATH/imm_i_type_d
@@ -54,11 +53,11 @@ add wave -noupdate -group ALU /tb_cpu/U_CPU/U_DATAPATH/U_ALU/A
 add wave -noupdate -group ALU /tb_cpu/U_CPU/U_DATAPATH/U_ALU/B
 add wave -noupdate -group ALU /tb_cpu/U_CPU/U_DATAPATH/U_ALU/RES
 add wave -noupdate -group ALU /tb_cpu/U_CPU/U_DATAPATH/U_ALU/FUNC
-add wave -noupdate -group DMEM -expand /tb_cpu/U_CPU/U_DMEM/mem
-add wave -noupdate -group DMEM /tb_cpu/U_CPU/U_DMEM/WEN
-add wave -noupdate -group DMEM /tb_cpu/U_CPU/U_DMEM/DIN
-add wave -noupdate -group DMEM /tb_cpu/U_CPU/U_DMEM/RWADDR
-add wave -noupdate -group DMEM /tb_cpu/U_CPU/U_DMEM/DOUT
+add wave -noupdate -group DMEM -expand /tb_cpu/U_DMEM/mem
+add wave -noupdate -group DMEM /tb_cpu/U_DMEM/WEN
+add wave -noupdate -group DMEM /tb_cpu/U_DMEM/DIN
+add wave -noupdate -group DMEM /tb_cpu/U_DMEM/RWADDR
+add wave -noupdate -group DMEM /tb_cpu/U_DMEM/DOUT
 add wave -noupdate -group HU -expand /tb_cpu/U_CPU/U_HU/DP_SIG
 add wave -noupdate -group HU /tb_cpu/U_CPU/U_HU/flush_pipeline_branch
 add wave -noupdate -group HU /tb_cpu/U_CPU/U_HU/dbg_instr_opcode_m

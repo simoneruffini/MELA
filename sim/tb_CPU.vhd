@@ -54,6 +54,15 @@ architecture BEHAVIOURAL of TB_CPU is
   signal clk                        : std_logic;
   signal rst_an                     : std_logic;
 
+  signal imem_addr                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal imem_addr_trunc            : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
+  signal imem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_rwaddr                : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_rwaddr_trunc          : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
+  signal dmem_wen                   : std_logic;                                -- Data Memory Write Enable
+  signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+
 
 
 begin
@@ -67,13 +76,55 @@ begin
       CLK => clk
     );
 
+  U_IMEM : entity work.imem(BEHAVIOURAL)
+    generic map (
+      ADDR_W => C_IMEM_ADDR_W,
+      DATA_W => C_ARCH_WORD_W
+    )
+    port map (
+      RST_AN => RST_AN,
+      RADDR  => imem_addr_trunc,
+      DOUT   => imem_dout
+    );
+
+  U_DMEM : entity work.dmem(BEHAVIOURAL)
+    generic map (
+      ADDR_W => C_DMEM_ADDR_W,
+      DATA_W => C_ARCH_WORD_W
+    )
+    port map (
+      CLK    => CLK,
+      RST_AN => RST_AN,
+      RWADDR => dmem_rwaddr_trunc,
+      WEN    => dmem_wen,
+      DIN    => dmem_din,
+      DOUT   => dmem_dout
+    );
+
   U_CPU : entity work.cpu(BEHAVIOURAL)
     port map (
       CLK    => clk,
-      RST_AN => rst_an
+      RST_AN => rst_an,
+      IMEM_ADDR   => imem_addr,
+      IMEM_DOUT   => imem_dout,
+      DMEM_RWADDR => dmem_rwaddr,
+      DMEM_WEN    => dmem_wen,
+      DMEM_DIN    => dmem_din,
+      DMEM_DOUT   => dmem_dout
     );
 
   ----------------------------------------------------------- COMBINATORIAL
+
+  -- NOTE: IMEM is word addressed, trucante addresses (bit0,1 removed)
+  -- NOTE: the imem_addr signal is additionaly truncated if the memory address
+  --       space (imem size) is smaller then the DLX architecture word width
+  imem_addr_trunc <= std_logic_vector(resize(unsigned(imem_addr(imem_addr'length-1 downto 2)), imem_addr_trunc'length));
+
+  -- NOTE: DMEM is word addressed, but dmem_rwaddr is already a word-addressed
+  --       address (no first 2 bits trucation)
+  -- NOTE: the dmem_rwaddr signal is still truncated if the memory address
+  --       space (dmem size) is smaller then the DLX architecture word width
+  dmem_rwaddr_trunc <= std_logic_vector(resize(unsigned(dmem_rwaddr), dmem_rwaddr_trunc'length));
 
   ----------------------------------------------------------- PROCESSES
 

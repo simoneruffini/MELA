@@ -29,7 +29,14 @@ library work;
 entity CPU is
   port (
     CLK              : in    std_logic;                                   -- Clock Signal (rising-edge trigger)
-    RST_AN           : in    std_logic                                    -- Reset Signal: Asyncronous Active Low (Negative)
+    RST_AN           : in    std_logic;                                    -- Reset Signal: Asyncronous Active Low (Negative)
+    -- xMEM ports
+    IMEM_ADDR        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructin Memory read address
+    IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructino Memory data output
+    DMEM_RWADDR      : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Data Memory read/write address
+    DMEM_WEN         : out   std_logic;                                       -- Data Memory Write Enable
+    DMEM_DIN         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Data Memory data input
+    DMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)     -- Data Memory data output
   );
 end entity CPU;
 
@@ -49,20 +56,20 @@ architecture BEHAVIOURAL of CPU is
 
   signal ctrl_word                  : ctrl_word_t;
   signal instr_cu                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal imem_addr                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal imem_addr_trunc            : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
-  signal imem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal dmem_rwaddr                : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal dmem_rwaddr_trunc          : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
-  signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  --signal imem_addr                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  --signal imem_addr_trunc            : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
+  --signal imem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  --signal dmem_rwaddr                : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  --signal dmem_rwaddr_trunc          : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
+  --signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+  --signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dp_sig                     : dp_sig_t;
   signal hzrd_sig                   : hzrd_sig_t;
 
   -- this needs to be in the top level
   signal assertion_test_output      : natural := dlx_pkg_check_assertions;
 
-  -- DEBUG
+  -- DEBUG signals (will be left out of synthesis)
   signal dbg_fetch                  : instr_t;
   signal dbg_decode                 : instr_t;
   signal dbg_execute                : instr_t;
@@ -82,16 +89,16 @@ begin
       CTRL_WORD => ctrl_word
     );
 
-  U_IMEM : entity work.imem(BEHAVIOURAL)
-    generic map (
-      ADDR_W => C_IMEM_ADDR_W,
-      DATA_W => C_ARCH_WORD_W
-    )
-    port map (
-      RST_AN => RST_AN,
-      RADDR  => imem_addr_trunc,
-      DOUT   => imem_dout
-    );
+--  U_IMEM : entity work.imem(BEHAVIOURAL)
+--    generic map (
+--      ADDR_W => C_IMEM_ADDR_W,
+--      DATA_W => C_ARCH_WORD_W
+--    )
+--    port map (
+--      RST_AN => RST_AN,
+--      RADDR  => imem_addr_trunc,
+--      DOUT   => imem_dout
+--    );
 
   U_DATAPATH : entity work.datapath(BEHAVIOURAL)
     port map (
@@ -101,26 +108,26 @@ begin
       INSTR_CU    => instr_cu,
       HZRD_SIG    => hzrd_sig,
       DP_SIG      => dp_sig,
-      IMEM_ADDR   => imem_addr,
-      IMEM_DOUT   => imem_dout,
-      DMEM_RWADDR => dmem_rwaddr,
-      DMEM_DIN    => dmem_din,
-      DMEM_DOUT   => dmem_dout
+      IMEM_ADDR   => IMEM_ADDR,
+      IMEM_DOUT   => IMEM_DOUT,
+      DMEM_RWADDR => DMEM_RWADDR,
+      DMEM_DIN    => DMEM_DIN,
+      DMEM_DOUT   => DMEM_DOUT
     );
 
-  U_DMEM : entity work.dmem(BEHAVIOURAL)
-    generic map (
-      ADDR_W => C_DMEM_ADDR_W,
-      DATA_W => C_ARCH_WORD_W
-    )
-    port map (
-      CLK    => CLK,
-      RST_AN => RST_AN,
-      RWADDR => dmem_rwaddr_trunc,
-      WEN    => ctrl_word.dmem_wen,
-      DIN    => dmem_din,
-      DOUT   => dmem_dout
-    );
+  --U_DMEM : entity work.dmem(BEHAVIOURAL)
+  --  generic map (
+  --    ADDR_W => C_DMEM_ADDR_W,
+  --    DATA_W => C_ARCH_WORD_W
+  --  )
+  --  port map (
+  --    CLK    => CLK,
+  --    RST_AN => RST_AN,
+  --    RWADDR => dmem_rwaddr_trunc,
+  --    WEN    => ctrl_word.dmem_wen,
+  --    DIN    => dmem_din,
+  --    DOUT   => dmem_dout
+  --  );
 
   U_HU : entity work.hu(BEHAVIOURAL)
     port map (
@@ -132,16 +139,19 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
 
+  DMEM_WEN   <= CTRL_WORD.dmem_wen;
+
+
   -- NOTE: IMEM is word addressed, trucante addresses (bit0,1 removed)
   -- NOTE: the imem_addr signal is additionaly truncated if the memory address
   --       space (imem size) is smaller then the DLX architecture word width
-  imem_addr_trunc <= std_logic_vector(resize(unsigned(imem_addr(imem_addr'length-1 downto 2)), imem_addr_trunc'length));
+  --imem_addr_trunc <= std_logic_vector(resize(unsigned(imem_addr(imem_addr'length-1 downto 2)), imem_addr_trunc'length));
 
   -- NOTE: DMEM is word addressed, but dmem_rwaddr is already a word-addressed
   --       address (no first 2 bits trucation)
   -- NOTE: the dmem_rwaddr signal is still truncated if the memory address
   --       space (dmem size) is smaller then the DLX architecture word width
-  dmem_rwaddr_trunc <= std_logic_vector(resize(unsigned(dmem_rwaddr), dmem_rwaddr_trunc'length));
+  --dmem_rwaddr_trunc <= std_logic_vector(resize(unsigned(dmem_rwaddr), dmem_rwaddr_trunc'length));
 
 
   -- DEBUG: will not be synthesized
