@@ -61,12 +61,15 @@ begin
   P_LOGIC : process (OP, A, B) is
   begin
 
-    l0 <= not (OP(0) and (not A) and (not B));
-    l1 <= not (OP(1) and (not A) and B);
-    l2 <= not (OP(2) and A and (not B));
-    l3 <= not (OP(3) and A and B);
+    logic : for i in 0 to DATA_W - 1 loop
 
-    S <= not (l0 and l1 and l2 and l3);
+      l0(i) <= not (OP(0) and (not A(i)) and (not B(i)));
+      l1(i) <= not (OP(1) and (not A(i)) and B(i));
+      l2(i) <= not (OP(2) and A(i) and (not B(i)));
+      l3(i) <= not (OP(3) and A(i) and B(i));
+      S(i)  <= not (l0(i) and l1(i) and l2(i) and l3(i));
+
+    end loop;
 
   end process P_LOGIC;
 
