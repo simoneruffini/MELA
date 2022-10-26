@@ -15,6 +15,8 @@
 --  If the register can be initialized by the INIT active high signal, in such case
 --  the register will take the value defined in INIT_VAL.
 --  The initialization function is overridden by the EN signal, if EN is on the
+--  NOTE: generics are unconstrained because of limitation of the syntehsis tool
+--        their size is DATA_W bit
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -25,9 +27,9 @@ library ieee;
 
 entity REG_PIPO is
   generic (
-    DATA_W       : integer;                                                    -- Data width of the register
-    INIT_VAL     : std_logic_vector(DATA_W - 1 downto 0) := (others => '0');   -- init value synchcronous
-    RST_INIT_VAL : std_logic_vector(DATA_W - 1 downto 0) := (others => '0')    -- value at reset
+    DATA_W       : integer;            -- Data width of the register
+    INIT_VAL     : std_logic_vector;   -- init value synchcronous (DATA_W - 1 downto 0);
+    RST_INIT_VAL : std_logic_vector    -- value at reset          (DATA_W - 1 downto 0)
   );
   port (
     CLK    : in    std_logic;                             -- Clock Signal (rising-edge trigger)
@@ -221,4 +223,24 @@ begin
   end process P_MEM;
 
 end architecture BEHAV_WITH_EN_INIT_RSTINIT;
+
+configuration CFG_REG_PIPO_BEHAV_WITH_EN of REG_PIPO is
+ for BEHAV_WITH_EN
+ end for;
+end CFG_REG_PIPO_BEHAV_WITH_EN;
+
+configuration CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT of REG_PIPO is
+  for BEHAV_WITH_EN_RSTINIT 
+  end for;
+end configuration CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT;
+
+configuration CFG_REG_PIPO_BEHAV_WITH_EN_INIT of REG_PIPO is
+  for BEHAV_WITH_EN_INIT
+  end for;
+end configuration CFG_REG_PIPO_BEHAV_WITH_EN_INIT;
+
+configuration CFG_REG_PIPO_BEHAV_WITH_EN_INIT_RSTINIT of REG_PIPO is
+  for BEHAV_WITH_EN_INIT_RSTINIT
+  end for;
+end configuration CFG_REG_PIPO_BEHAV_WITH_EN_INIT_RSTINIT;
 

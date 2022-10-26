@@ -28,12 +28,12 @@ entity T2_SHIFTER is
   port (
     A         : in    std_logic_vector(DATA_W - 1 downto 0);           -- Operand
     AMOUNT    : in    std_logic_vector(DATA_W - 1 downto 0);           -- Shift amount
-    OP        : in    std_logic_vector(1 downto 0);                    -- Opcode
+    OP        : in    std_logic_vector(2 - 1 downto 0);                    -- Opcode
     S         : out   std_logic_vector(DATA_W - 1 downto 0)            -- Data Output Port
   );
 end entity T2_SHIFTER;
 
-architecture BEHAVIOURAL of T2_SHIFTER is
+architecture STRUCTURAL of T2_SHIFTER is
 
   constant C_MASK_SIZE : natural := DATA_W + 9;
 
@@ -46,9 +46,53 @@ architecture BEHAVIOURAL of T2_SHIFTER is
 
   signal op_fine       : std_logic_vector(2 downto 0);               -- Op code for the fine shift block
 
+  component COARSE_SHIFT is
+    generic (
+      DATA_W    : integer;
+      MASK_SIZE : integer
+    );
+    port (
+      MASK0        : in    std_logic_vector(MASK_SIZE - 1 downto 0);
+      MASK8        : in    std_logic_vector(MASK_SIZE - 1 downto 0);
+      MASK16       : in    std_logic_vector(MASK_SIZE - 1 downto 0);
+      MASK24       : in    std_logic_vector(MASK_SIZE - 1 downto 0);
+      MSB          : in    std_logic;
+      AMOUNT       : in    std_logic_vector(DATA_W - 3 - 1  downto 0);
+      S            : out   std_logic_vector(MASK_SIZE - 1 downto 0)
+    );
+  end component;
+
+  component FINE_SHIFT is
+    generic (
+      DATA_W    : integer;
+      MASK_SIZE : integer
+    );
+    port (
+      A             : in    std_logic_vector(MASK_SIZE - 1 downto 0);
+      AMOUNT        : in    std_logic_vector(2 downto 0);
+      S             : out   std_logic_vector(DATA_W - 1 downto 0)
+    );
+  end component;
+
+  component MASK_GEN is
+    generic (
+      DATA_W    : integer;
+      MASK_SIZE : integer
+    );
+    port (
+      OP       : in    std_logic_vector(1 downto 0);
+      A        : in    std_logic_vector(DATA_W - 1 downto 0);
+      MASK0    : out   std_logic_vector(MASK_SIZE - 1 downto 0);
+      MASK8    : out   std_logic_vector(MASK_SIZE - 1 downto 0);
+      MASK16   : out   std_logic_vector(MASK_SIZE - 1 downto 0);
+      MASK24   : out   std_logic_vector(MASK_SIZE - 1 downto 0);
+      MSB      : out   std_logic
+    );
+  end component;
+
 begin
 
-  MASKGEN : entity work.mask_gen(BEHAVIOURAL)
+  MASKGEN : mask_gen
     generic map (
       DATA_W    => DATA_W,
       MASK_SIZE => C_MASK_SIZE
@@ -63,7 +107,7 @@ begin
       MSB    => msb
     );
 
-  COARSESHIFT : entity work.coarse_shift(BEHAVIOURAL)
+  COARSESHIFT : coarse_shift
     generic map (
       DATA_W    => DATA_W,
       MASK_SIZE => C_MASK_SIZE
@@ -78,7 +122,7 @@ begin
       S      => m_selected
     );
 
-  FINESHIFT : entity work.fine_shift(BEHAVIOURAL)
+  FINESHIFT : fine_shift
     generic map (
       DATA_W    => DATA_W,
       MASK_SIZE => C_MASK_SIZE
@@ -110,4 +154,18 @@ begin
 
   end process INV_OP;
 
-end architecture BEHAVIOURAL;
+end architecture STRUCTURAL;
+
+configuration CFG_T2_SHIFTER_STRUCT of T2_SHIFTER is
+  for STRUCTURAL
+    for all : MASK_GEN
+      use configuration work.CFG_MASK_GEN_BEHAV;
+    end for;
+    for all : COARSE_SHIFT
+      use configuration work.CFG_COARSE_SHIFT_BEHAV;
+    end for;
+    for all : FINE_SHIFT
+      use configuration work.CFG_FINE_SHIFT_BEHAV;
+    end for;
+  end for;
+end configuration CFG_T2_SHIFTER_STRUCT;

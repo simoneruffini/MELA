@@ -119,7 +119,7 @@ begin
 
       end loop;
 
-    elsif (CLK'EVENT and CLK = '0') then -- faling edge
+    elsif (CLK'EVENT and CLK = '1') then -- faling edge
       if (ENABLE = '1') then
         -- writing
         if (WR = '1') then
@@ -151,7 +151,7 @@ begin
 
 end architecture BEHAVIOURAL;
 
--- configuration CFG_RF_BEHAVIOURAL of RF is
---  for Behavioural
---  end for;
--- end configuration;
+configuration CFG_RF_BEHAV of RF is
+  for BEHAVIOURAL
+  end for;
+end configuration;

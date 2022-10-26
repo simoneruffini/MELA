@@ -130,8 +130,8 @@ begin
 
 end architecture BEHAVIOURAL;
 
--- configuration CFG_HU_BEHAVIOURAL of CPU is
---  for BEHAVIOURAL
---  end for;
--- end CFG_HU_BEHAVIOURAL;
+configuration CFG_HU_BEHAV of HU is
+ for BEHAVIOURAL
+ end for;
+end CFG_HU_BEHAV;
 

@@ -65,3 +65,8 @@ begin
   end process COARSESHIFT;
 
 end architecture BEHAVIOURAL;
+
+configuration CFG_COARSE_SHIFT_BEHAV of COARSE_SHIFT is
+  for BEHAVIOURAL
+  end for;
+end configuration CFG_COARSE_SHIFT_BEHAV;

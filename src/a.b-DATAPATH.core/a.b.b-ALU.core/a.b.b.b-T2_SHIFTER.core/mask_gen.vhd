@@ -80,3 +80,8 @@ begin
   end process MASKGEN;
 
 end architecture BEHAVIOURAL;
+
+configuration CFG_MASK_GEN_BEHAV of MASK_GEN is
+  for BEHAVIOURAL
+  end for;
+end configuration CFG_MASK_GEN_BEHAV;

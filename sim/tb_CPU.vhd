@@ -38,15 +38,14 @@ end entity TB_CPU;
 architecture BEHAVIOURAL of TB_CPU is
 
   ----------------------------------------------------------- CONSTANTS 1
-  constant C_CLK_FREQ_HZ            : natural := 1000000; -- 1MHz
+  constant C_CLK_FREQ_HZ            : natural := 1000000;                       -- 1MHz
   constant C_CLK_PERIOD_NS          : time := 1e09 / C_CLK_FREQ_HZ * 1 ns;
   constant C_0S                     : std_logic_vector(C_ARCH_WORD_W - 1 downto 0) := (others => '0');
 
   ----------------------------------------------------------- TYPES
-  
 
   ----------------------------------------------------------- FUNCTIONS
-  
+
   ----------------------------------------------------------- CONSTANTS 2
 
   ----------------------------------------------------------- SIGNALS
@@ -62,8 +61,6 @@ architecture BEHAVIOURAL of TB_CPU is
   signal dmem_wen                   : std_logic;                                -- Data Memory Write Enable
   signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-
-
 
 begin
 
@@ -82,7 +79,7 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      RST_AN => RST_AN,
+      RST_AN => rst_an,
       RADDR  => imem_addr_trunc,
       DOUT   => imem_dout
     );
@@ -93,18 +90,22 @@ begin
       DATA_W => C_ARCH_WORD_W
     )
     port map (
-      CLK    => CLK,
-      RST_AN => RST_AN,
+      CLK    => clk,
+      RST_AN => rst_an,
       RWADDR => dmem_rwaddr_trunc,
       WEN    => dmem_wen,
       DIN    => dmem_din,
       DOUT   => dmem_dout
     );
 
-  U_CPU : entity work.cpu(BEHAVIOURAL)
+  --U_CPU : configuration work.CFG_CPU_BEHAV
+  --U_CPU : configuration work.CFG_CPU_BEHAV_ALU_P4ADDER
+  --U_CPU : configuration work.CFG_CPU_BEHAV_ALU_T2LOGIC
+  --U_CPU : configuration work.CFG_CPU_BEHAV_ALU_T2SHIFTER
+  U_CPU : configuration work.CFG_CPU_BEHAV_ALU_STRUCT
     port map (
-      CLK    => clk,
-      RST_AN => rst_an,
+      CLK         => clk,
+      RST_AN      => rst_an,
       IMEM_ADDR   => imem_addr,
       IMEM_DOUT   => imem_dout,
       DMEM_RWADDR => dmem_rwaddr,

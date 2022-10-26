@@ -28,8 +28,8 @@ library work;
 
 entity CPU is
   port (
-    CLK              : in    std_logic;                                   -- Clock Signal (rising-edge trigger)
-    RST_AN           : in    std_logic;                                    -- Reset Signal: Asyncronous Active Low (Negative)
+    CLK              : in    std_logic;                                       -- Clock Signal (rising-edge trigger)
+    RST_AN           : in    std_logic;                                       -- Reset Signal: Asyncronous Active Low (Negative)
     -- xMEM ports
     IMEM_ADDR        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructin Memory read address
     IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);    -- Instructino Memory data output
@@ -44,6 +44,42 @@ end entity CPU;
 
 architecture BEHAVIOURAL of CPU is
 
+  ----------------------------------------------------------- COMPONENTS
+  component CU is
+    port (
+      CLK              : in    std_logic;
+      RST_AN           : in    std_logic;
+      INSTR            : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+      HZRD_SIG         : in    hzrd_sig_t;
+      CTRL_WORD        : out   ctrl_word_t
+    );
+  end component;
+
+  component DATAPATH is
+    port (
+      CLK              : in    std_logic;
+      RST_AN           : in    std_logic;
+      CTRL_WORD        : in    ctrl_word_t;
+      INSTR_CU         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+      HZRD_SIG         : in    hzrd_sig_t;
+      DP_SIG           : out   dp_sig_t;
+      IMEM_ADDR        : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+      IMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+      DMEM_RWADDR      : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+      DMEM_DIN         : out   std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
+      DMEM_DOUT        : in    std_logic_vector(C_ARCH_WORD_W - 1 downto 0)
+    );
+  end component;
+
+  component HU is
+    port (
+      CLK              : in    std_logic;
+      RST_AN           : in    std_logic;
+      DP_SIG           : in    dp_sig_t;
+      HZRD_SIG         : out   hzrd_sig_t
+    );
+  end component;
+
   ----------------------------------------------------------- CONSTANTS 1
 
   ----------------------------------------------------------- TYPES
@@ -56,13 +92,6 @@ architecture BEHAVIOURAL of CPU is
 
   signal ctrl_word                  : ctrl_word_t;
   signal instr_cu                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  --signal imem_addr                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  --signal imem_addr_trunc            : std_logic_vector(C_IMEM_ADDR_W - 1 downto 0);
-  --signal imem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  --signal dmem_rwaddr                : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  --signal dmem_rwaddr_trunc          : std_logic_vector(C_DMEM_ADDR_W - 1 downto 0);
-  --signal dmem_din                   : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
-  --signal dmem_dout                  : std_logic_vector(C_ARCH_WORD_W - 1 downto 0);
   signal dp_sig                     : dp_sig_t;
   signal hzrd_sig                   : hzrd_sig_t;
 
@@ -80,7 +109,7 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  U_CU : entity work.cu(BEHAVIOURAL)
+  U_CU : CU
     port map (
       CLK       => CLK,
       RST_AN    => RST_AN,
@@ -89,18 +118,7 @@ begin
       CTRL_WORD => ctrl_word
     );
 
---  U_IMEM : entity work.imem(BEHAVIOURAL)
---    generic map (
---      ADDR_W => C_IMEM_ADDR_W,
---      DATA_W => C_ARCH_WORD_W
---    )
---    port map (
---      RST_AN => RST_AN,
---      RADDR  => imem_addr_trunc,
---      DOUT   => imem_dout
---    );
-
-  U_DATAPATH : entity work.datapath(BEHAVIOURAL)
+  U_DATAPATH : DATAPATH
     port map (
       CLK         => CLK,
       RST_AN      => RST_AN,
@@ -115,21 +133,7 @@ begin
       DMEM_DOUT   => DMEM_DOUT
     );
 
-  --U_DMEM : entity work.dmem(BEHAVIOURAL)
-  --  generic map (
-  --    ADDR_W => C_DMEM_ADDR_W,
-  --    DATA_W => C_ARCH_WORD_W
-  --  )
-  --  port map (
-  --    CLK    => CLK,
-  --    RST_AN => RST_AN,
-  --    RWADDR => dmem_rwaddr_trunc,
-  --    WEN    => ctrl_word.dmem_wen,
-  --    DIN    => dmem_din,
-  --    DOUT   => dmem_dout
-  --  );
-
-  U_HU : entity work.hu(BEHAVIOURAL)
+  U_HU : HU
     port map (
       CLK      => CLK,
       RST_AN   => RST_AN,
@@ -139,20 +143,7 @@ begin
 
   ----------------------------------------------------------- COMBINATORIAL
 
-  DMEM_WEN   <= CTRL_WORD.dmem_wen;
-
-
-  -- NOTE: IMEM is word addressed, trucante addresses (bit0,1 removed)
-  -- NOTE: the imem_addr signal is additionaly truncated if the memory address
-  --       space (imem size) is smaller then the DLX architecture word width
-  --imem_addr_trunc <= std_logic_vector(resize(unsigned(imem_addr(imem_addr'length-1 downto 2)), imem_addr_trunc'length));
-
-  -- NOTE: DMEM is word addressed, but dmem_rwaddr is already a word-addressed
-  --       address (no first 2 bits trucation)
-  -- NOTE: the dmem_rwaddr signal is still truncated if the memory address
-  --       space (dmem size) is smaller then the DLX architecture word width
-  --dmem_rwaddr_trunc <= std_logic_vector(resize(unsigned(dmem_rwaddr), dmem_rwaddr_trunc'length));
-
+  DMEM_WEN <= CTRL_WORD.dmem_wen;
 
   -- DEBUG: will not be synthesized
   P_DBG_FETCH : process (instr_cu) is
@@ -198,7 +189,74 @@ begin
 
 end architecture BEHAVIOURAL;
 
--- configuration CFG_CPU_BEHAVIOURAL of CPU is
---  for BEHAVIOURAL
---  end for;
--- end CFG_CPU_BEHAVIOURAL;
+----------------------------------------------------------- CONFIGURATIONS
+
+configuration CFG_CPU_BEHAV of CPU is
+  for BEHAVIOURAL
+    for all: CU
+      use configuration work.CFG_CU_BEHAV;
+    end for;
+    for all: DATAPATH
+      use configuration work.CFG_DATAPATH_BEHAV;
+    end for;
+    for all: HU 
+      use configuration work.CFG_HU_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_CPU_BEHAV_ALU_P4ADDER of CPU is
+  for BEHAVIOURAL
+    for all: CU
+      use configuration work.CFG_CU_BEHAV;
+    end for;
+    for all: DATAPATH
+      use configuration work.CFG_DATAPATH_BEHAV_ALU_P4ADDER;
+    end for;
+    for all: HU 
+      use configuration work.CFG_HU_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_CPU_BEHAV_ALU_T2LOGIC of CPU is
+  for BEHAVIOURAL
+    for all: CU
+      use configuration work.CFG_CU_BEHAV;
+    end for;
+    for all: DATAPATH
+      use configuration work.CFG_DATAPATH_BEHAV_ALU_T2LOGIC;
+    end for;
+    for all: HU 
+      use configuration work.CFG_HU_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_CPU_BEHAV_ALU_T2SHIFTER of CPU is
+  for BEHAVIOURAL
+    for all: CU
+      use configuration work.CFG_CU_BEHAV;
+    end for;
+    for all: DATAPATH
+      use configuration work.CFG_DATAPATH_BEHAV_ALU_T2SHIFTER;
+    end for;
+    for all: HU 
+      use configuration work.CFG_HU_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_CPU_BEHAV_ALU_STRUCT of CPU is
+  for BEHAVIOURAL
+    for all: CU
+      use configuration work.CFG_CU_BEHAV;
+    end for;
+    for all: DATAPATH
+      use configuration work.CFG_DATAPATH_BEHAV_ALU_STRUCT;
+    end for;
+    for all: HU 
+      use configuration work.CFG_HU_BEHAV;
+    end for;
+  end for;
+end configuration;

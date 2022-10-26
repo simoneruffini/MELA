@@ -25,7 +25,7 @@ library ieee;
 library work;
   use work.dlx_pkg.all;
   use work.dlx_isa_enc_pkg.all;
-
+  use work.alu_pkg.all;
 ------------------------------------------------------------- ENTITY
 
 entity DATAPATH is
@@ -50,6 +50,57 @@ end entity DATAPATH;
 ------------------------------------------------------------- ARCHITECTURE
 
 architecture BEHAVIOURAL of DATAPATH is
+
+  ----------------------------------------------------------- COMPONENTS
+  component REG_PIPO is
+    generic (
+      DATA_W       : integer;
+      INIT_VAL     : std_logic_vector;
+      RST_INIT_VAL : std_logic_vector
+    );
+    port (
+      CLK    : in    std_logic;
+      RST_AN : in    std_logic;
+
+      EN     : in    std_logic;
+      INIT   : in    std_logic;
+      DIN    : in    std_logic_vector(DATA_W - 1 downto 0);
+      DOUT   : out   std_logic_vector(DATA_W - 1 downto 0)
+    );
+  end component;
+
+  component RF is
+    generic (
+      ADDR_W : integer;
+      DATA_W : integer
+    );
+    port (
+      CLK     : in    std_logic;
+      RST_AN  : in    std_logic;
+      ENABLE  : in    std_logic;
+      RD1     : in    std_logic;
+      RD2     : in    std_logic;
+      WR      : in    std_logic;
+      ADD_WR  : in    std_logic_vector(ADDR_W - 1 downto 0);
+      ADD_RD1 : in    std_logic_vector(ADDR_W - 1 downto 0);
+      ADD_RD2 : in    std_logic_vector(ADDR_W - 1 downto 0);
+      DATAIN  : in    std_logic_vector(DATA_W - 1 downto 0);
+      OUT1    : out   std_logic_vector(DATA_W - 1 downto 0);
+      OUT2    : out   std_logic_vector(DATA_W - 1 downto 0)
+    );
+  end component;
+
+  component ALU is
+    generic (
+      DATA_W : integer := 32
+    );
+    port (
+      FUNC : in    alu_func_t;
+      A    : in    std_logic_vector(DATA_W - 1 downto 0);
+      B    : in    std_logic_vector(DATA_W - 1 downto 0);
+      RES  : out   std_logic_vector(DATA_W - 1 downto 0)
+    );
+  end component;
 
   ----------------------------------------------------------- CONSTANTS 1
   constant C_REG_INIT_VAL   : integer := 0;
@@ -134,7 +185,7 @@ begin
   --*********************************************************************************************
   -- the program counter is a CLK cycle on it's own so it is not directly part of the FETCH stage
 
-  U_PC_REG : entity work.reg_pipo(BEHAV_WITH_EN_RSTINIT)
+  U_PC_REG : REG_PIPO
     generic map (
       DATA_W => pc_f'length, INIT_VAL => C_PC_INIT_VAL, RST_INIT_VAL => C_PC_INIT_VAL
     )
@@ -192,7 +243,7 @@ begin
 
   -- NPC MUX select signal logic
   npc_sel_f <= (is_0_m xor CTRL_WORD.comp_0_invert) when CTRL_WORD.branch_en = '1' else
-               '1' when CTRL_WORD.jump_en else
+               '1' when CTRL_WORD.jump_en = '1' else
                '0';
 
   -- NPC MUX
@@ -205,10 +256,12 @@ begin
   --*********************************************************************************************
 
   -- TODO: rethink this design it gets busier the more registers we need maybe use a generate block
-
-  U_PC_PLS_4_REG_FD : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  -- Why used reverse_range: https://stackoverflow.com/questions/55238201/warning-range-choice-direction-does-not-determine-aggregate-index-range-directi
+  U_PC_PLS_4_REG_FD : REG_PIPO
     generic map (
-      DATA_W => pc_pls_4_f'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_f'length))
+      DATA_W       => pc_pls_4_f'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_f'length)),
+      RST_INIT_VAL => (0 to pc_pls_4_f'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -219,9 +272,11 @@ begin
       DOUT   => pc_pls_4_d
     );
 
-  U_INSTR_REG_FD : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_INSTR_REG_FD : REG_PIPO
     generic map (
-      DATA_W => instr_f'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_f'length))
+      DATA_W       => instr_f'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_f'length)),
+      RST_INIT_VAL => (0 to instr_f'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -239,7 +294,7 @@ begin
 
   ----------------------------------------------------------- ENTITY DEFINITION
 
-  U_RF : entity work.rf(BEHAVIOURAL)
+  U_RF : RF
     generic map (
       ADDR_W => C_RF_ADDR_W,
       DATA_W => C_ARCH_WORD_W
@@ -285,7 +340,7 @@ begin
   rf_waddr_d <= std_logic_vector(to_unsigned(C_JAL_RET_ADDR_REG, rf_waddr_d'length)) when CTRL_WORD.jal_en = '1' else
                 rf_waddr_wb;
 
-  -- RF_DIN 
+  -- RF_DIN
   rf_din_d <= rf_din_wb;
 
   -- IMMEDIATE FROM JTYPE MUX
@@ -297,9 +352,11 @@ begin
   --*********************************************************** PIPELINE REGISTERS DECODE/EXECUTE
   --*********************************************************************************************
 
-  U_INSTR_OPCODE_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_INSTR_OPCODE_REG_DE : REG_PIPO
     generic map (
-      DATA_W => instr_opcode_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_opcode_d'length))
+      DATA_W       => instr_opcode_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_opcode_d'length)),
+      RST_INIT_VAL => (0 to instr_opcode_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -310,9 +367,11 @@ begin
       DOUT   => instr_opcode_e
     );
 
-  U_PC_PLS_4_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_PC_PLS_4_REG_DE : REG_PIPO
     generic map (
-      DATA_W => pc_pls_4_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_d'length))
+      DATA_W       => pc_pls_4_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_d'length)),
+      RST_INIT_VAL => (0 to pc_pls_4_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -323,9 +382,11 @@ begin
       DOUT   => pc_pls_4_e
     );
 
-  U_RF_DOUT1_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_DOUT1_REG_DE : REG_PIPO
     generic map (
-      DATA_W => rf_dout1_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_dout1_d'length))
+      DATA_W       => rf_dout1_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_dout1_d'length)),
+      RST_INIT_VAL => (0 to rf_dout1_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -336,9 +397,11 @@ begin
       DOUT   => rf_dout1_e
     );
 
-  U_RF_DOUT2_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_DOUT2_REG_DE : REG_PIPO
     generic map (
-      DATA_W => rf_dout2_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_dout2_d'length))
+      DATA_W       => rf_dout2_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_dout2_d'length)),
+      RST_INIT_VAL => (0 to rf_dout2_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -349,9 +412,11 @@ begin
       DOUT   => rf_dout2_e
     );
 
-  U_IMM_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_IMM_REG_DE : REG_PIPO
     generic map (
-      DATA_W => imm_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,imm_d'length))
+      DATA_W       => imm_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,imm_d'length)),
+      RST_INIT_VAL => (0 to imm_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -362,9 +427,11 @@ begin
       DOUT   => imm_e
     );
 
-  U_RS2_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RS2_REG_DE : REG_PIPO
     generic map (
-      DATA_W => rs2_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rs2_d'length))
+      DATA_W       => rs2_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rs2_d'length)),
+      RST_INIT_VAL => (0 to rs2_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -375,9 +442,11 @@ begin
       DOUT   => rs2_e
     );
 
-  U_RS3_REG_DE : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RS3_REG_DE : REG_PIPO
     generic map (
-      DATA_W => rs3_d'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rs3_d'length))
+      DATA_W       => rs3_d'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rs3_d'length)),
+      RST_INIT_VAL => (0 to rs3_d'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -394,8 +463,7 @@ begin
   --*****************************************************************************************
 
   ----------------------------------------------------------- ENTITY DEFINITION
-  --U_ALU : entity work.alu(BEHAVIOURAL)
-  U_ALU : entity work.alu(STRUCTURAL)
+  U_ALU : ALU
     generic map (
       DATA_W => C_ARCH_WORD_W
     )
@@ -432,9 +500,11 @@ begin
   --*********************************************************** PIPELINE REGISTERS EXECUTE/MEMORY
   --*********************************************************************************************
 
-  U_INSTR_OPCODE_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_INSTR_OPCODE_REG_EM : REG_PIPO
     generic map (
-      DATA_W => instr_opcode_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_opcode_e'length))
+      DATA_W       => instr_opcode_e'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,instr_opcode_e'length)),
+      RST_INIT_VAL => (0 to instr_opcode_e'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -445,9 +515,11 @@ begin
       DOUT   => instr_opcode_m
     );
 
-  U_PC_PLS_4_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_PC_PLS_4_REG_EM : REG_PIPO
     generic map (
-      DATA_W => pc_pls_4_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_e'length))
+      DATA_W       => pc_pls_4_e'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_e'length)),
+      RST_INIT_VAL => (0 to pc_pls_4_e'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -458,9 +530,11 @@ begin
       DOUT   => pc_pls_4_m
     );
 
-  U_ALU_OUT_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_ALU_OUT_REG_EM : REG_PIPO
     generic map (
-      DATA_W => alu_out_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_e'length))
+      DATA_W       => alu_out_e'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_e'length)),
+      RST_INIT_VAL => (0 to alu_out_e'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -471,9 +545,11 @@ begin
       DOUT   => alu_out_m
     );
 
-  U_DMEM_DOUT_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_DMEM_DOUT_REG_EM : REG_PIPO
     generic map (
-      DATA_W => dmem_din_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,dmem_din_e'length))
+      DATA_W       => dmem_din_e'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,dmem_din_e'length)),
+      RST_INIT_VAL => (0 to dmem_din_e'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -484,9 +560,11 @@ begin
       DOUT   => dmem_din_m
     );
 
-  U_RF_WADDR_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_WADDR_REG_EM : REG_PIPO
     generic map (
-      DATA_W => rf_waddr_e'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_waddr_e'length))
+      DATA_W       => rf_waddr_e'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_waddr_e'length)),
+      RST_INIT_VAL => (0 to rf_waddr_e'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -497,9 +575,11 @@ begin
       DOUT   => rf_waddr_m
     );
 
-  U_IS_0_REG_EM : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_IS_0_REG_EM : REG_PIPO
     generic map (
-      DATA_W => 1, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,1))
+      DATA_W       => 1,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,1)),
+      RST_INIT_VAL => (0 => '0')
     )
     port map (
       CLK     => CLK,
@@ -532,9 +612,11 @@ begin
   --********************************************************* PIPELINE REGISTERS MEMORY/WRITEBACK
   --*********************************************************************************************
 
-  U_PC_PLS_4_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_PC_PLS_4_REG_MWB : REG_PIPO
     generic map (
-      DATA_W => pc_pls_4_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_m'length))
+      DATA_W       => pc_pls_4_m'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,pc_pls_4_m'length)),
+      RST_INIT_VAL => (0 to pc_pls_4_m'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -545,9 +627,11 @@ begin
       DOUT   => pc_pls_4_wb
     );
 
-  U_ALU_OUT_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_ALU_OUT_REG_MWB : REG_PIPO
     generic map (
-      DATA_W => alu_out_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_m'length))
+      DATA_W       => alu_out_m'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,alu_out_m'length)),
+      RST_INIT_VAL => (0 to alu_out_m'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -558,9 +642,11 @@ begin
       DOUT   => alu_out_wb
     );
 
-  U_DMEM_DOUT_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_DMEM_DOUT_REG_MWB : REG_PIPO
     generic map (
-      DATA_W => dmem_dout_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,dmem_dout_m'length))
+      DATA_W       => dmem_dout_m'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,dmem_dout_m'length)),
+      RST_INIT_VAL => (0 to dmem_dout_m'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -571,9 +657,11 @@ begin
       DOUT   => dmem_dout_wb
     );
 
-  U_RF_WADDR_REG_MWB : entity work.reg_pipo(BEHAV_WITH_EN_INIT)
+  U_RF_WADDR_REG_MWB : REG_PIPO
     generic map (
-      DATA_W => rf_waddr_m'length, INIT_VAL => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_waddr_m'length))
+      DATA_W       => rf_waddr_m'length,
+      INIT_VAL     => std_logic_vector(to_unsigned(C_REG_INIT_VAL,rf_waddr_m'length)),
+      RST_INIT_VAL => (0 to rf_waddr_m'length - 1 => '0')
     )
     port map (
       CLK    => CLK,
@@ -598,7 +686,87 @@ begin
 
 end architecture BEHAVIOURAL;
 
--- configuration CFG_DATAPATH_BEHAVIOURAL of DATAPATH is
---  for BEHAVIOURAL
---  end for;
--- end CFG_DATAPATH_BEHAVIOURAL;
+configuration CFG_DATAPATH_BEHAV of DATAPATH is
+  for BEHAVIOURAL
+    for U_PC_REG : REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT;
+    end for;
+    for others: REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_INIT;
+    end for;
+    for all: ALU
+      use configuration work.CFG_ALU_BEHAV;
+    end for;
+    for all: RF
+      use configuration work.CFG_RF_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_DATAPATH_BEHAV_ALU_P4ADDER of DATAPATH is
+  for BEHAVIOURAL
+    for U_PC_REG : REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT;
+    end for;
+    for others: REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_INIT;
+    end for;
+    for all: ALU
+      use configuration work.CFG_ALU_BEHAV_P4ADDER;
+    end for;
+    for all: RF
+      use configuration work.CFG_RF_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_DATAPATH_BEHAV_ALU_T2LOGIC of DATAPATH is
+  for BEHAVIOURAL
+    for U_PC_REG : REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT;
+    end for;
+    for others: REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_INIT;
+    end for;
+    for all: ALU
+      use configuration work.CFG_ALU_BEHAV_T2LOGIC;
+    end for;
+    for all: RF
+      use configuration work.CFG_RF_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_DATAPATH_BEHAV_ALU_T2SHIFTER of DATAPATH is
+  for BEHAVIOURAL
+    for U_PC_REG : REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT;
+    end for;
+    for others: REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_INIT;
+    end for;
+    for all: ALU
+      use configuration work.CFG_ALU_BEHAV_T2SHIFTER;
+    end for;
+    for all: RF
+      use configuration work.CFG_RF_BEHAV;
+    end for;
+  end for;
+end configuration;
+
+configuration CFG_DATAPATH_BEHAV_ALU_STRUCT of DATAPATH is
+  for BEHAVIOURAL
+    for U_PC_REG : REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_RSTINIT;
+    end for;
+    for others: REG_PIPO
+      use configuration work.CFG_REG_PIPO_BEHAV_WITH_EN_INIT;
+    end for;
+    for all: ALU
+      use configuration work.CFG_ALU_STRUCTURAL;
+    end for;
+    for all: RF
+      use configuration work.CFG_RF_BEHAV;
+    end for;
+  end for;
+end configuration;

@@ -699,8 +699,8 @@ begin
 
 end architecture BEHAVIOURAL;
 
--- configuration CFG_CU_BEHAVIOURAL of CU is
--- for BEHAVIOURAL
--- end for;
--- end configuration;
+configuration CFG_CU_BEHAV of CU is
+  for BEHAVIOURAL
+  end for;
+end configuration;
 

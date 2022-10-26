@@ -180,69 +180,47 @@ package body DLX_ISA_ENC_PKG is
   function print_instr_op (opcode: std_logic_vector) return instr_t is
   begin
 
-    case (opcode) is
-
-      when RTYPE_OPCODE =>
-        return RTYPx;
-
-      when J_OPCODE =>
-        return Jx;
-
-      when JAL_OPCODE =>
-        return JALx;
-
-      when BEQZ_OPCODE =>
-        return BEQZx;
-
-      when BNEZ_OPCODE =>
-        return BNEZx;
-
-      when ADDI_OPCODE =>
-        return ADDIx;
-
-      when SUBI_OPCODE =>
-        return SUBIx;
-
-      when ANDI_OPCODE =>
-        return ANDIx;
-
-      when ORI_OPCODE =>
-        return ORIx;
-
-      when XORI_OPCODE =>
-        return XORIx;
-
-      when SLLI_OPCODE =>
-        return SLLIx;
-
-      when NOP_OPCODE =>
-        return NOPx;
-
-      when SRLI_OPCODE =>
-        return SRLIx;
-
-      when SRAI_OPCODE =>
-        return SRAIx;
-
-      when SNEI_OPCODE =>
-        return SNEIx;
-
-      when SLEI_OPCODE =>
-        return SLEIx;
-
-      when SGEI_OPCODE =>
-        return SGEIx;
-
-      when LW_OPCODE =>
-        return LWx;
-
-      when SW_OPCODE =>
-        return SWx;
-
-      when others =>
-        return INSTR_NOT_FOUNDx;
-
-    end case;
+    if (opcode = RTYPE_OPCODE) then
+      return RTYPx;
+    elsif (opcode = J_OPCODE) then
+      return Jx;
+    elsif (opcode = JAL_OPCODE) then
+      return JALx;
+    elsif (opcode = BEQZ_OPCODE) then
+      return BEQZx;
+    elsif (opcode = BNEZ_OPCODE) then
+      return BNEZx;
+    elsif (opcode = ADDI_OPCODE) then
+      return ADDIx;
+    elsif (opcode = SUBI_OPCODE) then
+      return SUBIx;
+    elsif (opcode = ANDI_OPCODE) then
+      return ANDIx;
+    elsif (opcode = ORI_OPCODE) then
+      return ORIx;
+    elsif (opcode = XORI_OPCODE) then
+      return XORIx;
+    elsif (opcode = SLLI_OPCODE) then
+      return SLLIx;
+    elsif (opcode = NOP_OPCODE) then
+      return NOPx;
+    elsif (opcode = SRLI_OPCODE) then
+      return SRLIx;
+    elsif (opcode = SRAI_OPCODE) then
+      return SRAIx;
+    elsif (opcode = SNEI_OPCODE) then
+      return SNEIx;
+    elsif (opcode = SLEI_OPCODE) then
+      return SLEIx;
+    elsif (opcode = SGEI_OPCODE) then
+      return SGEIx;
+    elsif (opcode = LW_OPCODE) then
+      return LWx;
+    elsif (opcode = SW_OPCODE) then
+      return SWx;
+    else
+      return INSTR_NOT_FOUNDx;
+    end if;
 
   end function print_instr_op;
 
@@ -255,47 +233,31 @@ package body DLX_ISA_ENC_PKG is
     ret := print_instr_op(opcode);
 
     if (ret = RTYPx) then
-
-      case (func) is
-
-        when SLL_FUNC =>
-          ret := sllx;
-
-        when SRL_FUNC =>
-          ret := srlx;
-
-        when SRA_FUNC =>
-          ret := srax;
-
-        when ADD_FUNC =>
-          ret := addx;
-
-        when SUB_FUNC =>
-          ret := subx;
-
-        when AND_FUNC =>
-          ret := andx;
-
-        when OR_FUNC =>
-          ret := orx;
-
-        when XOR_FUNC =>
-          ret := xorx;
-
-        when SNE_FUNC =>
-          ret := SNEx;
-
-        when SLE_FUNC =>
-          ret := SLEx;
-
-        when SGE_FUNC =>
-          ret := SGEx;
-
-        when others =>
-          ret := INSTR_NOT_FOUNDx;
-
-      end case;
-
+      if (opcode = SLL_FUNC) then
+        ret := sllx;
+      elsif (opcode = SRL_FUNC) then
+        ret := srlx;
+      elsif (opcode = SRA_FUNC) then
+        ret := srax;
+      elsif (opcode = ADD_FUNC) then
+        ret := addx;
+      elsif (opcode = SUB_FUNC) then
+        ret := subx;
+      elsif (opcode = AND_FUNC) then
+        ret := andx;
+      elsif (opcode = OR_FUNC) then
+        ret := orx;
+      elsif (opcode = XOR_FUNC) then
+        ret := xorx;
+      elsif (opcode = SNE_FUNC) then
+        ret := SNEx;
+      elsif (opcode = SLE_FUNC) then
+        ret := SLEx;
+      elsif (opcode = SGE_FUNC) then
+        ret := SGEx;
+      else
+        ret := INSTR_NOT_FOUNDx;
+      end if;
     end if;
 
     return ret;

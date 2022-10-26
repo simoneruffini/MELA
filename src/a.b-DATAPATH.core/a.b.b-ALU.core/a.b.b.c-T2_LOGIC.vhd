@@ -58,7 +58,7 @@ begin
 
   ----------------------------------------------------------- PROCESSES
 
-  P_LOGIC : process (OP, A, B) is
+  P_LOGIC_STAGE1 : process (OP, A, B) is
   begin
 
     logic : for i in 0 to DATA_W - 1 loop
@@ -67,11 +67,21 @@ begin
       l1(i) <= not (OP(1) and (not A(i)) and B(i));
       l2(i) <= not (OP(2) and A(i) and (not B(i)));
       l3(i) <= not (OP(3) and A(i) and B(i));
+
+    end loop;
+
+  end process P_LOGIC_STAGE1;
+
+  P_LOGIC_STAGE2 : process (l0, l1, l2, l3) is
+  begin
+
+    logic : for i in 0 to DATA_W - 1 loop
+
       S(i)  <= not (l0(i) and l1(i) and l2(i) and l3(i));
 
     end loop;
 
-  end process P_LOGIC;
+  end process P_LOGIC_STAGE2;
 
 end architecture STRUCTURAL;
 
@@ -119,3 +129,8 @@ begin
   end process LOGIC;
 
 end architecture BEHAVIOURAL;
+
+configuration CFG_T2_LOGIC_DATAFLOW of T2_LOGIC is
+  for STRUCTURAL
+  end for;
+end configuration CFG_T2_LOGIC_DATAFLOW;

@@ -74,3 +74,8 @@ begin
   end process FINESHIFT;
 
 end architecture BEHAVIOURAL;
+
+configuration CFG_FINE_SHIFT_BEHAV of FINE_SHIFT is
+  for BEHAVIOURAL
+  end for;
+end configuration CFG_FINE_SHIFT_BEHAV;
