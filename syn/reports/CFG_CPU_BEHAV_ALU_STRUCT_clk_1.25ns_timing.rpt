@@ -1,0 +1,137 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'CPU' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : CPU
+Version: F-2011.09-SP3
+Date   : Wed Oct 26 22:26:12 2022
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: U_CU/execute_sig_d2_reg[ALU_FUNC][1]
+              (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[21]
+            (rising edge-triggered flip-flop clocked by CLK)
+  Path Group: CLK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  CPU                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CLK (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  U_CU/execute_sig_d2_reg[ALU_FUNC][1]/CK (DFFS_X1)       0.00 #     0.00 r
+  U_CU/execute_sig_d2_reg[ALU_FUNC][1]/Q (DFFS_X1)        0.09       0.09 f
+  U_CU/CTRL_WORD[ALU_FUNC][1] (CU)                        0.00       0.09 f
+  U_DATAPATH/CTRL_WORD[ALU_FUNC][1] (DATAPATH)            0.00       0.09 f
+  U_DATAPATH/U_ALU/FUNC[1] (ALU_DATA_W32)                 0.00       0.09 f
+  U_DATAPATH/U_ALU/U42/ZN (INV_X1)                        0.03       0.12 r
+  U_DATAPATH/U_ALU/U200/ZN (NOR2_X1)                      0.03       0.15 f
+  U_DATAPATH/U_ALU/U27/ZN (NAND2_X1)                      0.04       0.18 r
+  U_DATAPATH/U_ALU/U28/ZN (NAND2_X1)                      0.03       0.22 f
+  U_DATAPATH/U_ALU/U22/ZN (AOI211_X1)                     0.08       0.29 r
+  U_DATAPATH/U_ALU/U3/ZN (AND2_X1)                        0.06       0.36 r
+  U_DATAPATH/U_ALU/U72/Z (BUF_X2)                         0.05       0.41 r
+  U_DATAPATH/U_ALU/U185/ZN (OAI22_X1)                     0.05       0.46 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/B[9] (P4_ADDER_NBIT32)      0.00       0.46 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/B[9] (CARRY_GENERATOR_NBIT32_NBIT_PER_BLOCK4)
+                                                          0.00       0.46 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_PG_PRIM_9/B (PG_PRIM_23)
+                                                          0.00       0.46 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_PG_PRIM_9/U2/Z (XOR2_X1)
+                                                          0.08       0.54 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_PG_PRIM_9/P (PG_PRIM_23)
+                                                          0.00       0.54 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_1_9/P_CURRENT (GG_32)
+                                                          0.00       0.54 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_1_9/U2/ZN (AOI21_X1)
+                                                          0.05       0.59 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_1_9/U1/ZN (INV_X1)
+                                                          0.03       0.61 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_1_9/G (GG_32)
+                                                          0.00       0.61 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_2_11/G_PREV (GG_18)
+                                                          0.00       0.61 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_2_11/U2/ZN (AOI21_X1)
+                                                          0.05       0.66 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_2_11/U1/ZN (INV_X1)
+                                                          0.03       0.69 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_BKBONE_GG_UNIT_2_11/G (GG_18)
+                                                          0.00       0.69 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_1_15/G_PREV (GG_11)
+                                                          0.00       0.69 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_1_15/U2/ZN (AOI21_X1)
+                                                          0.04       0.73 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_1_15/U1/ZN (INV_X1)
+                                                          0.03       0.76 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_1_15/G (GG_11)
+                                                          0.00       0.76 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_2_15/G_CURRENT (GG_7)
+                                                          0.00       0.76 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_2_15/U2/ZN (AOI21_X1)
+                                                          0.05       0.81 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_2_15/U1/ZN (INV_X1)
+                                                          0.04       0.85 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_2_15/G (GG_7)
+                                                          0.00       0.85 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_3_19/G_PREV (GG_4)
+                                                          0.00       0.85 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_3_19/U2/ZN (AOI21_X1)
+                                                          0.05       0.90 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_3_19/U1/ZN (INV_X1)
+                                                          0.04       0.94 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/U_LF_GG_UNIT_3_19/G (GG_4)
+                                                          0.00       0.94 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_CARRY_GENERATOR/CO[4] (CARRY_GENERATOR_NBIT32_NBIT_PER_BLOCK4)
+                                                          0.00       0.94 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/Ci[4] (SUM_GENERATOR_NBIT_PER_BLOCK4_NBLOCKS7)
+                                                          0.00       0.94 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/U_CSB_5/Cin (CSB_NBIT4_3)
+                                                          0.00       0.94 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/U_CSB_5/U3/ZN (INV_X1)
+                                                          0.05       0.99 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/U_CSB_5/U9/ZN (AOI22_X1)
+                                                          0.04       1.03 f
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/U_CSB_5/U12/ZN (INV_X1)
+                                                          0.03       1.06 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/U_CSB_5/S[1] (CSB_NBIT4_3)
+                                                          0.00       1.06 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/U_SUM_GENERATOR/S[17] (SUM_GENERATOR_NBIT_PER_BLOCK4_NBLOCKS7)
+                                                          0.00       1.06 r
+  U_DATAPATH/U_ALU/P4_ADDER_U/S[21] (P4_ADDER_NBIT32)     0.00       1.06 r
+  U_DATAPATH/U_ALU/U55/ZN (AOI222_X1)                     0.03       1.09 f
+  U_DATAPATH/U_ALU/U56/ZN (INV_X1)                        0.04       1.13 r
+  U_DATAPATH/U_ALU/RES[21] (ALU_DATA_W32)                 0.00       1.13 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/DIN[21] (REG_PIPO_32_00000000_00000000_5)
+                                                          0.00       1.13 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/U35/ZN (INV_X1)             0.02       1.15 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/U34/ZN (OAI22_X1)           0.05       1.20 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[21]/D (DFFR_X1)
+                                                          0.01       1.21 r
+  data arrival time                                                  1.21
+
+  clock CLK (rise edge)                                   1.25       1.25
+  clock network delay (ideal)                             0.00       1.25
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[21]/CK (DFFR_X1)
+                                                          0.00       1.25 r
+  library setup time                                     -0.04       1.21
+  data required time                                                 1.21
+  --------------------------------------------------------------------------
+  data required time                                                 1.21
+  data arrival time                                                 -1.21
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+1

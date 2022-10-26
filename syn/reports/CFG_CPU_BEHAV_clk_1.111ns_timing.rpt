@@ -1,0 +1,105 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : CPU
+Version: F-2011.09-SP3
+Date   : Wed Oct 26 18:07:49 2022
+****************************************
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: U_CU/execute_sig_d2_reg[PC_PLS_4_SEL]
+              (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[0]
+            (rising edge-triggered flip-flop clocked by CLK)
+  Path Group: CLK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  CPU                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CLK (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  U_CU/execute_sig_d2_reg[PC_PLS_4_SEL]/CK (SDFFR_X1)     0.00       0.00 r
+  U_CU/execute_sig_d2_reg[PC_PLS_4_SEL]/Q (SDFFR_X1)      0.07       0.07 f
+  U_CU/CTRL_WORD[PC_PLS_4_SEL] (CU)                       0.00       0.07 f
+  U_DATAPATH/CTRL_WORD[PC_PLS_4_SEL] (DATAPATH)           0.00       0.07 f
+  U_DATAPATH/U68/Z (CLKBUF_X2)                            0.05       0.12 f
+  U_DATAPATH/U54/Z (BUF_X4)                               0.07       0.19 f
+  U_DATAPATH/U142/Z (MUX2_X1)                             0.20       0.39 r
+  U_DATAPATH/U_ALU/A[4] (ALU_DATA_W32)                    0.00       0.39 r
+  U_DATAPATH/U_ALU/r80/B[4] (ALU_DATA_W32_DW01_cmp6_0)
+                                                          0.00       0.39 r
+  U_DATAPATH/U_ALU/r80/U42/ZN (INV_X2)                    0.06       0.45 f
+  U_DATAPATH/U_ALU/r80/U182/ZN (OR2_X1)                   0.07       0.52 f
+  U_DATAPATH/U_ALU/r80/U180/ZN (NAND2_X1)                 0.04       0.56 r
+  U_DATAPATH/U_ALU/r80/U41/ZN (INV_X2)                    0.04       0.60 f
+  U_DATAPATH/U_ALU/r80/U179/ZN (NAND3_X1)                 0.03       0.63 r
+  U_DATAPATH/U_ALU/r80/U177/ZN (NAND3_X1)                 0.03       0.66 f
+  U_DATAPATH/U_ALU/r80/U172/ZN (NAND3_X1)                 0.03       0.70 r
+  U_DATAPATH/U_ALU/r80/U170/ZN (NAND3_X1)                 0.03       0.73 f
+  U_DATAPATH/U_ALU/r80/U165/ZN (NAND3_X1)                 0.03       0.76 r
+  U_DATAPATH/U_ALU/r80/U163/ZN (NAND3_X1)                 0.03       0.80 f
+  U_DATAPATH/U_ALU/r80/U158/ZN (NAND3_X1)                 0.03       0.83 r
+  U_DATAPATH/U_ALU/r80/U156/ZN (NAND3_X1)                 0.03       0.86 f
+  U_DATAPATH/U_ALU/r80/U151/ZN (NAND3_X1)                 0.03       0.89 r
+  U_DATAPATH/U_ALU/r80/U149/ZN (NAND3_X1)                 0.03       0.93 f
+  U_DATAPATH/U_ALU/r80/U144/ZN (NAND3_X1)                 0.03       0.96 r
+  U_DATAPATH/U_ALU/r80/U142/ZN (NAND3_X1)                 0.03       0.99 f
+  U_DATAPATH/U_ALU/r80/U137/ZN (NAND3_X1)                 0.03       1.02 r
+  U_DATAPATH/U_ALU/r80/U135/ZN (NAND3_X1)                 0.03       1.06 f
+  U_DATAPATH/U_ALU/r80/U130/ZN (NAND3_X1)                 0.03       1.09 r
+  U_DATAPATH/U_ALU/r80/U128/ZN (NAND3_X1)                 0.03       1.12 f
+  U_DATAPATH/U_ALU/r80/U123/ZN (NAND3_X1)                 0.03       1.15 r
+  U_DATAPATH/U_ALU/r80/U121/ZN (NAND3_X1)                 0.03       1.19 f
+  U_DATAPATH/U_ALU/r80/U116/ZN (NAND3_X1)                 0.03       1.22 r
+  U_DATAPATH/U_ALU/r80/U114/ZN (NAND3_X1)                 0.03       1.25 f
+  U_DATAPATH/U_ALU/r80/U109/ZN (NAND3_X1)                 0.03       1.29 r
+  U_DATAPATH/U_ALU/r80/U107/ZN (NAND3_X1)                 0.03       1.32 f
+  U_DATAPATH/U_ALU/r80/U102/ZN (NAND3_X1)                 0.03       1.35 r
+  U_DATAPATH/U_ALU/r80/U100/ZN (NAND3_X1)                 0.03       1.39 f
+  U_DATAPATH/U_ALU/r80/U95/ZN (NAND3_X1)                  0.03       1.42 r
+  U_DATAPATH/U_ALU/r80/U93/ZN (NAND3_X1)                  0.03       1.45 f
+  U_DATAPATH/U_ALU/r80/U90/ZN (AND3_X1)                   0.04       1.49 f
+  U_DATAPATH/U_ALU/r80/U89/ZN (AOI21_X1)                  0.07       1.56 r
+  U_DATAPATH/U_ALU/r80/U3/ZN (INV_X2)                     0.04       1.60 f
+  U_DATAPATH/U_ALU/r80/U88/ZN (OAI21_X1)                  0.04       1.64 r
+  U_DATAPATH/U_ALU/r80/U87/ZN (OAI21_X1)                  0.04       1.68 f
+  U_DATAPATH/U_ALU/r80/U1/ZN (INV_X2)                     0.05       1.73 r
+  U_DATAPATH/U_ALU/r80/U52/ZN (NAND2_X1)                  0.03       1.76 f
+  U_DATAPATH/U_ALU/r80/NE (ALU_DATA_W32_DW01_cmp6_0)      0.00       1.76 f
+  U_DATAPATH/U_ALU/U578/ZN (NAND3_X1)                     0.04       1.80 r
+  U_DATAPATH/U_ALU/U477/ZN (OAI21_X2)                     0.04       1.84 f
+  U_DATAPATH/U_ALU/U577/ZN (NAND3_X1)                     0.03       1.88 r
+  U_DATAPATH/U_ALU/U165/ZN (NAND3_X1)                     0.04       1.92 f
+  U_DATAPATH/U_ALU/RES[0] (ALU_DATA_W32)                  0.00       1.92 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/DIN[0] (REG_PIPO_32_00000000_00000000_5)
+                                                          0.00       1.92 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/U71/ZN (INV_X2)             0.04       1.96 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/U2/ZN (OAI22_X2)            0.05       2.01 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[0]/D (DFFR_X1)
+                                                          0.01       2.02 f
+  data arrival time                                                  2.02
+
+  clock CLK (rise edge)                                   1.11       1.11
+  clock network delay (ideal)                             0.00       1.11
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[0]/CK (DFFR_X1)
+                                                          0.00       1.11 r
+  library setup time                                     -0.05       1.07
+  data required time                                                 1.07
+  --------------------------------------------------------------------------
+  data required time                                                 1.07
+  data arrival time                                                 -2.02
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.95
+
+
+1

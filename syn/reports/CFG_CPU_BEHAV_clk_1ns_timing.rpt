@@ -1,0 +1,60 @@
+Information: Updating design information... (UID-85)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : CPU
+Version: F-2011.09-SP3
+Date   : Wed Oct 26 17:57:05 2022
+****************************************
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: U_CU/writeback_sig_d4_reg[JAL_EN]
+              (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: U_DATAPATH/U_RF/registers_reg[1][31]
+            (rising edge-triggered flip-flop clocked by CLK')
+  Path Group: CLK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  CPU                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CLK (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  U_CU/writeback_sig_d4_reg[JAL_EN]/CK (DFFRS_X2)         0.00       0.00 r
+  U_CU/writeback_sig_d4_reg[JAL_EN]/Q (DFFRS_X2)          0.10       0.10 r
+  U_CU/CTRL_WORD[JAL_EN] (CU)                             0.00       0.10 r
+  U_DATAPATH/CTRL_WORD[JAL_EN] (DATAPATH)                 0.00       0.10 r
+  U_DATAPATH/U29/ZN (INV_X1)                              0.04       0.14 f
+  U_DATAPATH/U28/ZN (INV_X1)                              0.04       0.18 r
+  U_DATAPATH/U27/ZN (NOR2_X1)                             0.04       0.22 f
+  U_DATAPATH/U63/Z (BUF_X1)                               0.05       0.27 f
+  U_DATAPATH/U119/ZN (AOI222_X1)                          0.10       0.37 r
+  U_DATAPATH/U189/ZN (INV_X1)                             0.03       0.40 f
+  U_DATAPATH/U_RF/DATAIN[31] (RF_ADDR_W5_DATA_W32)        0.00       0.40 f
+  U_DATAPATH/U_RF/U57/Z (BUF_X1)                          0.06       0.46 f
+  U_DATAPATH/U_RF/U3485/ZN (AOI22_X1)                     0.07       0.53 r
+  U_DATAPATH/U_RF/U3484/ZN (INV_X1)                       0.02       0.55 f
+  U_DATAPATH/U_RF/registers_reg[1][31]/D (DFFR_X2)        0.01       0.56 f
+  data arrival time                                                  0.56
+
+  clock CLK' (rise edge)                                  0.50       0.50
+  clock network delay (ideal)                             0.00       0.50
+  U_DATAPATH/U_RF/registers_reg[1][31]/CK (DFFR_X2)       0.00       0.50 r
+  library setup time                                     -0.04       0.46
+  data required time                                                 0.46
+  --------------------------------------------------------------------------
+  data required time                                                 0.46
+  data arrival time                                                 -0.56
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.10
+
+
+1

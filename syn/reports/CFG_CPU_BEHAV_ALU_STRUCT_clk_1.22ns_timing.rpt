@@ -1,0 +1,109 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'CPU' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : CPU
+Version: F-2011.09-SP3
+Date   : Wed Oct 26 22:29:34 2022
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: U_CU/execute_sig_d2_reg[IMM_SEL]
+              (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[20]
+            (rising edge-triggered flip-flop clocked by CLK)
+  Path Group: CLK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  CPU                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CLK (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  U_CU/execute_sig_d2_reg[IMM_SEL]/CK (SDFFR_X1)          0.00 #     0.00 r
+  U_CU/execute_sig_d2_reg[IMM_SEL]/Q (SDFFR_X1)           0.09       0.09 r
+  U_CU/CTRL_WORD[IMM_SEL] (CU)                            0.00       0.09 r
+  U_DATAPATH/CTRL_WORD[IMM_SEL] (DATAPATH)                0.00       0.09 r
+  U_DATAPATH/U9/Z (BUF_X1)                                0.05       0.13 r
+  U_DATAPATH/U90/ZN (INV_X1)                              0.03       0.17 f
+  U_DATAPATH/U56/ZN (AOI22_X1)                            0.05       0.21 r
+  U_DATAPATH/U229/ZN (INV_X1)                             0.03       0.24 f
+  U_DATAPATH/U_ALU/B[11] (ALU_DATA_W32)                   0.00       0.24 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/AMOUNT[11] (T2_SHIFTER_DATA_W32)
+                                                          0.00       0.24 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/AMOUNT[8] (COARSE_SHIFT_DATA_W32_MASK_SIZE41)
+                                                          0.00       0.24 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U9/ZN (OR3_X2)
+                                                          0.09       0.33 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U39/ZN (NOR2_X1)
+                                                          0.04       0.37 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U37/ZN (NAND2_X1)
+                                                          0.04       0.41 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U20/ZN (NOR2_X1)
+                                                          0.04       0.45 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U7/ZN (AND4_X2)
+                                                          0.06       0.51 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U67/ZN (NAND2_X1)
+                                                          0.03       0.55 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U6/Z (BUF_X1)
+                                                          0.05       0.60 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U73/ZN (AND4_X2)
+                                                          0.07       0.67 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U102/ZN (NOR3_X1)
+                                                          0.08       0.75 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/U197/ZN (NAND2_X1)
+                                                          0.03       0.78 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/COARSESHIFT/S[28] (COARSE_SHIFT_DATA_W32_MASK_SIZE41)
+                                                          0.00       0.78 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/A[28] (FINE_SHIFT_DATA_W32_MASK_SIZE41)
+                                                          0.00       0.78 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/U94/ZN (INV_X1)
+                                                          0.03       0.81 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/U25/Z (MUX2_X1)
+                                                          0.05       0.86 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/U175/Z (MUX2_X1)
+                                                          0.05       0.91 r
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/U120/ZN (INV_X1)
+                                                          0.02       0.94 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/U22/Z (MUX2_X1)
+                                                          0.07       1.00 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/FINESHIFT/S[20] (FINE_SHIFT_DATA_W32_MASK_SIZE41)
+                                                          0.00       1.00 f
+  U_DATAPATH/U_ALU/T2_SHIFTER_U/S[20] (T2_SHIFTER_DATA_W32)
+                                                          0.00       1.00 f
+  U_DATAPATH/U_ALU/U280/ZN (AOI222_X1)                    0.09       1.10 r
+  U_DATAPATH/U_ALU/U246/ZN (INV_X1)                       0.03       1.12 f
+  U_DATAPATH/U_ALU/RES[20] (ALU_DATA_W32)                 0.00       1.12 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/DIN[20] (REG_PIPO_32_00000000_00000000_5)
+                                                          0.00       1.12 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/U47/ZN (INV_X1)             0.03       1.15 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/U46/ZN (OAI22_X1)           0.03       1.18 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[20]/D (DFFR_X1)
+                                                          0.01       1.20 f
+  data arrival time                                                  1.20
+
+  clock CLK (rise edge)                                   1.22       1.22
+  clock network delay (ideal)                             0.00       1.22
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[20]/CK (DFFR_X1)
+                                                          0.00       1.22 r
+  library setup time                                     -0.04       1.18
+  data required time                                                 1.18
+  --------------------------------------------------------------------------
+  data required time                                                 1.18
+  data arrival time                                                 -1.20
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.02
+
+
+1
