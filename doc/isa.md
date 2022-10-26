@@ -1,38 +1,69 @@
-Rs = register source 
-Rt = register target
-Rd = register destination
+# ISA
+The following are the supported instructions of this DLX implementation.
 
 ## Instruction Types
+
+Naming: 
+1) Rd = register destination
+2) Rs1/2 = register source 1/2
+
+`DP naming` means the associated nomenclature we gave in the datapath for each field.
+
+`DLX naming` is the naming used by the DLX isa.
+
+Therefore since the `rd` position is inconsistent across instruction, we opted to enumerate the fields and then depending on the instruction treat either `rs2` as `rd` or `rs3` as `rd`.
+
 ### I-type (load,store,reg-immediate alu op.)
-I-type:         `OP rd, rs1, IMM`
-31                                                                    0
-[----6bit-----|---5bit---|---5bit---|--------------16bit--------------]
-    OPCODE        Rs1        Rd                  IMMEDIATE
+Assembly syntax: `OP rd, rs1, IMM`
 
-Encodes: Loads and stores of bytes, words, half words
-All immediates (rd rs1 op immediate)
-Conditional branch instructions (rs1 is register, rd unused)
-Jump register, jump and link register
-(rd = 0, rs1 = destination, immediate = 0)
+Result (for the most): `rd <= rs1 OP IMM`
 
+```
+           1            6 7       11 12      16 17                              32
+           0            5 6       10 11      15 16                              31
+           32          27 26      22 21      17 16                               1
+           31          26 25      21 20      16 15                               0
+           [----6bit-----|---5bit---|---5bit---|--------------16bit--------------]
+DP naming      OPCODE        Rs1        Rs2                 imm_i_type
+DLX naming     OPCODE        Rs1        Rd                     IMM
+```
+Conditional branch instructions (`beqz`,`bnez`) `rs1` field is used as is, `rd` is unused.
+Some exception on the position for load store, see further.
 ### R-type (register-regiset alu op.)
-R-type:         `OP rd, rs1, rs2`
+Assembly syntax: `OP rd, rs1, rs2`
 
-31                                                                    0
-[----6bit-----|---5bit---|---5bit---|---5bit---|--------11bit---------]
-    OPCODE        Rs1        Rs2         Rd             FUNC 
+Result: `rd <= rs1 OP rs2`
 
-Register–register ALU operations: rd rs1 func rs2
-Function encodes the data path operation: Add, Sub, . . .
-Read/write special registers and moves
+```
+           1            6 7       11 12      16 17      21 22                   32
+           0            5 6       10 11      15 16      20 21                   31
+           32          27 26      22 21      17 16      12 11                    1
+           31          26 25      21 20      16 15      11 10                    0
+           [----6bit-----|---5bit---|---5bit---|---5bit---|--------11bit---------]
+DP naming      OPCODE        Rs1        Rs2         Rs3            FUNC
+DLX naming     OPCODE        Rs1        Rs2         Rd             FUNC 
+```
+FUNC: Function encodes the data path operation: Add, Sub, ... 
+
 ### J-type (jump, jal, trap, return from except)
-J-type:         `OP LABEL`
+Assembly Syntax: `OP LABEL`
 
-31                                                                    0
-[----6bit-----|---------------------26bit-----------------------------]
-    OPCODE                    IMMEDIATE/LABEL
+Result: depends
+
+```
+           1            6 7                                                     32
+           0            5 6                                                     31
+           32          27 26                                                     1
+           31          26 25                                                     0
+           [----6bit-----|---------------------26bit-----------------------------]
+DP naming      OPCODE                        imm_j_type
+DLX naming     OPCODE                          LABEL 
+```
 Jump and jump and link
-Trap and return from exception
+
+### Load Instruction
+
+### Store Instruction
 
 # BASIC OPCODES
 
@@ -66,134 +97,146 @@ Trap and return from exception
 |xor      | r   | 0x26        | 0b100110    | xor r6,r12,r15   | 0000 00.01 100.0 1111 .0011 0.000 0010 0110 |
 |xori     | i   | 0x0e        | 0b001110    | xori r6,r12,#1   | 0011 10.01 100.0 0110 .0000 0000 0000 0001  |
 
-# Solutions
+## ISA details
 
-add
-Ex: add r1 ,r2 ,r3
-R[Rd] <-- R[Rs1] + R[Rs2]
+###add
+Ex: ` add r1 ,r2 ,r3`
+`R[Rd] <-- R[Rs1] + R[Rs2]`
 All are signed integers
 IF ID EX MEM WB
 
-addi
-Ex: addi r5 ,r2 ,#5
-R[Rs2] <-- R[Rs1] + imm16
+###addi
+Ex: ` addi r5 ,r2 ,#5`
+`R[Rs2] <-- R[Rs1] + imm16`
 All are signed integers
 
-and
-Ex: and r2 ,r3 ,r4
+###and
+Ex: ` and r2 ,r3 ,r4`
 R[Rd] <-- R[Rs1] & R[Rs2]
 All are unsigned integers . Logical ‘and’ is performed on a bitwise basis.
 
-andi
-Ex: andi r3 ,r4 ,#5
+###andi
+Ex: ` andi r3 ,r4 ,#5`
 R[Rs2] <-- R[Rs1] & uimm16
 All are unsigned integers . Logical ‘and’ is performed on a bitwise basis.
 
-beqz
-Ex: beqz r1 ,label
+###beqz
+Ex: ` beqz r1 ,label`
 if (R[Rs1] == 0) PC <-- PC + imm16
 
-bnez
-Ex: bnez r1 ,label
+###bnez
+Ex: ` bnez r1 ,label`
 if (R[Rs1] != 0) PC <-- PC + imm16
 
-j
-Ex: j label
+###j
+Ex: ` j label`
 PC <-- PC + imm26
 Unconditionally jumps relative to the PC of the next instruction. imm26 is a 26-bit signed integer .
 
-jal (jump and link)
-Ex: jal label
+###jal (jump and link)
+Ex: ` jal label`
 R31 <-- PC + 4; PC <-- PC + imm26
 Saves a return address in register 31 and jumps relative to the PC of the next instruction. imm26 is a 26-bit signed integer.
 
-lw
-Ex: lw r19 ,label +63( r8)
+###lw
+Ex: ` lw r19 ,label +63( r8)`
 R[Rs2] <-- M[imm16 + R[Rs1]]
 One word is read from the effective address computed by adding signed integer imm16 and unsigned integer R[Rs1] and is stored in R[Rs2 ].
 
-nop
-Ex: nop
+###nop
+Ex: ` nop`
 Idles one cycle. 
 
-or 
-Ex: or r2 ,r3 ,r4
+###or 
+Ex: ` or r2 ,r3 ,r4`
 R[Rd] <-- R[Rs1] | R[Rs2]
 All are unsigned integers . Logical ‘or’ is performed on a bitwise basis.
 
-ori
-Ex: ori r3 ,r4 ,#5
+###ori
+Ex: ` ori r3 ,r4 ,#5`
 R[Rs2] <-- R[Rs1] | uimm16 
 All are unsigned integers . Logical ‘or’ is performed on a bitwise basis.
 
-sge
-Ex: sge r1,r3,r4
+###sge
+Ex: ` sge r1,r3,r4`
 if (R[Rs1] >= R[Rs2 ]) R[Rd] <-- 1 else R[Rd] <-- 0
 All are signed integers.
 
-sgei
-Ex: sgei r2 ,r1 ,#6
+###sgei
+Ex: ` sgei r2 ,r1 ,#6`
 if (R[Rs1] >= imm16 ) R[Rs2] <-- 1 else R[Rs2] <-- 0
 All are signed integers.
 
-sle
-Ex: sle r1 ,r2 ,r3
+###sle
+Ex: ` sle r1 ,r2 ,r3`
 if (R[Rs1] <= R[Rs2 ]) R[Rd] <-- 1 else R[Rd] <-- 0
 All are signed integers . 
 
-slei
-Ex: slei r8 ,r5 ,#345
+###slei
+Ex: ` slei r8 ,r5 ,#345`
 if (R[Rs1] <= imm16 ) R[Rs2] <-- 1 else R[Rs2] <-- 0
 All are signed integers . 
 
-sll
-Ex: sll r6 ,r7 ,r11
+###sll
+Ex: ` sll r6 ,r7 ,r11`
 R[Rd] <-- R[Rs1] << R[Rs2]_27..31
 All are unsigned integers . R[Rs1] is logically shifted left by the low five bits of R[Rs2]. Zeros are shifted into the least-significant bit.
 
-sne
-Ex: sne r1 ,r2 ,r3
+###sne
+Ex: ` sne r1 ,r2 ,r3`
 if (R[Rs1] != R[Rs2 ]) R[Rd] <-- 1 else R[Rd] <-- 0
 All are signed integers . 
 
-snei
-Ex: snei r4 ,r5 ,#89
+###snei
+Ex: ` snei r4 ,r5 ,#89`
 if (R[Rs1] != imm16) R[Rs2] <-- 1 else R[Rs2] <-- 0
 All are signed integers .
 
-srl
-Ex: srl r15 ,r2 ,r3
+###srl
+Ex: ` srl r15 ,r2 ,r3`
 R[Rd] <-- R[Rs1] >> R[Rs2]_27..31
 All are unsigned integers . R[Rs1] is arithmetically shifted right by R[Rs2 ].
 Zeros are shifted into the most significant bit.
 
-srli
-Ex: srli r1 ,r2 ,#5
+###srli
+Ex: ` srli r1 ,r2 ,#5`
 R[Rs2] <-- R[Rs1] >> uimm16_27..31
 All are unsigned integers . R[Rs1] is arithmetically shifted right by uimm16 .
 Zeros are shifted into the most significant bit.
 
-sub
-Ex: sub r3 ,r2 ,r1
+###sra
+Ex: ` sra r1 ,r2 ,r3`
+R[regc] <-- (R[rega]_0)^R[regb] ## (R[rega]>>R[regb])_R[regb ]..31
+R[rega] and R[regc] are signed integers . R[regb] is an unsigned integer . 
+R[rega] is arithmetically shifted right by R[regb ]. The sign bit is shifted into the most - significant bit. (Actually uses only the five low order bits of R[regb ].)
+
+###srai
+Ex: ` srli r1 ,r2 ,#5`
+R[Rs2] <-- R[Rs1] >> uimm16_27..31
+All are unsigned integers . R[Rs1] is arithmetically shifted right by uimm16 .
+Zeros are shifted into the most significant bit.
+
+###sub
+Ex: ` sub r3 ,r2 ,r1`
 R[Rd] <-- R[Rs1] - R[Rs2]
 All are signed integers.
 
-subi
-Ex: subi r15 ,r16 ,#964
+###subi
+Ex: ` subi r15 ,r16 ,#964`
 R[Rs2] <-- R[Rs1] - imm16
 All are signed integers . 
 
-sw
-Ex: sw 21(r13),r6
+###sw
+Ex: ` sw 21(r13),r6`
 M[imm16 + R[Rs1 ]] <-- R[Rs2]
 One word from integer register R[Rs2] is written to the effective address computed by adding signed integer imm16 and unsigned integer R[Rs1].
 
-xor
-Ex: xor r2 ,r3 ,r4
+###xor
+Ex: ` xor r2 ,r3 ,r4`
 R[Rd] <-- F[Rs1] XOR R[Rs2]
 All are unsigned integers . Logical ’xor’ is performed on a bitwise basis.
 
-xori
-Ex: xori r3 ,r4 ,#5
+###xori
+Ex: ` xori r3 ,r4 ,#5`
 R[Rs2] <-- R[Rs1] XOR uimm16
 All are unsigned integers . Logical ’xor’ is performed on a bitwise basis.
