@@ -4,8 +4,6 @@
 ../src/000-common.core/001-DLX_ISA_ENC_PKG.vhd
 ../src/000-common.core/002-REG_PIPO.vhd
 ../src/a.e-HU.vhd
-../src/a.d-DMEM.vhd
-../src/a.c-IMEM.vhd
 ../src/a.b-DATAPATH.core/a.b.b-ALU.core/000-common.core/fa.vhd
 ../src/a.b-DATAPATH.core/a.b.b-ALU.core/000-common.core/rca.vhd
 ../src/a.b-DATAPATH.core/a.b.b-ALU.core/a.b.b.a-P4-ADDER.core/carry_generator/CARRY_GENERATOR_PKG.vhd
@@ -25,6 +23,8 @@
 ../src/a.b-DATAPATH.core/a.b.a-RF.vhd
 ../src/a.b-DATAPATH.vhd
 ../src/a.a-CU.vhd
+../src/c-DMEM.vhd
+../src/b-IMEM.vhd
 ../src/a-CPU.vhd
 
 # Testbench stuff
@@ -34,3 +34,4 @@
 ../sim/tb_CU.vhd
 ../sim/tb_DATAPATH.vhd
 ../sim/tb_CPU.vhd
+../sim/tb_T2_LOGIC.vhd
