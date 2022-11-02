@@ -1,4 +1,4 @@
-Loading db file '/home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db'
+Loading db file '/home/ms22.4/dlx_simone/syn/libnangate/NangateOpenCellLibrary_typical_ecsm.db'
 Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
 Warning: Design has unannotated primary inputs. (PWR-414)
 Warning: Design has unannotated sequential cell outputs. (PWR-415)
@@ -8,13 +8,13 @@ Report : power
         -analysis_effort low
 Design : CPU
 Version: F-2011.09-SP3
-Date   : Wed Oct 26 20:34:05 2022
+Date   : Thu Oct 27 17:04:11 2022
 ****************************************
 
 
 Library(s) Used:
 
-    NangateOpenCellLibrary (File: /home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
+    NangateOpenCellLibrary (File: /home/ms22.4/dlx_simone/syn/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
 
 
 Operating Conditions: typical   Library: NangateOpenCellLibrary

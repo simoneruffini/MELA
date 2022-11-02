@@ -3,12 +3,12 @@
 Report : area
 Design : CPU
 Version: F-2011.09-SP3
-Date   : Wed Oct 26 17:57:05 2022
+Date   : Thu Oct 27 17:16:45 2022
 ****************************************
 
 Library(s) Used:
 
-    NangateOpenCellLibrary (File: /home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
+    NangateOpenCellLibrary (File: /home/ms22.4/dlx_simone/syn/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
 
 Number of ports:                          163
 Number of nets:                           222
@@ -19,10 +19,10 @@ Number of macros:                           0
 Number of buf/inv:                          0
 Number of references:                       3
 
-Combinational area:       7610.526055
-Noncombinational area:    8087.996264
+Combinational area:       7353.304052
+Noncombinational area:    8047.298259
 Net Interconnect area:      undefined  (Wire load has zero net area)
 
-Total cell area:          15698.522318
+Total cell area:          15400.602312
 Total area:                 undefined
 1

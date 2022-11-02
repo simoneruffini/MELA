@@ -3,12 +3,12 @@
 Report : area
 Design : CPU
 Version: F-2011.09-SP3
-Date   : Wed Oct 26 20:34:03 2022
+Date   : Thu Oct 27 17:04:08 2022
 ****************************************
 
 Library(s) Used:
 
-    NangateOpenCellLibrary (File: /home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
+    NangateOpenCellLibrary (File: /home/ms22.4/dlx_simone/syn/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
 
 Number of ports:                          163
 Number of nets:                           222

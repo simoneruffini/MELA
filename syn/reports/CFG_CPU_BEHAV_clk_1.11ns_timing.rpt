@@ -1,0 +1,86 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'CPU' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : CPU
+Version: F-2011.09-SP3
+Date   : Thu Oct 27 17:26:14 2022
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: U_CU/execute_sig_d2_reg[IMM_SEL]
+              (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[31]
+            (rising edge-triggered flip-flop clocked by CLK)
+  Path Group: CLK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  CPU                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CLK (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  U_CU/execute_sig_d2_reg[IMM_SEL]/CK (DFFRS_X2)          0.00 #     0.00 r
+  U_CU/execute_sig_d2_reg[IMM_SEL]/Q (DFFRS_X2)           0.10       0.10 r
+  U_CU/CTRL_WORD[IMM_SEL] (CU)                            0.00       0.10 r
+  U_DATAPATH/CTRL_WORD[IMM_SEL] (DATAPATH)                0.00       0.10 r
+  U_DATAPATH/U19/Z (BUF_X2)                               0.06       0.16 r
+  U_DATAPATH/U18/Z (MUX2_X1)                              0.10       0.26 f
+  U_DATAPATH/U_ALU/B[4] (ALU_DATA_W32)                    0.00       0.26 f
+  U_DATAPATH/U_ALU/sub_128/B[4] (ALU_DATA_W32_DW01_sub_2)
+                                                          0.00       0.26 f
+  U_DATAPATH/U_ALU/sub_128/U82/ZN (INV_X1)                0.04       0.30 r
+  U_DATAPATH/U_ALU/sub_128/U80/ZN (NAND2_X1)              0.03       0.34 f
+  U_DATAPATH/U_ALU/sub_128/U78/ZN (NAND2_X1)              0.03       0.37 r
+  U_DATAPATH/U_ALU/sub_128/U79/ZN (AND4_X2)               0.06       0.43 r
+  U_DATAPATH/U_ALU/sub_128/U110/ZN (NOR2_X1)              0.03       0.45 f
+  U_DATAPATH/U_ALU/sub_128/U147/ZN (AOI21_X1)             0.06       0.51 r
+  U_DATAPATH/U_ALU/sub_128/U102/ZN (OAI21_X1)             0.04       0.55 f
+  U_DATAPATH/U_ALU/sub_128/U52/ZN (NAND2_X1)              0.03       0.58 r
+  U_DATAPATH/U_ALU/sub_128/U51/ZN (NAND2_X1)              0.03       0.61 f
+  U_DATAPATH/U_ALU/sub_128/U89/ZN (AND2_X1)               0.04       0.65 f
+  U_DATAPATH/U_ALU/sub_128/U207/ZN (OAI21_X1)             0.04       0.69 r
+  U_DATAPATH/U_ALU/sub_128/U216/ZN (NOR2_X1)              0.03       0.72 f
+  U_DATAPATH/U_ALU/sub_128/U234/ZN (OAI21_X1)             0.04       0.76 r
+  U_DATAPATH/U_ALU/sub_128/U242/ZN (AOI21_X1)             0.03       0.80 f
+  U_DATAPATH/U_ALU/sub_128/U240/ZN (XNOR2_X1)             0.06       0.85 f
+  U_DATAPATH/U_ALU/sub_128/DIFF[31] (ALU_DATA_W32_DW01_sub_2)
+                                                          0.00       0.85 f
+  U_DATAPATH/U_ALU/U289/ZN (AND2_X1)                      0.04       0.89 f
+  U_DATAPATH/U_ALU/U286/ZN (NOR2_X1)                      0.04       0.94 r
+  U_DATAPATH/U_ALU/U283/ZN (NAND3_X1)                     0.03       0.97 f
+  U_DATAPATH/U_ALU/U284/ZN (AND2_X1)                      0.04       1.01 f
+  U_DATAPATH/U_ALU/RES[31] (ALU_DATA_W32)                 0.00       1.01 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/DIN[31] (REG_PIPO_32_00000000_00000000_5)
+                                                          0.00       1.01 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/U29/ZN (NAND2_X1)           0.03       1.04 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/U27/ZN (NAND2_X1)           0.03       1.06 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[31]/D (DFFR_X1)
+                                                          0.01       1.08 f
+  data arrival time                                                  1.08
+
+  clock CLK (rise edge)                                   1.11       1.11
+  clock network delay (ideal)                             0.00       1.11
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[31]/CK (DFFR_X1)
+                                                          0.00       1.11 r
+  library setup time                                     -0.04       1.07
+  data required time                                                 1.07
+  --------------------------------------------------------------------------
+  data required time                                                 1.07
+  data arrival time                                                 -1.08
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.01
+
+
+1

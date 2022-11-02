@@ -1,4 +1,4 @@
-Loading db file '/home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db'
+Loading db file '/home/ms22.4/dlx_simone/syn/libnangate/NangateOpenCellLibrary_typical_ecsm.db'
 Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
 Warning: Design has unannotated primary inputs. (PWR-414)
 Warning: Design has unannotated sequential cell outputs. (PWR-415)
@@ -6,15 +6,15 @@ Warning: Design has unannotated sequential cell outputs. (PWR-415)
 ****************************************
 Report : power
         -analysis_effort low
-Design : CPU
+Design : CPU_1
 Version: F-2011.09-SP3
-Date   : Wed Oct 26 22:35:02 2022
+Date   : Thu Oct 27 17:37:10 2022
 ****************************************
 
 
 Library(s) Used:
 
-    NangateOpenCellLibrary (File: /home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
+    NangateOpenCellLibrary (File: /home/ms22.4/dlx_simone/syn/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
 
 
 Operating Conditions: typical   Library: NangateOpenCellLibrary
@@ -22,7 +22,7 @@ Wire Load Model Mode: top
 
 Design        Wire Load Model            Library
 ------------------------------------------------
-CPU                    5K_hvratio_1_4    NangateOpenCellLibrary
+CPU_1                  5K_hvratio_1_4    NangateOpenCellLibrary
 
 
 Global Operating Voltage = 1.1  
@@ -34,12 +34,12 @@ Power-specific unit information :
     Leakage Power Units = 1nW
 
 
-  Cell Internal Power  =   8.8313 mW   (94%)
-  Net Switching Power  = 520.1803 uW    (6%)
+  Cell Internal Power  =   8.8347 mW   (94%)
+  Net Switching Power  = 516.5521 uW    (6%)
                          ---------
-Total Dynamic Power    =   9.3515 mW  (100%)
+Total Dynamic Power    =   9.3512 mW  (100%)
 
-Cell Leakage Power     = 302.1216 uW
+Cell Leakage Power     = 303.2837 uW
 
 
                  Internal         Switching           Leakage            Total
@@ -49,9 +49,9 @@ io_pad             0.0000            0.0000            0.0000            0.0000 
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 black_box          0.0000            0.0000            0.0000            0.0000  (   0.00%)
 clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
-register       8.6088e+03           60.1726        1.1872e+05        8.7877e+03  (  91.03%)
-sequential         1.0018            0.3823        2.4920e+03            3.8761  (   0.04%)
-combinational    221.5392          459.6245        1.8091e+05          862.0713  (   8.93%)
+register       8.6117e+03           60.3019        1.1873e+05        8.7907e+03  (  91.05%)
+sequential         0.9602            0.3665        2.4918e+03            3.8186  (   0.04%)
+combinational    222.0247          455.8828        1.8206e+05          859.9647  (   8.91%)
 --------------------------------------------------------------------------------------------------
-Total          8.8314e+03 uW       520.1794 uW     3.0212e+05 nW     9.6536e+03 uW
+Total          8.8347e+03 uW       516.5511 uW     3.0328e+05 nW     9.6545e+03 uW
 1

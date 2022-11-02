@@ -1,0 +1,49 @@
+#
+#		".synopsys_dc.setup" Initialization File for
+#
+#		    Dc_Shell and Design_Analyzer
+#
+# 	Default configurations will be used set in the installation
+#	dir .synopsys_dc.detup file, except from the directives given below
+#
+
+#SynopsysInstall = get_unix_variable(SYNOPSYS);
+
+set search_path  { .       \
+	./libnangate }
+
+
+# ================================================= #
+# Define a work library in the current project dir  #
+# to hold temporaryinclude files and keep the project area #
+# uncluttered. Note: You must create a subdirectory # 
+# in your project directory called WORK. Des. Comp. #
+# will not create this directory for you.           #
+# ================================================= #
+
+ define_design_lib -path ./work WORK
+
+  
+
+# ================================================= #
+# General configuration settings.                   #
+# ================================================= #
+
+# usign standard configuration in installation dir
+
+set hdlin_enable_configurations "true"
+set power_preserve_rtl_hier_names "true"
+
+# ================================================= #
+# Set the link, target and synthetic library        #
+# variables. Use synlibs (with the -fc switch) to   #
+# determine the link and target library settings.   #
+# You may like to copy this file to your project    #
+# directory and append the output of synlibs.       #
+
+set link_library  {NangateOpenCellLibrary_typical_ecsm.db}
+
+set target_library  {NangateOpenCellLibrary_typical_ecsm.db}
+
+
+

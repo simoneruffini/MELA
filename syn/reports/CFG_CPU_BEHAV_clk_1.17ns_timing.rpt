@@ -8,7 +8,7 @@ Report : timing
         -max_paths 1
 Design : CPU
 Version: F-2011.09-SP3
-Date   : Wed Oct 26 20:34:03 2022
+Date   : Thu Oct 27 17:04:08 2022
 ****************************************
 
  # A fanout number of 1000 was used for high fanout net computations.

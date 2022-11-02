@@ -1,0 +1,78 @@
+Information: Updating design information... (UID-85)
+Warning: Design 'CPU' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : CPU
+Version: F-2011.09-SP3
+Date   : Thu Oct 27 17:19:35 2022
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: U_CU/execute_sig_d2_reg[IMM_SEL]
+              (rising edge-triggered flip-flop clocked by CLK)
+  Endpoint: U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[3]
+            (rising edge-triggered flip-flop clocked by CLK)
+  Path Group: CLK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  CPU                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CLK (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  U_CU/execute_sig_d2_reg[IMM_SEL]/CK (SDFFR_X1)          0.00 #     0.00 r
+  U_CU/execute_sig_d2_reg[IMM_SEL]/Q (SDFFR_X1)           0.09       0.09 r
+  U_CU/CTRL_WORD[IMM_SEL] (CU)                            0.00       0.09 r
+  U_DATAPATH/CTRL_WORD[IMM_SEL] (DATAPATH)                0.00       0.09 r
+  U_DATAPATH/U44/Z (BUF_X1)                               0.06       0.15 r
+  U_DATAPATH/U17/Z (BUF_X1)                               0.06       0.21 r
+  U_DATAPATH/U243/Z (MUX2_X1)                             0.11       0.32 f
+  U_DATAPATH/U_ALU/B[31] (ALU_DATA_W32)                   0.00       0.32 f
+  U_DATAPATH/U_ALU/U159/ZN (OR2_X1)                       0.07       0.39 f
+  U_DATAPATH/U_ALU/U193/ZN (OR2_X1)                       0.05       0.45 f
+  U_DATAPATH/U_ALU/U212/ZN (NOR2_X1)                      0.04       0.49 r
+  U_DATAPATH/U_ALU/U147/ZN (AND4_X2)                      0.07       0.57 r
+  U_DATAPATH/U_ALU/U281/ZN (INV_X1)                       0.03       0.60 f
+  U_DATAPATH/U_ALU/U280/ZN (INV_X1)                       0.03       0.63 r
+  U_DATAPATH/U_ALU/U441/ZN (NAND2_X1)                     0.04       0.67 f
+  U_DATAPATH/U_ALU/U185/ZN (OR2_X1)                       0.06       0.73 f
+  U_DATAPATH/U_ALU/U445/ZN (INV_X1)                       0.04       0.77 r
+  U_DATAPATH/U_ALU/U446/ZN (NAND2_X1)                     0.05       0.82 f
+  U_DATAPATH/U_ALU/U199/ZN (INV_X1)                       0.05       0.88 r
+  U_DATAPATH/U_ALU/U192/Z (BUF_X2)                        0.05       0.93 r
+  U_DATAPATH/U_ALU/U465/ZN (AOI211_X1)                    0.04       0.96 f
+  U_DATAPATH/U_ALU/U466/ZN (OAI211_X1)                    0.04       1.00 r
+  U_DATAPATH/U_ALU/RES[3] (ALU_DATA_W32)                  0.00       1.00 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/DIN[3] (REG_PIPO_32_00000000_00000000_5)
+                                                          0.00       1.00 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/U34/ZN (INV_X1)             0.03       1.03 f
+  U_DATAPATH/U_ALU_OUT_REG_EM/U33/ZN (OAI22_X1)           0.05       1.08 r
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[3]/D (DFFR_X1)
+                                                          0.01       1.09 r
+  data arrival time                                                  1.09
+
+  clock CLK (rise edge)                                   1.13       1.13
+  clock network delay (ideal)                             0.00       1.13
+  U_DATAPATH/U_ALU_OUT_REG_EM/reg_mem_reg[3]/CK (DFFR_X1)
+                                                          0.00       1.13 r
+  library setup time                                     -0.04       1.09
+  data required time                                                 1.09
+  --------------------------------------------------------------------------
+  data required time                                                 1.09
+  data arrival time                                                 -1.09
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+1

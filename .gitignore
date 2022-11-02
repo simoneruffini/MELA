@@ -6,7 +6,7 @@ WORK/
 transcript
 vsim.wlf
 default.svf
-.synopsys_dc.setup
+#.synopsys_dc.setup
 *.bkp
 *.o
 __pycache__
