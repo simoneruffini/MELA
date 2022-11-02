@@ -1,5 +1,8 @@
-# DLX
-DLX RISC microprocessor VHDL implementation  [MicroEletronics PoliTO]
+# MELA
+A Modestly Exhaustive dLx Architecture
+
+DLX ISA, RISC microprocessor, VHDL implementation
+
 
 # Instruction Set Architecture
 See [here](./doc/isa.md)
@@ -18,3 +21,5 @@ Make sure the vim `PWD` is the root of the project
 # compile on remote
 :nnoremap <F6> :! ssh ms_polito "cd ./dlx_simone; ./scripts/build.sh"<cr>
 ```
+
+[MicroEletronics PoliTO]
