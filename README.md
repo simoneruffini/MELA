@@ -1,5 +1,16 @@
-# MELA
-A Modestly Exhaustive dLx Architecture
+# MELA: a Modestly Exhaustive dLx Architecture
+```
+                                                                .:'
+                                                               __ :'__
+                                                            .'`  `-'  ``.
+                                                           :             :
+                                                           :             :
+                                                            :           :
+                                                             `.__.-.__.'
+
+```
+
+----
 
 DLX ISA, RISC microprocessor, VHDL implementation
 
