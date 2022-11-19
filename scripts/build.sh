@@ -1,4 +1,4 @@
-#! /bin/env bash
+#!/usr/bin/env bash
 
 # Overridable variables
 VHDL_SRCS_LIST_FILE="./compile_sim.f"
