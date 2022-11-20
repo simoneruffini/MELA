@@ -42,7 +42,7 @@ if  [ "$1" = "syn" ] ; then
     fi
 
     # Source this file to be able to run design compiler
-    #source "/software/scripts/init_synopsys_64.11"
+    source "/software/scripts/init_synopsys_64.11"
 
     echo "#########################################"
     echo "####                                 ####"
@@ -62,7 +62,7 @@ if  [ "$1" = "syn" ] ; then
 fi 
 
 # Source this file to be able to run vsim,vcom,vlog etc...
-#source "/software/scripts/init_questa10.7c"
+source "/software/scripts/init_questa10.7c"
 
 # outputs of comilation go into sim folder
 cd ../sim
