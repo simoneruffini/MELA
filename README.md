@@ -14,15 +14,16 @@
 
 DLX ISA, RISC microprocessor, VHDL implementation
 
-
-# Instruction Set Architecture
+## Block Level Overview
+![top_level](./doc/drawio/top_level_github.drawio.png)
+## Instruction Set Architecture
 See [here](./doc/isa.md)
 
-# Notes 
+## Notes 
 I don't like this folder strcuture but it was imposed on us to keep the project "tidier" and simpler to recognize the hierarchy from. 
 To be honest the constraint is understandable but it's still aweful to look at and use.
 
-# Vim Bindings
+## Vim Bindings
 Make sure the vim `PWD` is the root of the project
 ```
 # commpile the asm file open in the current buffer
