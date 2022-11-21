@@ -49,7 +49,7 @@ The fine shift will shift the selected coarse mask by the three least-
 significant digits of AMOUNT , completing the shift operation
 
 ### T2 Logic Unit
-The T2 logic unit is able to perform five logical operations with just five NAND gates.
+The T2 logic unit is able to perform five logical operations (AND, NAND, OR, NOR and XOR) with just five NAND gates.
 ![T2 Logic Unit](doc/images/logic.jpg)
 
 ## Dependencies
