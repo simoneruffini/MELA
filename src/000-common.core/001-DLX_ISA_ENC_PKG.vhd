@@ -4,7 +4,7 @@
 --
 -- Create Date:     Tue Oct 11 05:15:07 PM CEST 2022
 -- Module Name:     DLX_ISA_ENC_PKG
--- Project Name:    DLX
+-- Project Name:    MELA
 -- Description:     DLX Instruction Set Architecture Encodings Package
 --
 -- Revision:

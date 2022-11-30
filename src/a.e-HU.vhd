@@ -3,7 +3,7 @@
 --
 -- Create Date:     Wed Oct 19 01:14:03 PM CEST 2022
 -- Module Name:     HU
--- Project Name:    DLX
+-- Project Name:    MELA
 -- Description:     Hazard Unit
 -- Constraints:
 --

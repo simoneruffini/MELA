@@ -6,7 +6,7 @@
 -- Create Date:     Wed May  4 16:45:33 CEST 2022
 -- Design Name:     Control Unit Hardwired
 -- Module Name:     CU.vhd
--- Project Name:    DLX control unit
+-- Project Name:    MELA control unit
 -- Description:     Control unit for the DLX datapath
 --
 --

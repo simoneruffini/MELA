@@ -4,7 +4,7 @@
 --
 -- Create Date:     Sat 23 16:09:34 PM CEST 2022
 -- Module Name:     DATAPATH
--- Project Name:    DLX
+-- Project Name:    MELA
 -- Description:     DLX datapath
 --
 -- Revision:

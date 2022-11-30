@@ -5,7 +5,7 @@
 --
 -- Create Date:     Wed May  4 09:47:35 PM CEST 2022
 -- Design Name:     DLX_PKG
--- Project Name:    DLX
+-- Project Name:    MELA
 -- Description:     Common package
 --
 -- Revision:

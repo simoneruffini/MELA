@@ -5,7 +5,7 @@
 --
 -- Create Date:   Tue Sep 27 12:40:53 PM CEST 2022
 -- Module Name:   REG_PIPO
--- Project Name:  DLX
+-- Project Name:  MELA
 -- Description:   Generic Register Parallell In Parallel Out
 --
 -- Revision:

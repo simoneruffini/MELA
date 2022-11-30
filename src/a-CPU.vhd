@@ -4,7 +4,7 @@
 --
 -- Create Date:     Fri Oct 14 05:59:30 PM CEST 2022
 -- Module Name:     CPU
--- Project Name:    DLX
+-- Project Name:    MELA
 -- Description:     Central Processing Unit implementing DLX isa
 --
 -- Revision:

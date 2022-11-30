@@ -4,7 +4,7 @@
 --
 -- Create Date:     Mon Sep 26 03:57:07 PM CEST 2022
 -- Module Name:     DMEM
--- Project Name:    DLX
+-- Project Name:    MELA
 -- Description:     Data Memory
 --
 -- Revision:
