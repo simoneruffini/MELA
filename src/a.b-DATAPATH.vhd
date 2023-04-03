@@ -680,8 +680,8 @@ begin
   ----------------------------------------------------------- ENTITY DEFINITION
 
   ----------------------------------------------------------- COMBINATORIAL
-  rf_din_wb <= dmem_dout_wb when CTRL_WORD.rf_wb_dmem_dout_sel = '1' else
-               pc_pls_4_wb  when CTRL_WORD.jal_en = '1' else
+  rf_din_wb <= pc_pls_4_wb  when CTRL_WORD.jal_en = '1' else
+               dmem_dout_wb when CTRL_WORD.rf_wb_dmem_dout_sel = '1' else
                alu_out_wb;
 
 end architecture BEHAVIOURAL;
